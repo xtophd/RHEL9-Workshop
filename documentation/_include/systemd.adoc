@@ -401,7 +401,8 @@ Notice that systemctl status displays that the unit has been extended with a dro
 
 Red Hat Documentation
 
-    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_basic_system_settings/introduction-to-systemd_configuring-basic-system-settings[Managing Services with Systemd]
+    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/introduction-to-systemd_configuring-basic-system-settings[Introduction to systemd]
+    
 
 [discrete]
 == End of Unit
