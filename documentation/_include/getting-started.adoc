@@ -91,7 +91,7 @@ The preparation script will run for approximately 5 to 7 minutes on a fresh depl
 == A Few Words While the Installer Runs
 
 [discrete]
-=== New in RHEL 8
+=== New in RHEL 9
 
 NOTE: If the presenter (or partner) has some slides to show, this is a good place to use them.  Otherwise, here are some high-level bullets about RHEL 9.
 
@@ -105,11 +105,11 @@ NOTE: If the presenter (or partner) has some slides to show, this is a good plac
   
 ==== General Information
 
-  * Kernel Version: 4.18+  
-  * System Compiler: GCC 8.2, LLVM 6.0
+  * Kernel Version: 5.14.0+  
+  * System Compiler: GCC 11.2.1, LLVM 13.0.1
   * Hardware Architectures: Intel/AMD 64-bit, IBM Power LE, IBM z Systems, ARM 64-bit
   * Default File System: XFS
-  * Package Management: Yum v4 (dnf)
+  * Package Management: dnf 4.1.0 (with yum 4.10 integration)
   * Time Sync: Chrony
   * Networking: Network Manager
 
