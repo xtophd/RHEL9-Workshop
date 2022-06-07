@@ -1,4 +1,4 @@
-:gitrepo: https://github.com/xtophd/RHEL8-Workshop
+:gitrepo: https://github.com/xtophd/RHEL9-Workshop
 :includedir: _includes
 :doctype: book
 :sectnums:
@@ -48,9 +48,9 @@ Click on the commands below to expose steps to perform each action.  Remember, o
 ====
 # cd ~
 
-# git clone https://github.com/xtophd/RHEL8-Workshop
+# git clone https://github.com/xtophd/RHEL9-Workshop
 
-# cd ./RHEL8-Workshop
+# cd ./RHEL9-Workshop
 
 # git branch <branch-name>
 ====
@@ -58,7 +58,7 @@ Click on the commands below to expose steps to perform each action.  Remember, o
 .Commands to update the workshop
 [%collapsible,bash,options="nowrap",subs="{markup-in-source}"]
 ====
-# cd ~/RHEL8-Workshop
+# cd ~/RHEL9-Workshop
 
 # git pull
 ====
@@ -66,7 +66,7 @@ Click on the commands below to expose steps to perform each action.  Remember, o
 .Commands to configure the workshop
 [%collapsible,bash,options="nowrap",subs="{markup-in-source}"]
 ====
-# cd ~/RHEL8-Workshop
+# cd ~/RHEL9-Workshop
 
 # cp ./sample-configs/[depoyment-type]/* ./config
 ====
@@ -81,9 +81,9 @@ Now we will run the playbooks that will set up all of the workshop exercises.
 
 [source,options="nowrap",subs="{markup-in-source}",role="execute"]
 ----
-cd ~/RHEL8-Workshop
+cd ~/RHEL9-Workshop
 
-./rhel8-workshop.sh all
+./rhel9-workshop.sh all
 ----
 
 The preparation script will run for approximately 5 to 7 minutes on a fresh deployment.
@@ -93,20 +93,15 @@ The preparation script will run for approximately 5 to 7 minutes on a fresh depl
 [discrete]
 === New in RHEL 8
 
-NOTE: If the presenter (or partner) has some slides to show, this is a good place to use them.  Otherwise, here are some high-level bullets about RHEL 8.
+NOTE: If the presenter (or partner) has some slides to show, this is a good place to use them.  Otherwise, here are some high-level bullets about RHEL 9.
 
 ==== Release Information
 
-  * RHEL 8 GA Release Date: May 7th, 2019
-  * End of Full Support: May 2024
-  * End of Maintenance Support: May 2029
+  * RHEL 9 GA Release Date: May 18th, 2022
+  * End of Full Support: May 2027
+  * End of Maintenance Support: May 2032
   ** _Subject to change, please refer to:_ https://access.redhat.com/support/policy/updates/errata[Red Hat Enterprise Linux Life Cycle]
-  * RHEL 8 Release cadence is now a predictable 6 month cycle
-  ** RHEL 8.1 was released Nov, 2019
-  ** RHEL 8.2 was released Apr, 2020
-  ** RHEL 8.3 was released Nov, 2020
-  ** RHEL 8.4 was released May, 2021
-  
+  * RHEL 9 Release cadence is a predictable 6 month cycle  
   
 ==== General Information
 
