@@ -152,7 +152,7 @@
     shell:
       cmd: |
         ssh-keygen -f {{ p_file }} -R {{ hostvars[item]['inventory_hostname_short'] }}
-        ssh-keygen -f {{ p_file }} -R {{ hostvars[item]['inventory_hostname_short'] }}.{{ workshop_vars.network_fqdn }}
+        ssh-keygen -f {{ p_file }} -R {{ hostvars[item]['inventory_hostname_short'] }}.{{ workshop_extras.network_fqdn }}
     with_items:
       - "{{ groups['myBastion'] }}"
       - "{{ groups['myNodes'] }}"
@@ -164,7 +164,7 @@
     shell:
       cmd: |
         ssh-keyscan {{ hostvars[item]['inventory_hostname_short'] }} >> {{ p_file }}
-        ssh-keyscan {{ hostvars[item]['inventory_hostname_short'] }}.{{ workshop_vars.network_fqdn }} >> {{ p_file }}
+        ssh-keyscan {{ hostvars[item]['inventory_hostname_short'] }}.{{ workshop_extras.network_fqdn }} >> {{ p_file }}
     with_items:
       - "{{ groups['myBastion'] }}"
       - "{{ groups['myNodes'] }}"
@@ -176,7 +176,7 @@
     shell:
       cmd: |
         ssh-keygen -f {{ p_file }} -R {{ hostvars[item]['inventory_hostname_short'] }}
-        ssh-keygen -f {{ p_file }} -R {{ hostvars[item]['inventory_hostname_short'] }}.{{ workshop_vars.network_fqdn }}
+        ssh-keygen -f {{ p_file }} -R {{ hostvars[item]['inventory_hostname_short'] }}.{{ workshop_extras.network_fqdn }}
     with_items:
       - "{{ groups['myBastion'] }}"
       - "{{ groups['myNodes'] }}"
@@ -190,7 +190,7 @@
     shell:
       cmd: |
         ssh-keyscan {{ hostvars[item]['inventory_hostname_short'] }} >> {{ p_file }}
-        ssh-keyscan {{ hostvars[item]['inventory_hostname_short'] }}.{{ workshop_vars.network_fqdn }} >> {{ p_file }}
+        ssh-keyscan {{ hostvars[item]['inventory_hostname_short'] }}.{{ workshop_extras.network_fqdn }} >> {{ p_file }}
     with_items:
       - "{{ groups['myBastion'] }}"
       - "{{ groups['myNodes'] }}"
