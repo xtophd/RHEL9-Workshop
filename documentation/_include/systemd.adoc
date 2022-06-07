@@ -17,7 +17,7 @@ endif::[]
 
 == Overview
 
-Systemd is the "init" system for RHEL 8 (and 7 for that matter).  It replaces Upstart, the SysV "init" system used in prior releases of RHEL.  Systemd is more than just a facility to bring up user space, it is a system manager that offers:
+Systemd is the "init" system for RHEL 9 (and 8 and 7 for that matter).  Long ago it replaced Upstart, the SysV "init" system used in releases of RHEL 6.x and older.  Systemd is more than just a facility to bring up user space, it is a system manager that offers:
 
   * service parallelization
   * socket and D-Bus activation
@@ -63,8 +63,8 @@ Let's collect some initial data about the boot process
 
 [source,options="nowrap",subs="{markup-in-source}"]
 ----
-Startup finished in 3.783s (kernel) + 6.526s (initrd) + 14.723s (userspace) = 25.033s
-multi-user.target reached after 10.540s in userspace
+Startup finished in 783ms (kernel) + 1.560s (initrd) + 11.901s (userspace) = 14.246s
+multi-user.target reached after 4.073s in userspace
 ----
 
 Next let's inspect further details about all running units, ordered by the time they took to initialize. 
@@ -76,13 +76,24 @@ Next let's inspect further details about all running units, ordered by the time 
 
 [source,options="nowrap",subs="{markup-in-source}"]
 ----
-          4.205s kdump.service
-          3.308s firewalld.service
-          3.108s dnf-makecache.service
-          2.991s NetworkManager-wait-online.service
-          2.182s dracut-initqueue.service
-          1.562s sssd.service
-          ...<output truncated>...
+9.036s kdump.service
+2.204s sshd-keygen@rsa.service
+ 725ms dracut-initqueue.service
+ 577ms NetworkManager-wait-online.service
+ 571ms initrd-switch-root.service
+ 457ms systemd-hwdb-update.service
+ 336ms dnf-makecache.service
+ 269ms ldconfig.service
+ 235ms sssd.service
+ 190ms systemd-vconsole-setup.service
+ 125ms systemd-logind.service
+ 119ms firewalld.service
+ 115ms systemd-udev-trigger.service
+ 108ms initrd-parse-etc.service
+ 107ms user@0.service
+  92ms lvm2-monitor.service
+  83ms modprobe@drm.service
+...<output truncated>...
 ----
 
 This helps to learn the “cost” of some of the default services.  To speed up boot-time, unnecessary services could potentially be removed or disabled.
@@ -128,13 +139,13 @@ As mentioned above, systemd has another concept called a service.  A service is 
 
 [bash,options="nowrap"]
 ----
-UNIT                               LOAD   ACTIVE SUB     DESCRIPTION                     
-auditd.service                     loaded active running Security Auditing Service       
-chronyd.service                    loaded active running NTP client/server               
-crond.service                      loaded active running Command Scheduler               
-dbus.service                       loaded active running D-Bus System Message Bus        
-dracut-shutdown.service            loaded active exited  Restore /run/initramfs on s
-firewalld.service                  loaded active running firewalld - dynamic firewal
+UNIT                               LOAD   ACTIVE SUB     DESCRIPTION
+auditd.service                     loaded active running Security Auditing Service
+chronyd.service                    loaded active running NTP client/server
+crond.service                      loaded active running Command Scheduler
+dbus-broker.service                loaded active running D-Bus System Message Bus
+dracut-shutdown.service            loaded active exited  Restore /run/initramfs on shutdown
+firewalld.service                  loaded active running firewalld - dynamic firewall daemon
 ...<output truncated>...
 ----
 
@@ -147,14 +158,12 @@ Next let's view all of the services available (ie: everything installed, running
 
 [bash,options="nowrap"]
 ----
-UNIT FILE                                   STATE   
-arp-ethers.service                          disabled
-auditd.service                              enabled 
-autovt@.service                             enabled 
-blk-availability.service                    disabled
-chrony-dnssrv@.service                      static  
-chrony-wait.service                         disabled
-chronyd.service                             enabled 
+UNIT FILE                                  STATE           VENDOR PRESET
+auditd.service                             enabled         enabled
+autovt@.service                            alias           -
+blk-availability.service                   disabled        disabled
+chrony-wait.service                        disabled        disabled
+chronyd.service                            enabled         enabled
 ...<output truncated>...
 ----
 
@@ -176,10 +185,9 @@ Let us install some packages.
 [bash,options="nowrap"]
 ----
 ...snip ...
-Package httpd-2.4.37-16.module+el8.1.0+4134+e6bad0ed.x86_64 is already installed.
-Package mariadb-server-3:10.3.17-1.module+el8.1.0+3974+90eded84.x86_64 is already installe
-d.
-Package mariadb-3:10.3.17-1.module+el8.1.0+3974+90eded84.x86_64 is already installed.
+Package httpd-2.4.51-7.el9_0.x86_64 is already installed.
+Package mariadb-server-3:10.5.13-2.el9.x86_64 is already installed.
+Package mariadb-3:10.5.13-2.el9.x86_64 is already installed.
 Dependencies resolved.
 Nothing to do.
 Complete!
@@ -189,7 +197,7 @@ Complete!
 
 Now it's time to enable the relevant system services.
 
-NOTE: The "enable --now" syntax was introduced in a recent release of RHEL 7 and of course is now availbale in RHEL 8.  The option permanently enables AND immediately starts the specified services in a single command.
+NOTE: The "enable --now" syntax was introduced in a recent release of RHEL 7 and of course is now availbale in RHEL 8 and RHEL 9.  The option permanently enables AND immediately starts the specified services in a single command.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
@@ -214,17 +222,18 @@ Now let's check the status.  You should see two separate sections in the output,
 [bash,options="nowrap"]
 ----
 ● httpd.service - The Apache HTTP Server
-   Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
-   Active: active (running) since Wed 2019-05-01 21:37:54 EDT; 12s ago
-     Docs: man:httpd.service(8)
- Main PID: 5135 (httpd)
-   Status: "Running, listening on: port 80"
-    Tasks: 213 (limit: 24007)
-   Memory: 26.5M
-   CGroup: /system.slice/httpd.service
-           ├─5135 /usr/sbin/httpd -DFOREGROUND
-           ├─5163 /usr/sbin/httpd -DFOREGROUND
-        ...<output truncated>...
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
+     Active: active (running) since Tue 2022-06-07 15:47:46 EDT; 31s ago
+       Docs: man:httpd.service(8)
+   Main PID: 37396 (httpd)
+     Status: "Total requests: 0; Idle/Busy workers 100/0;Requests/sec: 0; Bytes served/sec:   0 B/sec"
+      Tasks: 213 (limit: 22918)
+     Memory: 23.0M
+        CPU: 65ms
+     CGroup: /system.slice/httpd.service
+             ├─37396 /usr/sbin/httpd -DFOREGROUND
+             ├─37445 /usr/sbin/httpd -DFOREGROUND
+...<output truncated>...
 ----
 
 === Enable Firewall
@@ -347,18 +356,19 @@ Restart=always
 [bash,options="nowrap"]
 ----
 ● httpd.service - The Apache HTTP Server
-   Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
-  Drop-In: /etc/systemd/system/httpd.service.d
-           └─50-httpd.conf
-   Active: active (running) since Wed 2019-05-01 21:37:54 EDT; 11min ago
-     Docs: man:httpd.service(8)
- Main PID: 5135 (httpd)
-   Status: "Running, listening on: port 80"
-    Tasks: 213 (limit: 24007)
-   Memory: 26.5M
-   CGroup: /system.slice/httpd.service
-           ├─5135 /usr/sbin/httpd -DFOREGROUND
-           ├─5163 /usr/sbin/httpd -DFOREGROUND
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
+    Drop-In: /etc/systemd/system/httpd.service.d
+             └─50-httpd.conf
+     Active: active (running) since Tue 2022-06-07 15:47:46 EDT; 5min ago
+       Docs: man:httpd.service(8)
+   Main PID: 37396 (httpd)
+     Status: "Total requests: 0; Idle/Busy workers 100/0;Requests/sec: 0; Bytes served/sec:   0 B/sec"
+      Tasks: 213 (limit: 22918)
+     Memory: 23.0M
+        CPU: 181ms
+     CGroup: /system.slice/httpd.service
+             ├─37396 /usr/sbin/httpd -DFOREGROUND
+             ├─37445 /usr/sbin/httpd -DFOREGROUND
 ----
 
 Notice that systemctl status displays that the unit has been extended with a drop-in file.
@@ -371,22 +381,20 @@ Notice that systemctl status displays that the unit has been extended with a dro
 
 [bash,options="nowrap"]
 ----
-● mariadb.service - MariaDB 10.3 database server
-   Loaded: loaded (/usr/lib/systemd/system/mariadb.service; enabled; vendor preset: disab>
-  Drop-In: /etc/systemd/system/mariadb.service.d
-           └─override.conf
-   Active: active (running) since Thu 2020-04-16 13:10:45 EDT; 9s ago
-     Docs: man:mysqld(8)
-           https://mariadb.com/kb/en/library/systemd/
-  Process: 28674 ExecStartPost=/usr/libexec/mysql-check-upgrade (code=exited, status=0/SU>
-  Process: 28325 ExecStartPre=/usr/libexec/mysql-prepare-db-dir mariadb.service (code=exi>
-  Process: 28300 ExecStartPre=/usr/libexec/mysql-check-socket (code=exited, status=0/SUCC>
- Main PID: 28642 (mysqld)
-   Status: "Taking your SQL requests now..."
-    Tasks: 30 (limit: 23999)
-   Memory: 84.5M
-   CGroup: /system.slice/mariadb.service
-           └─28642 /usr/libexec/mysqld --basedir=/usr
+● mariadb.service - MariaDB 10.5 database server
+     Loaded: loaded (/usr/lib/systemd/system/mariadb.service; enabled; vendor preset: disabled)
+    Drop-In: /etc/systemd/system/mariadb.service.d
+             └─override.conf
+     Active: active (running) since Tue 2022-06-07 15:47:48 EDT; 6min ago
+       Docs: man:mariadbd(8)
+             https://mariadb.com/kb/en/library/systemd/
+   Main PID: 37717 (mariadbd)
+     Status: "Taking your SQL requests now..."
+      Tasks: 8 (limit: 22918)
+     Memory: 73.2M
+        CPU: 337ms
+     CGroup: /system.slice/mariadb.service
+             └─37717 /usr/libexec/mariadbd --basedir=/usr
 ----
 
 == Additional Resources
