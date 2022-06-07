@@ -81,7 +81,7 @@ systemctl status sshd
 [discrete]
 == End of Unit
 
-link:../RHEL8-Workshop.adoc[Return to Document]
+link:../RHEL9-Workshop.adoc[Return to Document]
 
 ////
 Always end files with a blank line to avoid include problems.
