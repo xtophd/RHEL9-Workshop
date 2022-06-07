@@ -94,7 +94,7 @@ For Windows desktops:
 == RHEL 9 Workshop: EXERCISES
 
 [#toc]
-  . link:{includedir}/getting-started.adoc[*Workshop Preparation* - DO THIS FIRST! ]
+  . link:{includedir}/getting-started.adoc[*Getting Started* - DO THIS FIRST! ]
   . link:{includedir}/webconsole.adoc[*Web Console* - System Management]
   . link:{includedir}/systemd.adoc[*SystemD* - System Service Management]
   . link:{includedir}/firewalld.adoc[*FirewallD* - Firewall Service Management]
