@@ -18,10 +18,8 @@ endif::[]
 == Presented By
 
   * Christoph Doerbeck
-  * Karl Abbott
   * Eddie Chen
   * Gordon Keegan
-  * Matt St. Onge
   
 [discrete]
 == Introduction
