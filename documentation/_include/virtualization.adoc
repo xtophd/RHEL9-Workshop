@@ -1,0 +1,355 @@
+:sectnums:
+:sectnumlevels: 3
+:markup-in-source: verbatim,attributes,quotes
+:imagesdir: ./_images
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+:toc:
+:toclevels: 1
+
+= Virtualization Management
+
+NOTE: If you are using the web-console and do not see "Virtual Machines" in the menu, chances are that you need to sign-out and sign-in again.
+
+Provided your hardware is reasonably modern, chances are that it supports virtualization.  This unit introduces simple virtualization management using kvm and libvirt.  You will learn how to:
+
+    * Install additional necessary software
+    * Enable necessary system services and firewall ports
+    * Use the command line to create and manage a virtual machine
+    * Use the web console (cockpit) to create and manage a virtual machine
+
+== Getting Started
+
+For these exercises, you will be using the host `bastion` as user `root`.
+
+Use `sudo` to elevate your priviledges.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*sudo -i*
+----
+
+Verify that you are on the right host for these exercises.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*workshop-virt-checkhost.sh*
+----
+
+You are now ready to proceed with these exercises.
+
+== Requirements
+
+First we need to ensure the system being used supports either:
+
+    * Intel VT-x and Intel 64 virtualization extensions
+    * AMD-V and the AMD64 virtualization extensions
+
+This is done with the following simple commands.
+
+You can start by examining the CPU flags (capabilities) advertised by your system.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*grep -E 'svm|vmx' /proc/cpuinfo*
+----
+
+[source,options="nowrap",subs="{markup-in-source}"]
+----
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 
+clflush mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon rep_good
+nopl xtopology cpuid tsc_known_freq pni pclmulqdq *vmx* ssse3 fma cx16 pcid sse4_1 sse4_2 
+x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnow
+prefetch invpcid_single ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept
+vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx avx512f avx512dq rds
+eed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 arat pku os
+pke avx512_vnni md_clear arch_capabilities
+----
+
+You are looking for either the Intel flag (vmx) or the AMD flag (svm).  A more sophisticated command makes it a little easier to determine.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*if grep -qE 'svm|vmx' /proc/cpuinfo ; then echo "Virt Supported" ; else echo "WARNING!! Virt NOT Supported"; fi*
+----
+
+[source,options="nowrap",subs="{markup-in-source}"]
+----
+Virt Supported
+----
+
+After you install all the required software, there are some additional tools to provide more detailed reporting on system capabilities.
+
+== Installation and Configuration
+
+NOTE: Please note that all software has been pre-installed and configured.  These steps are provided as reference material only.
+
+System needs to be configure with access to the following repos:
+
+  * rhel-8-baseos-rpms
+  * rhel-8-appstream-rpms
+
+Install the required packages.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*yum install -y qemu-kvm libvirt virt-install libvirt-client libguestfs-tools cockpit-machines*
+----
+
+Next we need to enable the various services.
+
+NOTE: Please note that all software has been pre-installed and configured.  These steps are provided as reference material.
+
+If for some reason the webconsole is not enabled, please visit that unit for instructions on installing and configuring webconsole.
+
+To enable the necessary services for this unit:
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*systemctl enable --now libvirtd*
+----
+
+NOTE: The "enable --now" syntax is new in RHEL 8.  It allows for permanently enabling as well as immediately starting services in a single command.
+
+Finally check the service status.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*systemctl status libvirtd*
+----
+
+=== Verify Virtualization Host Status
+
+One simple command checks various hardware and software configurations for support of virtualization.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*virt-host-validate*
+----
+
+[bash,options="nowrap"]
+----
+  QEMU: Checking for hardware virtualization                                 : PASS
+  QEMU: Checking if device /dev/kvm exists                                   : PASS
+  QEMU: Checking if device /dev/kvm is accessible                            : PASS
+  QEMU: Checking if device /dev/vhost-net exists                             : PASS
+  QEMU: Checking if device /dev/net/tun exists                               : PASS
+  QEMU: Checking for cgroup 'cpu' controller support                         : PASS
+  QEMU: Checking for cgroup 'cpuacct' controller support                     : PASS
+  QEMU: Checking for cgroup 'cpuset' controller support                      : PASS
+  QEMU: Checking for cgroup 'memory' controller support                      : PASS
+  QEMU: Checking for cgroup 'devices' controller support                     : PASS
+  QEMU: Checking for cgroup 'blkio' controller support                       : PASS
+  QEMU: Checking for device assignment IOMMU support                         : WARN (No ACPI IVRS table found, IOMMU either disabled in BIOS or not supported by this hardware platform)
+----
+
+== Deploy A Virtual-Machine with 'virt-install'
+
+Red Hat provides pre-made generic images of RHEL for use as virtual machines in a QCOW2 format.
+
+However, in order to access them for download one needs to have an active Red Hat Enterprise Linux entitlement.  An alternative to downloading a qcow image is to make one.  
+
+Fortunately, that's precisely what you did in the previous unit with Image Builder.
+
+=== Locate your QCOW Image
+
+In the previous exercise, you built a custom QCOW2 image using Image Builder.  The result of that work should be a vm image named vmguest.qcow2 
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*ls /var/lib/libvirt/images*
+----
+
+[bash,options="nowrap"]
+----
+vmguest.qcow2
+----
+
+== Customize your QCOW Image
+
+Now you need to do a few more things to your image:
+
+    * set a hostname
+    * set a root password
+    * copy a simple HTML file
+    * selinux relabel files in the guest
+    * remove the cloud-init package
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*virt-customize \
+    -a /var/lib/libvirt/images/vmguest.qcow2 \
+    --hostname vmguest \
+    --root-password password:redhat \
+    --copy-in /usr/local/etc/index.html:/var/www/html \
+    --selinux-relabel \
+    --uninstall cloud-init*
+----
+
+
+=== VM Deployment
+
+It is now time to launch the VM
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*virt-install \
+   --import \
+   --name vmguest \
+   --memory 2048 \
+   --vcpus 1 \
+   --disk /var/lib/libvirt/images/vmguest.qcow2 \
+   --graphics vnc \
+   --noautoconsole\
+   --os-variant rhel8.4*
+----
+
+Give the VM a few moments to boot.
+
+== Virtual Machine Connectivity
+
+To determine what IP address was assigned to the new host, we can using some options to the virsh utility
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*virsh net-dhcp-leases default*
+----
+
+The output will show us the clients MAC address and the IP address it was assigned via the libvirt integrated dnsmasq service.
+
+[bash,options="nowrap"]
+----
+ Expiry Time           MAC address         Protocol   IP address          Hostname   Client ID or DUID
+-----------------------------------------------------------------------------------------------------------
+ 2021-11-13 11:19:33   52:54:00:63:85:76   ipv4       192.168.122.62/24   -          01:52:54:00:63:85:76
+----
+
+Another mechanism determine the ip address of the client is to use the 'domifaddr' option.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*virsh domifaddr vmguest*
+----
+
+[bash,options="nowrap"]
+----
+ Name       MAC address          Protocol     Address
+-------------------------------------------------------------------------------
+ vnet0      52:54:00:63:85:76    ipv4         192.168.122.62/24
+----
+
+If the above command results in empty data, it is just an indication that the virtual machine has 
+not completed it's bootstrap.  Just give it a few more moments and try again.
+
+Once we can see the network information, now it is time to connect to the host so 
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4,a,/\//) ; print a[1] }')*
+----
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*curl $VM_IP*
+----
+
+== Virtual Machine Inspection
+
+Now it is time to connect to the host and check out some it's characteristics.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4,a,/\//) ; print a[1] }')*
+----
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*ssh $VM_IP*
+----
+
+The password was set in the previous exercise with virt-customize command and is probably just 'redhat'
+
+The virtual machine is on a private network and not accessbile from the internet.  You will only 
+be able to access it from the bastion via ssh, or from the webconsole.
+
+Verify that the httpd daemon is running.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*systemctl status httpd*
+----
+
+Verifiy that the index.html is installed.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*ls /var/www/html/index.html*
+----
+
+Exit back to the host
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*exit*
+----
+
+== Additional CLI Commands
+
+Some additional simple virtual machine management commands
+
+  * *virsh list* lists running virtual machines
+  * *virsh list --all* lists all virtual machines regardless of state
+  * *virsh start <vm-name>* starts a virtual machine named 
+  * *virsh shutdown <vm-name>* performs a soft shutdown of the virtual machine
+  * *virsh destroy <vm-name>* performs distructive cold stop the virtual machine
+
+== Explore VM Management with 'Web-Console'
+
+From the menu, select the Machines tab.  You will notice that the interface is still pretty rudimentary when compared with the Red Hat Virtualization Manager (RHVM), but one critical feature is available: the console!
+
+Take some time to explore the capabilities of the Web-Console Machines webui.
+
+== Virtual Machine Shutdown
+
+WARN: It is IMPORTANT to shutdown the deployed VMs.  Leaving any VM running in this workshop environment can adversely impact other exercises.
+
+Using either the CLI (or the Web-Console), be sure to shutdown the VM(s) you deployed to ensure additional workshop exercises perform reasonably.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*virsh list --all*
+----
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*virsh shutdown vmguest*
+----
+
+== Additional Resources
+
+Cockpit Project Page
+
+    * link:http://cockpit-project.org/blog/category/release.html[Cockpit Project]
+
+Network Related Topics
+
+    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/networking_guide/ch-configure_network_bridging[Configure Network Bridging]
+
+    * link:http://blog.leifmadsen.com/blog/2016/12/01/create-network-bridge-with-nmcli-for-libvirt/[Create Network Bridge with nmcli]
+
+[discrete]
+== End of Unit
+
+ifdef::env-github[]
+link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+endif::[]
+
+////
+Always end files with a blank line to avoid include problems.
+////

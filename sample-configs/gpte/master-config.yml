@@ -1,0 +1,103 @@
+##
+##    !! WARNING !!  Ansible only interprets 'True' and 'False'
+##                   as booleans when reading ini files.  Other
+##                   values such as 'true' or 'false' would be 
+##                   interpreted as strings and would break various
+##                   logic tests.  
+##
+##                   When reading YML files, booleans can take on
+##                   many forms and be interpreted correctly.
+##
+##                   For consistency, only use unquoted booleans: True & False
+
+all: 
+
+  vars:
+
+    ## ----------------------------------------
+    ##    Workshop Variables
+
+
+
+    workshop_vars:
+
+      clustername:          "{{ lookup('file','.././config/gpte-guid.txt') }}"
+      network_basedomain:   "internal"
+      network_fqdn:         "{{ lookup('file','.././config/gpte-guid.txt') }}.internal"
+      
+      set_student_password: True
+      set_admin_password:   False
+
+      ##
+      ##    Passwords should be loaded from a file
+      ##    or be set in credentials.yml.  Never here
+      ##    unless you understand the risks.
+      ##
+      ##    !!! LEAVE PASSWORDS COMMENTED OUT !!!
+      ##
+
+      student_name:         "student"
+      student_password:     "{{ lookup('file','.././config/gpte-studentpw.txt') }}"
+
+      admin_name:           "root"
+      #admin_password:       ""
+
+      enable_unit:
+        appstream:          True
+        boom:               False
+        buildah:            True
+        ebpf:               True
+        firewalld:          True
+        kpatch:             True
+        nftables:           True
+        podman:             True
+        stratis:            True
+        systemd:            True
+        tlog:               True
+        imagebuilder:       True
+        virtualization:     True
+        vdo:                True
+        wayland:            False
+        webconsole:         True
+  
+        
+
+
+
+    ## ----------------------------------------
+    ##    Override default ansible host with
+    ##    one that includes fqdn.  This saves us
+    ##    from having to specify FQDN in host 
+    ##    vars section below.  This assumes all
+    ##    hosts are in the same domain. DUH!
+
+
+
+    ansible_host: "{{ inventory_hostname }}.{{ workshop_vars.network_fqdn }}"
+
+
+
+## ----------------------------------------
+## HOSTGROUPS & VARS
+## ----------------------------------------
+
+
+
+myBastion:
+  hosts:
+    bastion:
+  vars:
+    ansible_connection: local
+
+
+
+## -----------------
+
+
+
+myNodes:
+  hosts:
+    node1:
+    node2:
+    node3:
+    node4:

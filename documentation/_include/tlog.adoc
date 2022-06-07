@@ -1,0 +1,255 @@
+:sectnums:
+:sectnumlevels: 3
+:markup-in-source: verbatim,attributes,quotes
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+:toc:
+:toclevels: 1
+
+= Session Recording with Tlog
+
+== Overview
+
+Tlog is a terminal I/O recording and playback package for Linux.  The session logs retain all the passed data and timing.  Sessions are recorded in JSON format as to eventually deliver the data to a storage service _(such as Elasticsearch)_ where it can be searched, queried and be played back.
+
+If you have successfully run the RHEL 8 lab preparation playbook, then node1.example.com has already been properly configured for session logging.  What follows are some basic exercises to demonstrate how this facility functions.
+
+== Getting Started
+
+For these exercises, you will be using the host `node1` as user `root`.
+
+From host `bastion`, ssh to `node1`.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*ssh node1*
+----
+
+Use `sudo` to elevate your priviledges.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*sudo -i*
+----
+
+Verify that you are on the right host for these exercises.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*workshop-tlog-checkhost.sh*
+----
+
+You are now ready to proceed with these exercises.
+
+== Creating a Session Log
+
+The system has been configured with an additional non-priviledged user called `other-user`.  Run the following command to change to the `other-user`.
+
+NOTE: The command is 'su' + 'dash' + 'other-user'.  Don't forget the dash!
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*su - other-user*
+----
+
+[bash,options="nowrap"]
+----
+ATTENTION! Your session is being recorded!
+----
+
+You should have gotten a message when switching to `other-user` that the session is being recorded.
+
+Now to do a few activities worth logging.  You can check out a directory listing, look at the host's _passwd_ and _shadow_ files.  
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*ls -l /etc*
+----
+
+[bash,options="nowrap"]
+----
+-rw-r--r--.  1 root root       68 Apr 17 22:19 shells
+drwxr-xr-x.  2 root root     4096 Apr 17 21:54 skel
+-rw-r--r--.  1 root root      138 Sep 12  2019 sos.conf
+drwxr-xr-x.  3 root root     4096 Apr 17 21:58 ssh
+drwxr-xr-x.  2 root root     4096 Apr 17 21:55 ssl
+drwx------.  4 sssd sssd     4096 Apr 17 21:55 sssd
+-rw-r--r--.  1 root root       48 Apr 17 22:21 subgid
+-rw-r--r--.  1 root root       24 Apr 17 22:19 subgid-
+-rw-r--r--.  1 root root       48 Apr 17 22:21 subuid
+-rw-r--r--.  1 root root       24 Apr 17 22:19 subuid-
+-rw-r-----.  1 root root     1786 Aug 16  2019 sudo.conf
+-r--r-----.  1 root root     4328 Aug 16  2019 sudoers
+...SNIP...
+----
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*cat /etc/passwd*
+----
+
+[bash,options="nowrap"]
+----
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+...SNIP...
+----
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*cat /etc/shadow*
+----
+
+[bash,options="nowrap"]
+----
+cat: /etc/shadow: Permission denied
+----
+
+Oh wait, you need root priviledges to see the contents of _/etc/shadow_.  You can use sudo for that!
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*sudo cat /etc/shadow*
+----
+
+[bash,options="nowrap"]
+----
+root:$6$9Jk5EGiB2aBl95kj$RIdiSqNdKt95zqddStFUY/zVKIUujWfGWJkLM5KQ.7zY88Kxxa0qm78qLMFRAqDO2qOrp.qZBaQAKcUFm1Is70:18370:0:99999:7:::
+bin:*:17988:0:99999:7:::
+daemon:*:17988:0:99999:7:::
+adm:*:17988:0:99999:7:::
+lp:*:17988:0:99999:7:::
+sync:*:17988:0:99999:7:::
+shutdown:*:17988:0:99999:7:::
+halt:*:17988:0:99999:7:::
+mail:*:17988:0:99999:7:::
+operator:*:17988:0:99999:7:::
+games:*:17988:0:99999:7:::
+ftp:*:17988:0:99999:7:::
+...SNIP...
+----
+
+We are done with our limited nafarious activities, so proceed to `exit`
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*exit*
+----
+
+== Session Play Back
+
+Session logs are configured to record in the system journal by default.  A distinct advantage to this approach is that session recordings are also augmented with meta data which includes: user, session-id, host-id and a log-message-id.  Let's have a look.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*journalctl -o verbose  --output-fields=TLOG_USER,TLOG_REC TLOG_USER=other-user*
+----
+
+[bash,options="nowrap"]
+----
+Sat 2019-04-27 21:21:27.852913 EDT [s=bcde42e4c96048c3908657177414e202;i=700;b=b2333248c22a4c5f912a>
+    TLOG_USER=other-user
+    TLOG_REC=b2333248c22a4c5f912a245f6266582e-3cb9-e9bf9
+Sat 2019-04-27 21:21:33.354695 EDT [s=bcde42e4c96048c3908657177414e202;i=701;b=b2333248c22a4c5f912a>
+    TLOG_USER=other-user
+    TLOG_REC=b2333248c22a4c5f912a245f6266582e-3cb9-e9bf9
+Sat 2019-04-27 21:21:43.483301 EDT [s=bcde42e4c96048c3908657177414e202;i=702;b=b2333248c22a4c5f912a>
+    TLOG_USER=other-user
+    TLOG_REC=b2333248c22a4c5f912a245f6266582e-3cb9-e9bf9
+Sat 2019-04-27 21:21:54.193564 EDT [s=bcde42e4c96048c3908657177414e202;i=707;b=b2333248c22a4c5f912a>
+    TLOG_USER=other-user
+    TLOG_REC=b2333248c22a4c5f912a245f6266582e-3cb9-e9bf9
+Sat 2019-04-27 21:21:58.770887 EDT [s=bcde42e4c96048c3908657177414e202;i=70c;b=b2333248c22a4c5f912a>
+    TLOG_USER=other-user
+    TLOG_REC=b2333248c22a4c5f912a245f6266582e-3cb9-e9bf9
+----
+
+Each one of those entries makes up a chunk of a session recording.  It is by way of searching the system journal and identifying the correct TLOG_REC for a specific session, that you can then play back the session using `tlog-play`.
+
+We have taken the liberty of scripting this "search" to playback the last session log from the user cloud-user.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*workshop-tlog-playback.sh*
+----
+
+Once you hit enter on the above command, you will see a note that "Playback Started..." and again when "Playback Finished...".  Be patient until it completes and your root prompt returns.
+
+[NOTE]
+====
+_Native command(s) to playback last tlog_
+----
+myTLOG=`journalctl -o verbose -n 1 --output-fields=TLOG_USER,TLOG_REC TLOG_USER=other-user | grep TLOG_REC`
+
+tlog-play -r journal -M ${myTLOG}
+----
+====
+
+== Initial Setup of TLOG
+
+Clearly we have taken the liberty to pre-configure TLOG for this lab.  But, it was not very difficult.  TLOG requires a couple of packages, a configuration file and simple restart of the sssd service.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+yum install tlog cockpit-session-recording
+----
+
+Here is what the config file looks like _/etc/sssd/conf.d/sssd-session-recording.conf_
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*cat /etc/sssd/conf.d/sssd-session-recording.conf*
+----
+
+[bash,options="nowrap"]
+----
+# This file deployed by Ansible playbook
+# /etc/sssd/conf.d/sssd-session-recording.conf
+
+[session_recording]
+scope = some
+users = other-user
+groups = other-user
+----
+
+And lastly, reload systemd and restart the sssd service.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*systemctl daemon-reload*
+*systemctl restart sssd*
+----
+
+== Additional Resources
+
+Red Hat Documentation
+
+    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/recording_sessions/getting-started-with-session-recording_getting-started-with-session-recording[Getting Started With Session Recording]
+
+[discrete]
+== End of Unit
+
+ifdef::env-github[]
+link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+endif::[]
+
+////
+Always end files with a blank line to avoid include problems.
+////
+

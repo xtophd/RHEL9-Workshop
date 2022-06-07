@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Check if this is the expected host
+
+HOSTNAME_SHORT=`hostname -s`
+
+if [[ "{{ inventory_hostname_short }}" = "${HOSTNAME_SHORT}" ]]; then
+  echo "YES : this is the correct host"
+else
+  echo "WARNING - NOT THE RIGHT HOST: check your instructions"
+fi

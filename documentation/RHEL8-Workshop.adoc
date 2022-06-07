@@ -1,0 +1,159 @@
+:gitrepo: https://github.com/xtophd/RHEL8-Workshop
+:includedir: _include
+:doctype: book
+:sectnums:
+:sectnumlevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:imagesdir: ./_include/_images/
+
+= The Definitive Red Hat Enterprise Linux 8 Hands-on Lab
+
+[discrete]
+== Presented By
+
+  * Christoph Doerbeck
+  * Karl Abbott
+  * Eddie Chen
+  * Gordon Keegan
+  * Matt St. Onge
+  
+[discrete]
+== Introduction
+
+First of all, THANK YOU for registering and participating in *The Definitive Red Hat Enterprise Linux 8 Hands-on Lab*.  The lab team has worked very hard to assemble a series of exercises to introduce many of the new features and capabilities found in the next great release of RHEL.  We hope you enjoy this experience and please don't hesitate to ask questions.
+
+Also, please don't forget to review this session at the completion of this lab.  Your reviews and feedback help keep labs like these as top attractions for the Red Hat Summit.
+
+NOTE:  This whole effort is done using official Red Hat software and although things can likely be set up to work with upstream software components (Fedora, CentOS, etc...), alternate derivatives of RHEL are not tested or validated with these exercises.
+
+[discrete]
+== Workshop Abstract
+
+  * link:{includedir}/abstract.adoc[About This Workshop]
+
+[discrete]
+== Conventions Used
+
+  * link:{includedir}/conventions.adoc[Documentation Style and Conventions]
+
+[discrete]
+== How to Connect
+
+There are (typically) three options to complete the lab.
+
+  . Follow instructions provided to connect to the shell embedded on the  workstation WebConsole
+  . Depending on deployed infrastructure, use a local ssh terminal with credentials provided by instructors
+  . Depending on deployed infrastructure, use true console provided by a VDI solution
+
+NOTE: you will need true console (GUI) on "WORKSTATION" for the *Wayland* unit.
+
+
+
+[discrete]
+== Quick Overview of *tmux*
+
+NOTE: We strongly advise the use of *tmux* before you begin your exercises.  This will prevent the loss of active work in the event your connection is broken.  
+
+Simple list of *tmux* commands:
+
+  * run tmux: `tmux`
+  * create an additional terminal shell: `ctrl-b c`
+  * switch to Next terminal shell: `ctrl-b n`
+  * switch to Previous terminal shell: `ctrl-b p`
+
+After a broken connection:
+
+  * list available sessions : `tmux ls`
+  * attach to disconnected session : `tmux a [-t #]`
+
+
+
+[discrete]
+== How to Cut & Paste with Web Console
+
+NOTE: Chrome is the only "supported" browser that I test for this workshop.  Chances are you will have the same experience with Firefox, but that is not confirmed.
+
+For Linux or MacOS based desktops:
+
+  * normal mouse selections with cut & paste should work as expected.
+
+For Windows desktops:
+
+  * COPY standard app: CTRL-c
+  * PASTE to stardard app: CTRL-v 
+  * COPY from web-console terminal: CTRL-a + CTRL-c
+  * PASTE to web-console terminal: CTRL-a + CTRL-v
+
+
+
+[discrete]
+== RHEL 8 LAB: EXERCISES
+
+[#toc]
+  . link:{includedir}/getting-started.adoc[*Workshop Preparation* - DO THIS FIRST! ]
+  . link:{includedir}/webconsole.adoc[*Web Console* - System Management]
+  . link:{includedir}/systemd.adoc[*SystemD* - System Service Management]
+  . link:{includedir}/firewalld.adoc[*FirewallD* - Firewall Service Management]
+  . link:{includedir}/nftables.adoc[*NFTables* - Firewall Subsystem]
+  . link:{includedir}/ebpf.adoc[*eBPF Tracing* - Extended Berkeley Packet Filter for Linux Kernel Tracing]
+  . link:{includedir}/appstream-yum.adoc[*App Stream* - Application Delivery]
+  . link:{includedir}/podman.adoc[*Podman* - Container Management]
+  . link:{includedir}/buildah.adoc[*Buildah & Skopeo* - Container Development]
+  . link:{includedir}/image-builder.adoc[*Image Builder* - Easy custom OS Builds]
+  . link:{includedir}/virtualization.adoc[*Virtualization* - Virtualization Management]
+  . link:{includedir}/tlog.adoc[*TLog* - Session Logging]
+  . link:{includedir}/lvm-vdo.adoc[*LVM and VDO* - Storage Management and Data Optimization]
+  . link:{includedir}/stratis.adoc[*Stratis* - Simplified Storage Management]
+  . link:{includedir}/kpatch.adoc[*KPatch* - Kernel Live Patching]
+  . link:{includedir}/boom-kernel-parms.adoc[*BOOM* - Boot Management]
+  . link:{includedir}/wayland.adoc[*Wayland* - Desktop GUI ]
+
+
+////  
+TO PRINT THIS DOC REMOVE THIS LINE AND COMMENTS AROUND INCLUDES
+include::{includedir}/getting-started.adoc[leveloffset=+1]
+include::{includedir}/webconsole.adoc[leveloffset=+1]
+include::{includedir}/systemd.adoc[leveloffset=+1]
+include::{includedir}/firewalld.adoc[leveloffset=+1]
+include::{includedir}/nftables.adoc[leveloffset=+1]
+include::{includedir}/ebpf.adoc[leveloffset=+1]
+include::{includedir}/appstream-yum.adoc[leveloffset=+1]
+include::{includedir}/podman.adoc[leveloffset=+1]
+include::{includedir}/buildah.adoc[leveloffset=+1]
+include::{includedir}/image-builder.adoc[leveloffset=+1]
+include::{includedir}/virtualization.adoc[leveloffset=+1]
+include::{includedir}/tlog.adoc[leveloffset=+1]
+include::{includedir}/lvm-vdo.adoc[leveloffset=+1]
+include::{includedir}/stratis.adoc[leveloffset=+1]
+include::{includedir}/boom-kernel-parms.adoc[leveloffset=+1] 
+include::{includedir}/wayland.adoc[leveloffset=+1]
+////
+
+[discrete]
+== Additional Resources
+
+Red Hat Documentation
+
+    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/considerations_in_adopting_rhel_8/index[CONSIDERATIONS IN ADOPTING RHEL 8] - This document provides an overview of changes in Red Hat Enterprise Linux 8 since Red Hat Enterprise Linux 7 to help you evaluate migration to Red Hat Enterprise Linux 8:  
+
+
+[discrete]
+== The End
+
+Please remember to fill out the survey.  The RHEL 8 Lab team really appreciates your time spent with us today and we hope you enjoy the rest of your Summit experience.
+
+.Built-in
+asciidoctor-version:: {asciidoctor-version}
+safe-mode-name:: {safe-mode-name}
+
+////
+Always end files with a blank line to avoid include problems.
+////
+
+

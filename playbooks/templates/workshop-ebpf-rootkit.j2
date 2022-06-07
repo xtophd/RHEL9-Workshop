@@ -1,0 +1,47 @@
+#/bin/bash
+
+## Let's be clear THIS IS NOT A ROOTKIT!!!
+## This script is an aid for a teaching tool
+
+echo "# Capture hostname"
+uname -a
+
+echo "" ; sleep 1
+
+echo "# Capture who is logged in"
+who
+
+echo "" ; sleep 1
+
+echo "# Get the root passwd entry"
+grep root /etc/passwd
+
+echo "" ; sleep 1
+
+echo "# Get the root shadow entry"
+grep root /etc/shadow
+
+echo "" ; sleep 1
+
+echo "# Filesystem configs"
+cat /etc/fstab
+
+echo "" ; sleep 1
+
+echo "# List of running processes"
+ps -ef
+
+echo "" ; sleep 1
+
+echo "# List of open ports"
+netstat -tulpn
+
+echo "" ; sleep 1
+
+echo "# SELinux status"
+getenforce
+
+echo "" ; sleep 1
+
+echo "# Firewalld status"
+firewall-cmd --state
