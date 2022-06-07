@@ -91,7 +91,7 @@ For Windows desktops:
 
 
 [discrete]
-== RHEL 8 LAB: EXERCISES
+== RHEL 9 Workshop: EXERCISES
 
 [#toc]
   . link:{includedir}/getting-started.adoc[*Workshop Preparation* - DO THIS FIRST! ]
