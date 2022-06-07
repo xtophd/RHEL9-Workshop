@@ -13,7 +13,7 @@ ifdef::env-github[]
 endif::[]
 :imagesdir: ./_include/_images/
 
-= RHEL8-Workshop
+= RHEL9-Workshop
 
 Foundational exercises to introduce core concepts of Red Hat Enterprise Linux 9
 
