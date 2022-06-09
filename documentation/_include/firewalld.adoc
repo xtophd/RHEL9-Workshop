@@ -468,6 +468,7 @@ public
   services: cockpit http https ssh
   ports: 8080/tcp 8443/tcp
   protocols:
+  forward: yes
   masquerade: no
   forward-ports:
   source-ports:
