@@ -188,7 +188,7 @@ Get a list of currently configured and active "zones".
 *firewall-cmd --get-active-zones*
 ----
 
-[bash,options="nowrap"]
+[bash,options="nowrap",subs="{markup-in-source}"]
 ----
 libvirt
   interfaces: virbr0
