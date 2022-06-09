@@ -709,7 +709,7 @@ A configuration file for a podman build has already been supplied for your syste
 
 [bash,options="nowrap"]
 ----
-FROM ubi8/ubi
+FROM ubi9/ubi
 
 RUN yum install -y httpd
 RUN yum clean all
@@ -747,11 +747,11 @@ Once this completes, run:
 
 [bash,options="nowrap"]
 ----
-REPOSITORY                                    TAG      IMAGE ID       CREATED          SIZE
-localhost/custom_image                        latest   8544c2e4a901   10 minutes ago   273 MB
-localhost/myfavorite                          latest   8121a9f5303b   12 days ago      240 MB
-registry.access.redhat.com/ubi8/ubi           latest   8121a9f5303b   12 days ago      240 MB
-registry.access.redhat.com/ubi8/ubi-minimal   latest   91d23a64fdf2   12 days ago      108 MB
+REPOSITORY                               TAG         IMAGE ID      CREATED        SIZE
+localhost/custom_image                   latest      b7a25f575856  8 seconds ago  258 MB
+registry.access.redhat.com/ubi9/ubi      latest      46720ac964ac  5 weeks ago    229 MB
+localhost/myfavorite                     latest      46720ac964ac  5 weeks ago    229 MB
+registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago    129 MB
 ----
 
 === Deploy
@@ -808,12 +808,11 @@ Let us look at the processes running on the host.
 
 [bash,options="nowrap"]
 ----
-8662 httpd -D FOREGROUND
-8703 httpd -D FOREGROUND
-8704 httpd -D FOREGROUND
-8705 httpd -D FOREGROUND
-8711 httpd -D FOREGROUND
-8717 httpd -D FOREGROUND
+48787 /usr/sbin/httpd -D FOREGROUND
+48789 /usr/sbin/httpd -D FOREGROUND
+48790 /usr/sbin/httpd -D FOREGROUND
+48791 /usr/sbin/httpd -D FOREGROUND
+48792 /usr/sbin/httpd -D FOREGROUND
 ----
 
 And finally let's look at some networking info.
@@ -825,7 +824,7 @@ And finally let's look at some networking info.
 
 [bash,options="nowrap"]
 ----
-tcp        0      0 0.0.0.0:8080            0.0.0.0:*               LISTEN      28298/conmon
+tcp        0      0 0.0.0.0:8080            0.0.0.0:*               LISTEN      48784/conmon
 ----
 
 
@@ -839,23 +838,30 @@ Now let's introduce a commandline utility 'lsns' to check out the namespaces.
 [bash,options="nowrap"]
 ----
         NS TYPE   NPROCS   PID USER   COMMAND
-4026531835 cgroup    104     1 root   /usr/lib/systemd/systemd --switched-root --system --deserialize 18
-4026531836 pid        99     1 root   /usr/lib/systemd/systemd --switched-root --system --deserialize 18
-4026531837 user      104     1 root   /usr/lib/systemd/systemd --switched-root --system --deserialize 18
-4026531838 uts        99     1 root   /usr/lib/systemd/systemd --switched-root --system --deserialize 18
-4026531839 ipc        99     1 root   /usr/lib/systemd/systemd --switched-root --system --deserialize 18
-4026531840 mnt        93     1 root   /usr/lib/systemd/systemd --switched-root --system --deserialize 18
-4026531860 mnt         1    21 root   kdevtmpfs
-4026531992 net        99     1 root   /usr/lib/systemd/systemd --switched-root --system --deserialize 18
-4026532136 mnt         1   728 root   /usr/lib/systemd/systemd-udevd
-4026532314 mnt         2   950 root   /sbin/auditd
-4026532315 mnt         1   993 chrony /usr/sbin/chronyd
-4026532316 mnt         1  1038 root   /usr/sbin/NetworkManager --no-daemon
-4026532388 net         5 30921 root   /usr/sbin/httpd -D FOREGROUND
-4026532449 mnt         5 30921 root   /usr/sbin/httpd -D FOREGROUND
-4026532450 uts         5 30921 root   /usr/sbin/httpd -D FOREGROUND
-4026532451 ipc         5 30921 root   /usr/sbin/httpd -D FOREGROUND
-4026532452 pid         5 30921 root   /usr/sbin/httpd -D FOREGROUND
+4026531834 time      107     1 root   /usr/lib/systemd/systemd nofb --switched-root --system --deserialize 18
+4026531835 cgroup    102     1 root   /usr/lib/systemd/systemd nofb --switched-root --system --deserialize 18
+4026531836 pid       102     1 root   /usr/lib/systemd/systemd nofb --switched-root --system --deserialize 18
+4026531837 user      107     1 root   /usr/lib/systemd/systemd nofb --switched-root --system --deserialize 18
+4026531838 uts       100     1 root   /usr/lib/systemd/systemd nofb --switched-root --system --deserialize 18
+4026531839 ipc       102     1 root   /usr/lib/systemd/systemd nofb --switched-root --system --deserialize 18
+4026531840 mnt        92     1 root   /usr/lib/systemd/systemd nofb --switched-root --system --deserialize 18
+4026531860 mnt         1    24 root   kdevtmpfs
+4026531992 net       102     1 root   /usr/lib/systemd/systemd nofb --switched-root --system --deserialize 18
+4026532252 mnt         1   640 root   /usr/lib/systemd/systemd-udevd
+4026532253 uts         1   640 root   /usr/lib/systemd/systemd-udevd
+4026532308 mnt         2   745 root   /sbin/auditd
+4026532309 mnt         1   792 chrony /usr/sbin/chronyd -F 2
+4026532310 mnt         1   772 root   /usr/sbin/irqbalance --foreground
+4026532311 mnt         1   790 root   /usr/lib/systemd/systemd-logind
+4026532312 uts         1   790 root   /usr/lib/systemd/systemd-logind
+4026532313 mnt         2   802 dbus   /usr/bin/dbus-broker-launch --scope system --audit
+4026532314 mnt         1   804 root   /usr/sbin/NetworkManager --no-daemon
+4026532316 net         5 48787 root   /usr/sbin/httpd -D FOREGROUND
+4026532375 mnt         5 48787 root   /usr/sbin/httpd -D FOREGROUND
+4026532376 uts         5 48787 root   /usr/sbin/httpd -D FOREGROUND
+4026532377 ipc         5 48787 root   /usr/sbin/httpd -D FOREGROUND
+4026532378 pid         5 48787 root   /usr/sbin/httpd -D FOREGROUND
+4026532379 cgroup      5 48787 root   /usr/sbin/httpd -D FOREGROUND
 ----
 
 We see that the httpd processes running are using the mnt uts ipc pid and net namespaces.
@@ -870,15 +876,21 @@ Since we explored namespaces earlier, we may as well have a look at the control-
 [bash,options="nowrap"]
 ----
 ... SNIP ...
-└─machine.slice
-  ├─libpod-conmon-c726b2422ba73c0eb904c283a50a66e6e47cb42c3b633075e39f40d268026c6c.scope
-  │ └─30909 /usr/libexec/podman/conmon -s -c c726b2422ba73c0eb904c283a50a66e6e47cb42c3b633075e39f40d26802>
-  └─libpod-c726b2422ba73c0eb904c283a50a66e6e47cb42c3b633075e39f40d268026c6c.scope
-    ├─30921 /usr/sbin/httpd -D FOREGROUND
-    ├─30934 /usr/sbin/httpd -D FOREGROUND
-    ├─30935 /usr/sbin/httpd -D FOREGROUND
-    ├─30936 /usr/sbin/httpd -D FOREGROUND
-    └─30937 /usr/sbin/httpd -D FOREGROUND
+└─machine.slice (#7107)
+  → trusted.invocation_id: aaf8887d115a4205a876885134f5b7c3
+  ├─libpod-2a60daa6c3abb5d5a7282598f2747999c0c71807752911b831a4e66743f084b8.scope … (#11452)
+  │ → trusted.delegate: 1
+  │ → trusted.invocation_id: 49c9ef47d6e04e6abc3bbb20a9943692
+  │ └─container (#11505)
+  │   ├─48787 /usr/sbin/httpd -D FOREGROUND
+  │   ├─48789 /usr/sbin/httpd -D FOREGROUND
+  │   ├─48790 /usr/sbin/httpd -D FOREGROUND
+  │   ├─48791 /usr/sbin/httpd -D FOREGROUND
+  │   └─48792 /usr/sbin/httpd -D FOREGROUND
+  └─libpod-conmon-2a60daa6c3abb5d5a7282598f2747999c0c71807752911b831a4e66743f084b8.scope … (#11399)
+    → trusted.delegate: 1
+    → trusted.invocation_id: e0b9d07bb47a4af7a859e492a86b85c0
+    └─48784 /usr/bin/conmon --api-version 1 -c 2a60daa6c3abb5d5a7282598f2747999c0c71807752911b831a4e66743f084b8 -u 2a60daa6>
 ----
 
 What we can tell is that our container is bound by a cgroup called "machine.slice".  Otherwise, nothing remarkable to discern here.
