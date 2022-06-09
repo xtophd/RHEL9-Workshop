@@ -8,9 +8,9 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
-:eth0: ens3
+:nic0: ens3
 ifeval::["%cloud_provider%" == "ec2"]
-:eth0: eth0
+:nic0: eth0
 endif::[]
 
 :toc:
@@ -193,15 +193,15 @@ Get a list of currently configured and active "zones".
 libvirt
   interfaces: virbr0
 public
-  interfaces: %eth0%
+  interfaces: {nic0}
 ----
 
 You may have one or more zones depending on the host and it's configuration:
 
-  * `public` zone on interface `%eth0%`
+  * `public` zone on interface `{nic0}`
   * `libvirt` zone on interface `virbr0`
   
-NOTE:  In this sample output, the virtual bridge `libvirt` is created and managed by libvirtd.  It is possible that your system will not have the libvirt zone.  For our purposes, we are only interested in the public zone and the interface `%eth0%`.
+NOTE:  In this sample output, the virtual bridge `libvirt` is created and managed by libvirtd.  It is possible that your system will not have the libvirt zone.  For our purposes, we are only interested in the public zone and the interface `{nic0}`.
 
 We had this information from the previous command, but to be more specific let's just list the physical interfaces associated with the public zone.
 
@@ -212,7 +212,7 @@ We had this information from the previous command, but to be more specific let's
 
 [bash,options="nowrap"]
 ----
-%eth0%
+{nic0}
 ----
 
 Get a list of services configured on the public zone.
@@ -262,7 +262,7 @@ Finally, let's just list everything about the public zone.
 public (active)
   target: default
   icmp-block-inversion: no
-  interfaces: %eth0%
+  interfaces: {nic0}
   sources:
   services: cockpit dhcpv6-client http ssh
   ports:
