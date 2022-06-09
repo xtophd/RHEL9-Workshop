@@ -503,8 +503,9 @@ public
   interfaces:
   sources:
   services: cockpit http https ssh
-  ports: 
+  ports:
   protocols:
+  forward: yes
   masquerade: no
   forward-ports:
   source-ports:
@@ -583,6 +584,8 @@ http
   source-ports:
   modules:
   destination:
+  includes:
+  helpers:
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
@@ -598,6 +601,8 @@ https
   source-ports:
   modules:
   destination:
+  includes:
+  helpers:
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
