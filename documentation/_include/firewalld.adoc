@@ -149,7 +149,7 @@ Here are a couple common configs for services defined in */usr/lib/firewalld/ser
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*cat /usr/lib/firewalld/devices/http.xml*
+*cat /usr/lib/firewalld/services/http.xml*
 ----
 
 .http.xml
