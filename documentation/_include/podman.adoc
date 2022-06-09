@@ -346,8 +346,8 @@ Let us run a few more commands to see what else we can glean.
 
 [bash,options="nowrap"]
 ----
-CONTAINER ID  IMAGE                             COMMAND           CREATED         STATUS                     PORTS  NAMES
-249de20ebdb0  core.example.com:5000/ubi:latest  echo hello world  18 seconds ago  Exited (0) 17 seconds ago         objective_kepler
+CONTAINER ID  IMAGE                                       COMMAND           CREATED         STATUS                     PORTS       NAMES
+fc07b3e29378  registry.access.redhat.com/ubi9/ubi:latest  echo hello world  35 seconds ago  Exited (0) 35 seconds ago              amazing_payne
 ----
 
 Now let us run the exact same command as before to print "hello world".
@@ -372,52 +372,117 @@ Check out 'podman info' one more time and you should notice a few changes.
 [bash,options="nowrap"]
 ----
 host:
-  BuildahVersion: 1.9.0
-  Conmon:
-    package: podman-1.4.2-5.module+el8.1.0+4240+893c1ab8.x86_64
-    path: /usr/libexec/podman/conmon
-    version: 'conmon version 2.0.1-dev, commit: unknown'
-  Distribution:
-    distribution: '"rhel"'
-    version: "8.1"
-  MemFree: 2372833280
-  MemTotal: 3863744512
-  OCIRuntime:
-    package: runc-1.0.0-60.rc8.module+el8.1.0+4081+b29780af.x86_64
-    path: /usr/bin/runc
-    version: 'runc version spec: 1.0.1-dev'
-  SwapFree: 2097147904
-  SwapTotal: 2097147904
   arch: amd64
+  buildahVersion: 1.24.1
+  cgroupControllers:
+  - cpuset
+  - cpu
+  - io
+  - memory
+  - hugetlb
+  - pids
+  - rdma
+  - misc
+  cgroupManager: systemd
+  cgroupVersion: v2
+  conmon:
+    package: conmon-2.1.0-1.el9.x86_64
+    path: /usr/bin/conmon
+    version: 'conmon version 2.1.0, commit: 3a898eb433ae426e729088ccdc2bdae44a3164da'
   cpus: 2
-  hostname: node3.rhel8.example.com
-  kernel: 4.18.0-147.el8.x86_64
+  distribution:
+    distribution: '"rhel"'
+    version: "9.0"
+  eventLogger: journald
+  hostname: node3
+  idMappings:
+    gidmap: null
+    uidmap: null
+  kernel: 5.14.0-70.13.1.el9_0.x86_64
+  linkmode: dynamic
+  logDriver: journald
+  memFree: 2109620224
+  memTotal: 3796713472
+  networkBackend: cni
+  ociRuntime:
+    name: crun
+    package: crun-1.4.4-2.el9_0.x86_64
+    path: /usr/bin/crun
+    version: |-
+      crun version 1.4.4
+      commit: 6521fcc5806f20f6187eb933f9f45130c86da230
+      spec: 1.0.0
+      +SYSTEMD +SELINUX +APPARMOR +CAP +SECCOMP +EBPF +CRIU +YAJL
   os: linux
-  rootless: false
-  uptime: 21m 46.96s
+  remoteSocket:
+    path: /run/podman/podman.sock
+  security:
+    apparmorEnabled: false
+    capabilities: CAP_NET_RAW,CAP_CHOWN,CAP_DAC_OVERRIDE,CAP_FOWNER,CAP_FSETID,CAP_KILL,CAP_NET_BIND_SERVICE,CAP_SETFCAP,CAP
+_SETGID,CAP_SETPCAP,CAP_SETUID,CAP_SYS_CHROOT
+    rootless: false
+    seccompEnabled: true
+    seccompProfilePath: /usr/share/containers/seccomp.json
+    selinuxEnabled: true
+  serviceIsRemote: false
+  slirp4netns:
+    executable: /usr/bin/slirp4netns
+    package: slirp4netns-1.1.12-4.el9.x86_64
+    version: |-
+      slirp4netns version 1.1.12
+      commit: 7a104a101aa3278a2152351a082a6df71f57c9a3
+      libslirp: 4.4.0
+      SLIRP_CONFIG_VERSION_MAX: 3
+      libseccomp: 2.5.2
+  swapFree: 2097147904
+  swapTotal: 2097147904
+  uptime: 48h 14m 58.78s (Approximately 2.00 days)
+plugins:
+  log:
+  - k8s-file
+  - none
+  - passthrough
+  - journald
+  network:
+  - bridge
+  - macvlan
+  - ipvlan
+  volume:
+  - local
 registries:
-  blocked: null
-  insecure: null
   search:
   - registry.access.redhat.com
   - quay.io
   - docker.io
 store:
-  ConfigFile: /etc/containers/storage.conf
-  ContainerStore:
+  configFile: /etc/containers/storage.conf
+  containerStore:
     number: 2
-  GraphDriverName: overlay
-  GraphOptions: null
-  GraphRoot: /var/lib/containers/storage
-  GraphStatus:
+    paused: 0
+    running: 0
+    stopped: 2
+  graphDriverName: overlay
+  graphOptions:
+    overlay.mountopt: nodev,metacopy=on
+  graphRoot: /var/lib/containers/storage
+  graphStatus:
     Backing Filesystem: extfs
-    Native Overlay Diff: "true"
+    Native Overlay Diff: "false"
     Supports d_type: "true"
-    Using metacopy: "false"
-  ImageStore:
+    Using metacopy: "true"
+  imageCopyTmpDir: /var/tmp
+  imageStore:
     number: 2
-  RunRoot: /var/run/containers/storage
-  VolumePath: /var/lib/containers/storage/volumes
+  runRoot: /run/containers/storage
+  volumePath: /var/lib/containers/storage/volumes
+version:
+  APIVersion: 4.0.2
+  Built: 1648802737
+  BuiltTime: Fri Apr  1 04:45:37 2022
+  GitCommit: ""
+  GoVersion: go1.17.7
+  OsArch: linux/amd64
+  Version: 4.0.2
 ----
 
 You should notice that the number of containers (ContainerStore) has incremented to 2, and that the number of ImageStore(s) has grown.  
@@ -433,9 +498,9 @@ Run 'podman ps -a' to the IDs of the exited containers.
 
 [bash,options="nowrap"]
 ----
-CONTAINER ID  IMAGE                             COMMAND           CREATED         STATUS                     PORTS  NAMES
-e3f139ef0942  core.example.com:5000/ubi:latest  echo hello world  35 seconds ago  Exited (0) 34 seconds ago         cocky_golick
-249de20ebdb0  core.example.com:5000/ubi:latest  echo hello world  2 minutes ago   Exited (0) 2 minutes ago          objective_kepler
+CONTAINER ID  IMAGE                                       COMMAND           CREATED             STATUS                         PORTS       NAMES
+fc07b3e29378  registry.access.redhat.com/ubi9/ubi:latest  echo hello world  3 minutes ago       Exited (0) 3 minutes ago                   amazing_payne
+eb8556004620  registry.access.redhat.com/ubi9/ubi:latest  echo hello world  About a minute ago  Exited (0) About a minute ago              peaceful_sutherland
 ----
 
 Using the container UIDs from the above output, you can now clean up the 'exited' containers.
@@ -466,7 +531,7 @@ Now you should be able to run 'podman ps -a' again, and the results should come 
 
 [bash,options="nowrap"]
 ----
-d8736f5cbd35
+a3f3e99082ca
 ----
 
 So what we have learned here is that the hostname in the container's namespace is NOT the same as the host platform (node3.example.com).  It is unique and is by default identical to the container's ID.  You can verify this with 'podman ps -a'.
@@ -478,8 +543,8 @@ So what we have learned here is that the hostname in the container's namespace i
 
 [bash,options="nowrap"]
 ----
-CONTAINER ID  IMAGE                                       COMMAND               CREATED         STATUS                     PORTS  NAMES
-d8736f5cbd35  registry.access.redhat.com/ubi8/ubi:latest  cat /proc/sys/ker...  30 seconds ago  Exited (0) 30 seconds ago         dazzling_mendeleev
+CONTAINER ID  IMAGE                                       COMMAND               CREATED         STATUS                     PORTS       NAMES
+a3f3e99082ca  registry.access.redhat.com/ubi9/ubi:latest  cat /proc/sys/ker...  42 seconds ago  Exited (0) 42 seconds ago              dreamy_driscoll
 ----
 
 === Process ID
@@ -494,8 +559,7 @@ Let us have a look at the process table from with-in the container's namespace.
 
 [bash,options="nowrap"]
 ----
-Error: container_linux.go:345: starting container process caused "exec: \"ps\": executable file not found in $PATH"
-: OCI runtime error
+Error: crun: executable file `ps` not found in $PATH: No such file or directory: OCI runtime attempted to invoke a command that was not found
 ----
 
 What just happened?
@@ -513,8 +577,8 @@ NOTE: Using bind mounts is generally suitable for debugging, but not a good prac
 
 [bash,options="nowrap"]
 ----
-UID        PID  PPID  C STIME TTY          TIME CMD
-root         1     0  0 20:33 ?        00:00:00 /bin/ps -ef
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 17:23 ?        00:00:00 /bin/ps -ef
 ----
 
 Notice that all the process belonging to host itself are absent.  The programs running in the container's namespace are isolated from the rest of the host.  From the container's perspective, the process in the container is the only process running.
@@ -530,11 +594,11 @@ Now let us run a command to report the network configuration from within the a c
 
 [bash,options="nowrap"]
 ----
-3: eth0@if10: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
-    link/ether 8a:ce:7f:ea:c7:9a brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet 10.88.0.8/16 scope global eth0
+2: eth0@if9: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
+    link/ether ea:c8:d5:af:ff:19 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.88.0.7/16 brd 10.88.255.255 scope global eth0
        valid_lft forever preferred_lft forever
-    inet6 fe80::88ce:7fff:feea:c79a/64 scope link tentative
+    inet6 fe80::e8c8:d5ff:feaf:ff19/64 scope link tentative
        valid_lft forever preferred_lft forever
 ----
 
@@ -551,9 +615,9 @@ NOTE: Note that we introduce the '--rm' flag to our podman command.  This tells 
 
 [bash,options="nowrap"]
 ----
-127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-10.88.0.9       aa2204f3cd29
+::1        localhost localhost.localdomain localhost6 localhost6.localdomain6
+10.88.0.9  02e3c6ddc1b3 youthful_margulis
+10.88.0.1  host.containers.internal
 ----
 
 How does the container resolve hostnames (ie: DNS)?
@@ -565,8 +629,7 @@ How does the container resolve hostnames (ie: DNS)?
 
 [bash,options="nowrap"]
 ----
-search example.com
-nameserver 10.0.0.2
+nameserver 192.168.100.34
 ----
 
 Take a look at the routing table.
@@ -598,14 +661,11 @@ Finally, look at the filesystem(S) in the container's namespace.
 [bash,options="nowrap"]
 ----
 Filesystem      Size  Used Avail Use% Mounted on
-overlay         8.0G  1.9G  6.2G  24% /
+overlay          25G  1.9G   22G   8% /
 tmpfs            64M     0   64M   0% /dev
-tmpfs           1.9G  8.6M  1.9G   1% /etc/hosts
+tmpfs           725M  8.9M  716M   2% /etc/hosts
 shm              63M     0   63M   0% /dev/shm
-tmpfs           1.9G     0  1.9G   0% /sys/fs/cgroup
-tmpfs           1.9G     0  1.9G   0% /proc/acpi
-tmpfs           1.9G     0  1.9G   0% /proc/scsi
-tmpfs           1.9G     0  1.9G   0% /sys/firmware
+devtmpfs        1.8G     0  1.8G   0% /proc/keys
 ----
 
 You were introduced to Bind-Mounts in the previous section.  Let us examine what the filesystems looks like with an active Bind-Mount.
@@ -617,16 +677,13 @@ You were introduced to Bind-Mounts in the previous section.  Let us examine what
 
 [bash,options="nowrap"]
 ----
-Filesystem             Size  Used Avail Use% Mounted on
-overlay                8.0G  1.9G  6.2G  24% /
-tmpfs                   64M     0   64M   0% /dev
-tmpfs                  1.9G  8.6M  1.9G   1% /etc/hosts
-/dev/mapper/rhel-root  8.0G  1.9G  6.2G  24% /usr/bin
-shm                     63M     0   63M   0% /dev/shm
-tmpfs                  1.9G     0  1.9G   0% /sys/fs/cgroup
-tmpfs                  1.9G     0  1.9G   0% /proc/acpi
-tmpfs                  1.9G     0  1.9G   0% /proc/scsi
-tmpfs                  1.9G     0  1.9G   0% /sys/firmware
+Filesystem                Size  Used Avail Use% Mounted on
+overlay                    25G  1.9G   22G   8% /
+tmpfs                      64M     0   64M   0% /dev
+tmpfs                     725M  9.0M  716M   2% /etc/hosts
+/dev/mapper/vg_rhel-root   25G  1.9G   22G   8% /usr/bin
+shm                        63M     0   63M   0% /dev/shm
+devtmpfs                  1.8G     0  1.8G   0% /proc/keys
 ----
 
 Notice above how there is now a dedicated mount point for /usr/bin.  Bind-Mounts can be a very powerful tool (primarily for diagnostics) to termporarily inject tools and files that are not normally part of a container image.  Remember, using bind mounts as a design decision for enterprise container strategies is folly.
