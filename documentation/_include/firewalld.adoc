@@ -708,13 +708,13 @@ firewall-cmd --panic-off
 Red Hat Documentation
 
     * link:https://developers.redhat.com/blog/2018/08/10/firewalld-the-future-is-nftables/[Firewalld: The Future is nftables]
-    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/securing_networks/using-and-configuring-firewalld_securing-networks[Using And Configuring Firewalls]
+    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_firewalls_and_packet_filters/using-and-configuring-firewalld_firewall-packet-filters[Using And Configuring Firewalls]
     
 [discrete]
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////
