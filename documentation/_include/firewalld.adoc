@@ -222,7 +222,7 @@ Get a list of services configured on the public zone.
 *firewall-cmd --zone=public --list-services*
 ----
 
-[bash,options="nowrap"]
+[bash,options="nowrap",subs="{markup-in-source}"]
 ----
 cockpit dhcpv6-client ssh
 ----
