@@ -59,52 +59,117 @@ Now have a look at the general container information.
 [bash,options="nowrap"]
 ----
 host:
-  BuildahVersion: 1.9.0
-  Conmon:
-    package: podman-1.4.2-5.module+el8.1.0+4240+893c1ab8.x86_64
-    path: /usr/libexec/podman/conmon
-    version: 'conmon version 2.0.1-dev, commit: unknown'
-  Distribution:
-    distribution: '"rhel"'
-    version: "8.1"
-  MemFree: 2770325504
-  MemTotal: 3863744512
-  OCIRuntime:
-    package: runc-1.0.0-60.rc8.module+el8.1.0+4081+b29780af.x86_64
-    path: /usr/bin/runc
-    version: 'runc version spec: 1.0.1-dev'
-  SwapFree: 2097147904
-  SwapTotal: 2097147904
   arch: amd64
+  buildahVersion: 1.24.1
+  cgroupControllers:
+  - cpuset
+  - cpu
+  - io
+  - memory
+  - hugetlb
+  - pids
+  - rdma
+  - misc
+  cgroupManager: systemd
+  cgroupVersion: v2
+  conmon:
+    package: conmon-2.1.0-1.el9.x86_64
+    path: /usr/bin/conmon
+    version: 'conmon version 2.1.0, commit: 3a898eb433ae426e729088ccdc2bdae44a3164da'
   cpus: 2
-  hostname: node3.rhel8.example.com
-  kernel: 4.18.0-147.el8.x86_64
+  distribution:
+    distribution: '"rhel"'
+    version: "9.0"
+  eventLogger: journald
+  hostname: node3
+  idMappings:
+    gidmap: null
+    uidmap: null
+  kernel: 5.14.0-70.13.1.el9_0.x86_64
+  linkmode: dynamic
+  logDriver: journald
+  memFree: 2539753472
+  memTotal: 3796713472
+  networkBackend: cni
+  ociRuntime:
+    name: crun
+    package: crun-1.4.4-2.el9_0.x86_64
+    path: /usr/bin/crun
+    version: |-
+      crun version 1.4.4
+      commit: 6521fcc5806f20f6187eb933f9f45130c86da230
+      spec: 1.0.0
+      +SYSTEMD +SELINUX +APPARMOR +CAP +SECCOMP +EBPF +CRIU +YAJL
   os: linux
-  rootless: false
-  uptime: 10m 40.82s
+  remoteSocket:
+    path: /run/podman/podman.sock
+  security:
+    apparmorEnabled: false
+    capabilities: CAP_NET_RAW,CAP_CHOWN,CAP_DAC_OVERRIDE,CAP_FOWNER,CAP_FSETID,CAP_KILL,CAP_NET_BIND_SERVICE,CAP_SETFCAP,CAP
+_SETGID,CAP_SETPCAP,CAP_SETUID,CAP_SYS_CHROOT
+    rootless: false
+    seccompEnabled: true
+    seccompProfilePath: /usr/share/containers/seccomp.json
+    selinuxEnabled: true
+  serviceIsRemote: false
+  slirp4netns:
+    executable: /usr/bin/slirp4netns
+    package: slirp4netns-1.1.12-4.el9.x86_64
+    version: |-
+      slirp4netns version 1.1.12
+      commit: 7a104a101aa3278a2152351a082a6df71f57c9a3
+      libslirp: 4.4.0
+      SLIRP_CONFIG_VERSION_MAX: 3
+      libseccomp: 2.5.2
+  swapFree: 2097147904
+  swapTotal: 2097147904
+  uptime: 48h 4m 55.97s (Approximately 2.00 days)
+plugins:
+  log:
+  - k8s-file
+  - none
+  - passthrough
+  - journald
+  network:
+  - bridge
+  - macvlan
+  - ipvlan
+  volume:
+  - local
 registries:
-  blocked: null
-  insecure: null
   search:
   - registry.access.redhat.com
   - quay.io
   - docker.io
 store:
-  ConfigFile: /etc/containers/storage.conf
-  ContainerStore:
+  configFile: /etc/containers/storage.conf
+  containerStore:
     number: 0
-  GraphDriverName: overlay
-  GraphOptions: null
-  GraphRoot: /var/lib/containers/storage
-  GraphStatus:
+    paused: 0
+    running: 0
+    stopped: 0
+  graphDriverName: overlay
+  graphOptions:
+    overlay.mountopt: nodev,metacopy=on
+  graphRoot: /var/lib/containers/storage
+  graphStatus:
     Backing Filesystem: extfs
-    Native Overlay Diff: "true"
+    Native Overlay Diff: "false"
     Supports d_type: "true"
-    Using metacopy: "false"
-  ImageStore:
+    Using metacopy: "true"
+  imageCopyTmpDir: /var/tmp
+  imageStore:
     number: 0
-  RunRoot: /var/run/containers/storage
-  VolumePath: /var/lib/containers/storage/volumes
+  runRoot: /run/containers/storage
+  volumePath: /var/lib/containers/storage/volumes
+version:
+  APIVersion: 4.0.2
+  Built: 1648802737
+  BuiltTime: Fri Apr  1 04:45:37 2022
+  GitCommit: ""
+  GoVersion: go1.17.7
+  OsArch: linux/amd64
+  Version: 4.0.2
 ----
 
 === Container Image Management
