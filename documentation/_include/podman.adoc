@@ -191,18 +191,21 @@ Time to pull a container from our local repository.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*podman pull ubi8/ubi*
+*podman pull ubi9/ubi*
 ----
 
 [bash,options="nowrap"]
 ----
-Trying to pull registry.access.redhat.com/ubi8/ubi...Getting image source signatures
-Copying blob ee2244abc66f done
-Copying blob befb03b11956 done
-Copying config 8121a9f530 done
+Resolved "ubi9/ubi" as an alias (/etc/containers/registries.conf.d/000-shortnames.conf)
+Trying to pull registry.access.redhat.com/ubi9/ubi:latest...
+Getting image source signatures
+Checking if image destination supports signatures
+Copying blob 2c9b1d3d1a0a done
+Copying blob f95ee31bf3b7 done
+Copying config 46720ac964 done
 Writing manifest to image destination
 Storing signatures
-8121a9f5303be173ae054b7032613d5917d953d7353ff0540d692b2eaa089fbe
+46720ac964ac0e5fb23c8594797c3f7bb19c5a82c4734957f8991e94c30bd9f8
 ----
 
 Have a looks at the image list now.
@@ -214,8 +217,8 @@ Have a looks at the image list now.
 
 [bash,options="nowrap"]
 ----
-REPOSITORY                            TAG      IMAGE ID       CREATED       SIZE
-registry.access.redhat.com/ubi8/ubi   latest   8121a9f5303b   11 days ago   240 MB
+REPOSITORY                           TAG         IMAGE ID      CREATED      SIZE
+registry.access.redhat.com/ubi9/ubi  latest      46720ac964ac  5 weeks ago  229 MB
 ----
 
 NOTE: if you are a subscriber to Red Hat Enterprise Linux, you can pull authentic Red Hat certified images directly from Red Hat's repository.  For example: `podman pull rhel7.5 --creds 'username:password'`
@@ -224,8 +227,8 @@ Pull a few more container images.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*podman pull ubi8/ubi-minimal*
-*podman pull ubi8/ubi-init*
+*podman pull ubi9/ubi-minimal*
+*podman pull ubi9/ubi-init*
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
@@ -235,10 +238,10 @@ Pull a few more container images.
 
 [bash,options="nowrap"]
 ----
-REPOSITORY                                    TAG      IMAGE ID       CREATED       SIZE
-registry.access.redhat.com/ubi8/ubi-init      latest   0f5485af5398   11 days ago   256 MB
-registry.access.redhat.com/ubi8/ubi           latest   8121a9f5303b   11 days ago   240 MB
-registry.access.redhat.com/ubi8/ubi-minimal   latest   91d23a64fdf2   11 days ago   108 MB
+REPOSITORY                               TAG         IMAGE ID      CREATED      SIZE
+registry.access.redhat.com/ubi9-init     latest      632d4802e2e9  5 weeks ago  246 MB
+registry.access.redhat.com/ubi9/ubi      latest      46720ac964ac  5 weeks ago  229 MB
+registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago  129 MB
 ----
 
 ==== Container Tags
@@ -248,7 +251,7 @@ contain, especially after an image has been customized.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*podman tag registry.access.redhat.com/ubi8/ubi myfavorite*
+*podman tag registry.access.redhat.com/ubi9/ubi myfavorite*
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
@@ -258,11 +261,11 @@ contain, especially after an image has been customized.
 
 [bash,options="nowrap"]
 ----
-REPOSITORY                                    TAG      IMAGE ID       CREATED       SIZE
-registry.access.redhat.com/ubi8/ubi-init      latest   0f5485af5398   11 days ago   256 MB
-registry.access.redhat.com/ubi8/ubi           latest   8121a9f5303b   11 days ago   240 MB
-localhost/myfavorite                          latest   8121a9f5303b   11 days ago   240 MB
-registry.access.redhat.com/ubi8/ubi-minimal   latest   91d23a64fdf2   11 days ago   108 MB
+REPOSITORY                               TAG         IMAGE ID      CREATED      SIZE
+registry.access.redhat.com/ubi9-init     latest      632d4802e2e9  5 weeks ago  246 MB
+registry.access.redhat.com/ubi9/ubi      latest      46720ac964ac  5 weeks ago  229 MB
+localhost/myfavorite                     latest      46720ac964ac  5 weeks ago  229 MB
+registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago  129 MB
 ----
 
 Notice how the image-id for "ubi" and "myfavorite" are identical.
@@ -278,7 +281,7 @@ NOTE: The link:https://access.redhat.com/containers[Red Hat Container Catalog] (
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*podman rmi ubi-init*
+*podman rmi ubi9-init*
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
@@ -288,10 +291,10 @@ NOTE: The link:https://access.redhat.com/containers[Red Hat Container Catalog] (
 
 [bash,options="nowrap"]
 ----
-REPOSITORY                                    TAG      IMAGE ID       CREATED       SIZE
-registry.access.redhat.com/ubi8/ubi           latest   8121a9f5303b   11 days ago   240 MB
-localhost/myfavorite                          latest   8121a9f5303b   11 days ago   240 MB
-registry.access.redhat.com/ubi8/ubi-minimal   latest   91d23a64fdf2   11 days ago   108 MB
+REPOSITORY                               TAG         IMAGE ID      CREATED      SIZE
+registry.access.redhat.com/ubi9/ubi      latest      46720ac964ac  5 weeks ago  229 MB
+localhost/myfavorite                     latest      46720ac964ac  5 weeks ago  229 MB
+registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago  129 MB
 ----
 
 === Essential Container Commands
