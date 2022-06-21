@@ -80,36 +80,10 @@ For your convenience, the webconsole has already been installed and configured o
 ====
 _Native command(s) to install and enable the Web Console_
 ----
-yum install -y cockpit cockpit-dashboard firewalld
+dnf install -y cockpit firewalld
 systemctl enable --now cockpit.socket
 firewall-cmd --add-service=cockpit --permanent
 firewall-cmd --reload
-----
-====
-
-=== Custom Ports
-
-By default, the Web Console listens on port 9090 of a host.  To make the system more accessible to students, an additional port of 443 was added to the configuration.  This was done by creating a systemd drop-in config:
-
-./etc/systemd/system/cockpit.socket.d/listen.conf
-----
-[Socket]
-ListenStream=443
-----
-
-This configuration change required a systemctl daemon-reload, selinux update and a firewall rule addition.  Remember that this is provided as reference only.
-
-[NOTE]
-====
-_Native command(s) to enable the Web Console on port 443_
-----
-systemctl daemon-reload
-systemctl restart cockpit.socket
-
-semanage port -m -t websm_port_t -p tcp 443
-
-firewall-cmd --add-port=443/tcp
-firewall-cmd --add-port=443/tcp --permanent
 ----
 ====
 
