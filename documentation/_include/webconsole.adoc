@@ -99,7 +99,7 @@ Accept the various notifications about insecure ceritificates, and then login in
 
 Use the following URL:
 
-  * link:https://{targethost_fqdn}/[] 
+  * link:https://{targethost_fqdn}:9090/[] 
 
 And the following UserID and Password:
 
