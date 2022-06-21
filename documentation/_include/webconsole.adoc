@@ -80,7 +80,7 @@ For your convenience, the webconsole has already been installed and configured o
 ====
 _Native command(s) to install and enable the Web Console_
 ----
-dnf install -y cockpit firewalld
+dnf install -y cockpit firewalld tuned
 systemctl enable --now cockpit.socket
 firewall-cmd --add-service=cockpit --permanent
 firewall-cmd --reload
@@ -160,7 +160,7 @@ To configure and enable stored metrics by hand, you can use follow the commands 
 ====
 _Native command(s) to enable stored metrics_
 ----
-yum install -y cockpit-pcp
+dnf install -y cockpit-pcp
 systemctl restart cockpit.socket
 ----
 ====
