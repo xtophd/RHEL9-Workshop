@@ -18,9 +18,9 @@
   when: workshop_vars.enable_unit.systemd
   tags: systemd
 
-#- import_playbook: rhel9-unit-firewalld.yml
-#  when: workshop_vars.enable_unit.firewalld
-#  tags: firewalld
+- import_playbook: rhel9-unit-firewalld.yml
+  when: workshop_vars.enable_unit.firewalld
+  tags: firewalld
 
 - import_playbook: rhel9-unit-nftables.yml
   when: workshop_vars.enable_unit.nftables
@@ -70,6 +70,7 @@
   tags: finish
 
 ## Save the webconsole for last since it will discconect webconsole session on service restart
-#- import_playbook: rhel9-unit-webconsole.yml
-#  when: workshop_vars.enable_unit.webconsole
-#  tags: webconsole
+
+- import_playbook: rhel9-unit-webconsole.yml
+  when: workshop_vars.enable_unit.webconsole
+  tags: webconsole
