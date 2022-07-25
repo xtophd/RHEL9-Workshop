@@ -1,4 +1,4 @@
----
+#---
 - hosts: all
   become: true
   tasks:
@@ -8,7 +8,7 @@
   ##    if workshopuser_username is not defined
   ##
 
-  - name: "rhel8-prep : loading credentials"
+  - name: "rhel9-prep : loading credentials"
     include_vars:
       file: "../config/credentials.yml"
     when: 
@@ -22,7 +22,7 @@
   become: true
   tasks:
 
-  - name: "rhel8-prep : TEMPLATE /etc/motd (incomplete)"
+  - name: "rhel9-prep : TEMPLATE /etc/motd (incomplete)"
     template:
       src: motd-incomplete.j2
       dest: /etc/motd
@@ -36,7 +36,7 @@
   become: true
   tasks:
 
-  - name: "rhel8-prep : TEMPLATE /etc/motd"
+  - name: "rhel9-prep : TEMPLATE /etc/motd"
     template:
       src: motd-generic.j2
       dest: /etc/motd
@@ -50,26 +50,26 @@
   become: true
   tasks:
 
-  - name: "rhel8-prep : YUM remove UN-WANTED packages"
+  - name: "rhel9-prep : YUM remove UN-WANTED packages"
     yum: name=insights-client state=absent
     register: result
     retries: 10
     until: result is succeeded
     delay: 5
 
-  - name: "rhel8-prep : YUM install WANTED packages"
+  - name: "rhel9-prep : YUM install WANTED packages"
     yum: name=tmux state=installed
     register: result
     retries: 10
     until: result is succeeded
     delay: 5
 
-  - name: "rhel8-prep : FILE remove UN-WANTED motd messages"
+  - name: "rhel9-prep : FILE remove UN-WANTED motd messages"
     file:
       path: /etc/motd.d/cockpit
       state: absent
 
-  - name: "rhel8-prep : SERVICE disable and stop unwanted services"
+  - name: "rhel9-prep : SERVICE disable and stop unwanted services"
     service: 
       name="{{ item.name }}"
       state=stopped
@@ -77,13 +77,13 @@
     with_items:
       - {name: 'rhsmcertd'}
 
-  - name: "rhel8-prep : CMD disable yum plugins for subscription-manager"
+  - name: "rhel9-prep : CMD disable yum plugins for subscription-manager"
     shell: 
       cmd: |          
         sed -i 's/enabled=1/enabled=0/g' /etc/yum/pluginconf.d/subscription-manager.conf
         sed -i 's/enabled=1/enabled=0/g' /etc/yum/pluginconf.d/product-id.conf
                   
-  - name: "rhel8-prep : create and/or reset admin user"
+  - name: "rhel9-prep : create and/or reset admin user"
     vars:
       t_passwd: "{{ workshop_vars.admin_password | default(rhel8workshop_admin_password) }}" 
     user: 
@@ -93,7 +93,7 @@
     when:
       - workshop_vars.set_admin_password
 
-  - name: "rhel8-prep : create and/or reset student user"
+  - name: "rhel9-prep : create and/or reset student user"
     vars:
       t_passwd: "{{ workshop_vars.student_password | default(rhel8workshop_student_password) }}" 
     user: 
@@ -103,15 +103,15 @@
     when:
       - workshop_vars.set_student_password
 
-  - name: "rhel8-prep : create student group"
+  - name: "rhel9-prep : create student group"
     group: 
       name:     "{{ workshop_vars.student_name  }}" 
       state:    present
 
-  - name: "rhel8-prep : USER modification"
+  - name: "rhel9-prep : USER modification"
     user: name="{{ workshop_vars.student_name }}" groups="wheel"
 
-  - name: "rhel8-prep : Sudo Configuration"
+  - name: "rhel9-prep : Sudo Configuration"
     vars:
       t_studentName: "{{ workshop_vars.student_name }}"
     template:
@@ -124,7 +124,7 @@
       - {src: 'sudoers.j2', dest: '/etc/sudoers.d/rhel8-workshop'}
       - {src: 'sudoers-student.j2', dest: '/etc/sudoers.d/{{ workshop_vars.student_name }}'}
 
-  - name: "rhel8-prep : check ssh directory permissions"
+  - name: "rhel9-prep : check ssh directory permissions"
     file:
       path: ~{{ item }}/.ssh
       mode: "0700"
@@ -135,7 +135,7 @@
       - "root"
       - "{{ workshop_vars.student_name }}"
 
-  - name: "rhel8-prep : check ssh known_hosts  permissions"
+  - name: "rhel9-prep : check ssh known_hosts  permissions"
     file:
       path: "~{{ item }}/.ssh/known_hosts"
       mode: "0700"
@@ -146,7 +146,7 @@
       - "root"
       - "{{ workshop_vars.student_name }}"
 
-  - name: "rhel8-prep : clean up known_hosts for root"
+  - name: "rhel9-prep : clean up known_hosts for root"
     vars:
       p_file: "~root/.ssh/known_hosts"
     shell:
@@ -158,7 +158,7 @@
       - "{{ groups['myNodes'] }}"
     ignore_errors: yes
 
-  - name: "rhel8-prep: scan and add ssh keys to known_hosts for root"
+  - name: "rhel9-prep: scan and add ssh keys to known_hosts for root"
     vars:
       p_file: "~root/.ssh/known_hosts"
     shell:
@@ -170,7 +170,7 @@
       - "{{ groups['myNodes'] }}"
     ignore_errors: yes
 
-  - name: "rhel8-prep : clean up known_hosts for {{ workshop_vars.student_name }}"
+  - name: "rhel9-prep : clean up known_hosts for {{ workshop_vars.student_name }}"
     vars:
       p_file: "~{{ workshop_vars.student_name }}/.ssh/known_hosts"
     shell:
@@ -184,7 +184,7 @@
     become: yes
     become_user: "{{ workshop_vars.student_name }}"
 
-  - name: "rhel8-prep: scan and add ssh keys to known_hosts for {{ workshop_vars.student_name }}"
+  - name: "rhel9-prep: scan and add ssh keys to known_hosts for {{ workshop_vars.student_name }}"
     vars:
       p_file: "~{{ workshop_vars.student_name }}/.ssh/known_hosts"
     shell:
@@ -205,31 +205,85 @@
   become: true
   tasks:
 
-  - name: "rhel8-prep : create ssh key for root"
-    openssh_keypair:
-      path:  "~root/.ssh/id_rsa"
-      owner: "root"
-      group: "root"
-    register: rootkey_result
 
-  - name: "rhel8-prep : save temp copy of root ssh key"
+  ##
+  ## In RHEL-9, thanks to separation of ansible-core, openssh_keypair is no longer
+  ##            part of ansible-core.  So, we revert to shell commands.
+  ##
+
+
+
+#  - name: "rhel9-prep : create ssh key for root"
+#    openssh_keypair:
+#      path:  "~root/.ssh/id_rsa"
+#      owner: "root"
+#      group: "root"
+#    register: rootkey_result
+#
+#  - name: "rhel9-prep : save temp copy of root ssh key"
+#    delegate_to: localhost
+#    copy:
+#      content="{{ rootkey_result.public_key }}"
+#      dest="../config/root_sshkey.temp"
+
+
+
+  - name: "rhel9-prep : test for root ssh key"
+    stat: 
+      path: /root/.ssh/id_rsa
+    register: root_sshkey
+
+  - name: "rhel9-prep : create ssh key for root"
+    shell: 
+      cmd: |          
+        ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
+    when: not root_sshkey.stat.exists
+
+  - name: "rhel9-prep : save temp copy of root ssh key"
     delegate_to: localhost
-    copy:
-      content="{{ rootkey_result.public_key }}"
-      dest="../config/root_sshkey.temp"
+    fetch:
+      src:  "/root/.ssh/id_rsa.pub"
+      dest: "../config/root_sshkey.temp"
+      flat: true
 
-  - name: "rhel8-prep : create ssh key for {{ workshop_vars.student_name }}"
-    openssh_keypair:
-      path:  ~{{ workshop_vars.student_name }}/.ssh/id_rsa
-      owner: "{{ workshop_vars.student_name }}"
-      group: "{{ workshop_vars.student_name }}"
-    register: studentkey_result
 
-  - name: "rhel8-prep : save temp copy of {{ workshop_vars.student_name }} ssh key"
-    delegate_to: localhost
-    copy:
-      content="{{ studentkey_result.public_key }}"
-      dest="../config/{{workshop_vars.student_name}}_sshkey.temp"
+#  - name: "rhel8-prep : create ssh key for {{ workshop_vars.student_name }}"
+#    openssh_keypair:
+#      path:  ~{{ workshop_vars.student_name }}/.ssh/id_rsa
+#      owner: "{{ workshop_vars.student_name }}"
+#      group: "{{ workshop_vars.student_name }}"
+#    register: studentkey_result
+#
+#  - name: "rhel8-prep : save temp copy of {{ workshop_vars.student_name }} ssh key"
+#    delegate_to: localhost
+#    copy:
+#      content="{{ studentkey_result.public_key }}"
+#      dest="../config/{{workshop_vars.student_name}}_sshkey.temp"
+
+
+
+  - name: "rhel9-prep : test for {{ workshop_vars.student_name }} ssh key"
+    become: true
+    become_user: "{{ workshop_vars.student_name }}"
+    stat: 
+      path: "/home/{{ workshop_vars.student_name }}/.ssh/id_rsa"
+    register: student_sshkey
+
+  - name: "rhel9-prep : create ssh key for {{ workshop_vars.student_name }}"
+    become: true
+    become_user: "{{ workshop_vars.student_name }}"
+    shell: 
+      cmd: |          
+        ssh-keygen -t rsa -N "" -f "/home/{{ workshop_vars.student_name }}/.ssh/id_rsa"
+    when: not student_sshkey.stat.exists
+
+  - name: "rhel9-prep : save temp copy of {{ workshop_vars.student_name }} ssh key"
+    become: true
+    become_user: "{{ workshop_vars.student_name }}"
+    fetch:
+      src:  "/home/{{ workshop_vars.student_name }}/.ssh/id_rsa.pub"
+      dest: "../config/{{ workshop_vars.student_name }}_sshkey.temp"
+      flat: true
 
 
 
@@ -238,15 +292,20 @@
   become: true
   tasks:
 
-  - name: "rhel8-prep : install authorized_key to nodes"
-    authorized_key:
-      user: "{{ item }}"
-      state: present
-      key: "{{ lookup('file','../config/{{ item }}_sshkey.temp') }}"
-      manage_dir: yes
+  - name: "rhel8-prep : install authorized_keys for root"
+    vars:
+      t_key:     "{{ lookup('file','../config/{{item.user}}_sshkey.temp') }}"
+    lineinfile:
+      create:  true
+      owner:   "{{ item.user }}"
+      group:   "{{ item.user }}"
+      path:    "{{ item.path }}"
+      line:    "{{ t_key }}"
+      mode:    "0600"
     with_items:
-      - "root"
-      - "{{ workshop_vars.student_name }}"
+      - { user: 'root', path: '/root/.ssh/authorized_keys' }
+      - { user: '{{ workshop_vars.student_name }}', path: '/home/{{ workshop_vars.student_name }}/.ssh/authorized_keys' }
+
 
   - name: "rhel8-prep : remove local temp copy of ssh key"
     delegate_to: localhost

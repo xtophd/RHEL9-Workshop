@@ -59,8 +59,10 @@ all:
         vdo:                True
         wayland:            False
         webconsole:         True
-  
-        
+
+    workshop_extras:
+
+      network_fqdn:         "{{ workshop_vars.clustername }}.{{ workshop_vars.network_basedomain }}"
 
 
 
