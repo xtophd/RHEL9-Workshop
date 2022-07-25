@@ -47,7 +47,7 @@ case "$1" in
         ;;
 
     *)
-        echo "USAGE: rhel9-workshop [ all | prep | appstream | boom | buildah | ebpf | firewalld | nftables | podman | settings | stratis | systemd | tlog | virt | vdo | wayland | webconsole | kpatch ]"
+        echo "USAGE: rhel9-workshop [ all | prep | appstream | boom | buildah | ebpf | firewalld | nftables | osbuild | podman | settings | stratis | systemd | tlog | virt | vdo | wayland | webconsole | kpatch ]"
         ;;
 
 esac

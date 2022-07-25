@@ -47,11 +47,11 @@
     - name: "rhel8-unit-webconsole : firewalld service start"
       service: name="firewalld" state=restarted enabled=yes
 
-    - name: "rhel8-unit-webconsole : firewall configuration"
-      firewalld: service="cockpit" permanent=yes immediate=yes state=enabled
+#    - name: "rhel8-unit-webconsole : firewall configuration"
+#      firewalld: service="cockpit" permanent=yes immediate=yes state=enabled
 
-    - name: "rhel8-unit-webconsole : firewall configuration"
-      firewalld: port=443/tcp permanent=yes immediate=yes state=enabled
+#    - name: "rhel8-unit-webconsole : firewall configuration"
+#      firewalld: port=443/tcp permanent=yes immediate=yes state=enabled
 
     - name: "rhel8-unit-webconsole : workshop file installs"
       template:
@@ -79,6 +79,6 @@
     - name: "rhel8-unit-webconsole : firewalld service start"
       service: name="firewalld" state=restarted enabled=yes
 
-    - name: "rhel8-unit-webconsole : firewall configuration"
-      firewalld: service="cockpit" permanent=yes immediate=yes state=enabled
+#    - name: "rhel8-unit-webconsole : firewall configuration"
+#      firewalld: service="cockpit" permanent=yes immediate=yes state=enabled
 
