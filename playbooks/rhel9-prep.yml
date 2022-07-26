@@ -211,23 +211,6 @@
   ##            part of ansible-core.  So, we revert to shell commands.
   ##
 
-
-
-#  - name: "rhel9-prep : create ssh key for root"
-#    openssh_keypair:
-#      path:  "~root/.ssh/id_rsa"
-#      owner: "root"
-#      group: "root"
-#    register: rootkey_result
-#
-#  - name: "rhel9-prep : save temp copy of root ssh key"
-#    delegate_to: localhost
-#    copy:
-#      content="{{ rootkey_result.public_key }}"
-#      dest="../config/root_sshkey.temp"
-
-
-
   - name: "rhel9-prep : test for root ssh key"
     stat: 
       path: /root/.ssh/id_rsa
@@ -245,22 +228,6 @@
       src:  "/root/.ssh/id_rsa.pub"
       dest: "../config/root_sshkey.temp"
       flat: true
-
-
-#  - name: "rhel8-prep : create ssh key for {{ workshop_vars.student_name }}"
-#    openssh_keypair:
-#      path:  ~{{ workshop_vars.student_name }}/.ssh/id_rsa
-#      owner: "{{ workshop_vars.student_name }}"
-#      group: "{{ workshop_vars.student_name }}"
-#    register: studentkey_result
-#
-#  - name: "rhel8-prep : save temp copy of {{ workshop_vars.student_name }} ssh key"
-#    delegate_to: localhost
-#    copy:
-#      content="{{ studentkey_result.public_key }}"
-#      dest="../config/{{workshop_vars.student_name}}_sshkey.temp"
-
-
 
   - name: "rhel9-prep : test for {{ workshop_vars.student_name }} ssh key"
     become: true

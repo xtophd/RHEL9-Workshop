@@ -3,17 +3,17 @@
   become: true
   tasks:
   
-    - name: "rhel8-unit-stratis : yum install packages"
+    - name: "rhel9-unit-stratis : yum install packages"
       yum: name=stratisd,stratis-cli state=installed
       register: result
       retries: 10
       until: result is succeeded
       delay: 5
       
-    - name: "rhel8-unit-stratis : service restart"
+    - name: "rhel9-unit-stratis : service restart"
       service: name="stratisd" state=restarted enabled=yes
 
-    - name: "rhel8-unit-stratis : workshop file installs"
+    - name: "rhel9-unit-stratis : workshop file installs"
       template:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
