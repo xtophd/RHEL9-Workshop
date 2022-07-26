@@ -14,7 +14,7 @@
     when: 
       - workshop_vars.set_student_password 
       - workshop_vars.student_password is undefined
-      - rhel8workshop_student_password is undefined
+      - rhel9workshop_student_password is undefined
 
 
 
@@ -85,7 +85,7 @@
                   
   - name: "rhel9-prep : create and/or reset admin user"
     vars:
-      t_passwd: "{{ workshop_vars.admin_password | default(rhel8workshop_admin_password) }}" 
+      t_passwd: "{{ workshop_vars.admin_password | default(rhel9workshop_admin_password) }}" 
     user: 
       name:     "{{ workshop_vars.admin_name  }}" 
       password: "{{ t_passwd | password_hash('sha512') }}"
@@ -95,7 +95,7 @@
 
   - name: "rhel9-prep : create and/or reset student user"
     vars:
-      t_passwd: "{{ workshop_vars.student_password | default(rhel8workshop_student_password) }}" 
+      t_passwd: "{{ workshop_vars.student_password | default(rhel9workshop_student_password) }}" 
     user: 
       name:     "{{ workshop_vars.student_name  }}" 
       password: "{{ t_passwd | password_hash('sha512') }}"
@@ -121,7 +121,7 @@
       group: root
       mode: 0600
     with_items:
-      - {src: 'sudoers.j2', dest: '/etc/sudoers.d/rhel8-workshop'}
+      - {src: 'sudoers.j2', dest: '/etc/sudoers.d/rhel9-workshop'}
       - {src: 'sudoers-student.j2', dest: '/etc/sudoers.d/{{ workshop_vars.student_name }}'}
 
   - name: "rhel9-prep : check ssh directory permissions"
@@ -259,7 +259,7 @@
   become: true
   tasks:
 
-  - name: "rhel8-prep : install authorized_keys for root"
+  - name: "rhel9-prep : install authorized_keys for root"
     vars:
       t_key:     "{{ lookup('file','../config/{{item.user}}_sshkey.temp') }}"
     lineinfile:
@@ -274,7 +274,7 @@
       - { user: '{{ workshop_vars.student_name }}', path: '/home/{{ workshop_vars.student_name }}/.ssh/authorized_keys' }
 
 
-  - name: "rhel8-prep : remove local temp copy of ssh key"
+  - name: "rhel9-prep : remove local temp copy of ssh key"
     delegate_to: localhost
     file: path="../config/{{ item }}_sshkey.temp" state=absent
     with_items:
