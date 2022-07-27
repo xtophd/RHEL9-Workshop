@@ -71,29 +71,31 @@ Next let's inspect further details about all running units, ordered by the time 
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*systemd-analyze blame*
+*systemd-analyze blame | head -n 15*
 ----
 
 [source,options="nowrap",subs="{markup-in-source}"]
 ----
-9.036s kdump.service
-2.204s sshd-keygen@rsa.service
- 725ms dracut-initqueue.service
- 577ms NetworkManager-wait-online.service
- 571ms initrd-switch-root.service
- 457ms systemd-hwdb-update.service
- 336ms dnf-makecache.service
- 269ms ldconfig.service
- 235ms sssd.service
- 190ms systemd-vconsole-setup.service
- 125ms systemd-logind.service
- 119ms firewalld.service
- 115ms systemd-udev-trigger.service
- 108ms initrd-parse-etc.service
- 107ms user@0.service
-  92ms lvm2-monitor.service
-  83ms modprobe@drm.service
-...<output truncated>...
+2.407s initrd-switch-root.service
+1.657s cloud-init-local.service
+1.560s dnf-makecache.service
+1.538s kdump.service
+1.021s cloud-init.service
+ 802ms cloud-config.service
+ 795ms cloud-final.service
+ 750ms tuned.service
+ 572ms dracut-initqueue.service
+ 433ms dev-hugepages.mount
+ 367ms dev-mqueue.mount
+ 366ms firewalld.service
+ 359ms sys-kernel-debug.mount
+ 353ms sys-kernel-tracing.mount
+ 345ms kmod-static-nodes.service
+ 322ms NetworkManager-wait-online.service
+ 319ms modprobe@drm.service
+ 312ms modprobe@fuse.service
+ 307ms nis-domainname.service
+ 235ms polkit.service
 ----
 
 This helps to learn the “cost” of some of the default services.  To speed up boot-time, unnecessary services could potentially be removed or disabled.
