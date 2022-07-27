@@ -91,11 +91,6 @@ Next let's inspect further details about all running units, ordered by the time 
  359ms sys-kernel-debug.mount
  353ms sys-kernel-tracing.mount
  345ms kmod-static-nodes.service
- 322ms NetworkManager-wait-online.service
- 319ms modprobe@drm.service
- 312ms modprobe@fuse.service
- 307ms nis-domainname.service
- 235ms polkit.service
 ----
 
 This helps to learn the “cost” of some of the default services.  To speed up boot-time, unnecessary services could potentially be removed or disabled.
@@ -136,7 +131,7 @@ As mentioned above, systemd has another concept called a service.  A service is 
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*systemctl -t service*
+*systemctl -t service | head -n 15*
 ----
 
 [bash,options="nowrap"]
@@ -144,11 +139,18 @@ As mentioned above, systemd has another concept called a service.  A service is 
 UNIT                               LOAD   ACTIVE SUB     DESCRIPTION
 auditd.service                     loaded active running Security Auditing Service
 chronyd.service                    loaded active running NTP client/server
+cloud-config.service               loaded active exited  Apply the settings specified in cloud-config
+cloud-final.service                loaded active exited  Execute cloud user/final scripts
+cloud-init-local.service           loaded active exited  Initial cloud-init job (pre-networking)
+cloud-init.service                 loaded active exited  Initial cloud-init job (metadata service crawler)
 crond.service                      loaded active running Command Scheduler
 dbus-broker.service                loaded active running D-Bus System Message Bus
 dracut-shutdown.service            loaded active exited  Restore /run/initramfs on shutdown
 firewalld.service                  loaded active running firewalld - dynamic firewall daemon
-...<output truncated>...
+getty@tty1.service                 loaded active running Getty on tty1
+import-state.service               loaded active exited  Import network configuration from initramfs
+irqbalance.service                 loaded active running irqbalance daemon
+kdump.service                      loaded active exited  Crash recovery kernel arming
 ----
 
 Next let's view all of the services available (ie: everything installed, running or not) on the system. The following command is similar to the older chkconfig --list as it will show both enabled and disabled services:
@@ -163,9 +165,20 @@ Next let's view all of the services available (ie: everything installed, running
 UNIT FILE                                  STATE           VENDOR PRESET
 auditd.service                             enabled         enabled
 autovt@.service                            alias           -
-blk-availability.service                   disabled        disabled
 chrony-wait.service                        disabled        disabled
 chronyd.service                            enabled         enabled
+cloud-config.service                       enabled         disabled
+cloud-final.service                        enabled         disabled
+cloud-init-local.service                   enabled         disabled
+cloud-init.service                         enabled         disabled
+cockpit-motd.service                       static          -
+cockpit-wsinstance-http.service            static          -
+cockpit-wsinstance-https-factory@.service  static          -
+cockpit-wsinstance-https@.service          static          -
+cockpit.service                            static          -
+console-getty.service                      disabled        disabled
+container-getty@.service                   static          -
+
 ...<output truncated>...
 ----
 
