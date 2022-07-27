@@ -75,7 +75,10 @@ Click on the commands below to expose steps to perform each action.  Remember, o
 
 == Run the Prep Script
 
+WARNING: There are 2 package dependencies in order for the prep-script to function: ansible-core, rhel-system-roles.  The prep-script will attempt to install these packages if detected as missing.
+
 NOTE: If you run the deployment playbooks from the web console shell, you will be disconnected and have to sign in again.  If you used tmux, you can easily recover your shell with 'tmux a'
+
 
 Now we will run the playbooks that will set up all of the workshop exercises.
 
