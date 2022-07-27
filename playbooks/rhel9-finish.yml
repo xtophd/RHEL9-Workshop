@@ -3,7 +3,7 @@
   become: true
   tasks:
 
-  - name: "rhel8-prep : TEMPLATE /etc/motd (complete)"
+  - name: "rhel9-prep : TEMPLATE /etc/motd (complete)"
     template:
       src: motd-complete.j2
       dest: /etc/motd

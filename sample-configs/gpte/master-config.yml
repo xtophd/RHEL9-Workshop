@@ -47,20 +47,22 @@ all:
         boom:               False
         buildah:            True
         ebpf:               True
-        firewalld:          True
+        firewalld:          False
         kpatch:             True
         nftables:           True
         podman:             True
         stratis:            True
         systemd:            True
-        tlog:               True
+        tlog:               False
         imagebuilder:       True
         virtualization:     True
         vdo:                True
         wayland:            False
         webconsole:         True
-  
-        
+
+    workshop_extras:
+
+      network_fqdn:         "{{ workshop_vars.clustername }}.{{ workshop_vars.network_basedomain }}"
 
 
 

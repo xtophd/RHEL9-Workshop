@@ -3,14 +3,14 @@
   become: true
   tasks:
   
-    - name: "rhel8-unit-webconsole : yum install packages"
+    - name: "rhel9-unit-webconsole : yum install packages"
       yum: name=cockpit,cockpit-pcp,firewalld,sos state=installed
       register: result
       retries: 10
       until: result is succeeded
       delay: 5
 
-    - name: "rhel8-unit-webconsole : yum install cockpit-dashboard for rhel <= 8.3"
+    - name: "rhel9-unit-webconsole : yum install cockpit-dashboard for rhel <= 8.3"
       yum: name=cockpit-dashboard state=installed
       register: result
       retries: 10
@@ -18,12 +18,12 @@
       delay: 5
       when: ansible_distribution_version is version('8.3','<=')
 
-    - name: "rhel8-unit-webconsole : shell to add selinux rule for websm on port 443"
+    - name: "rhel9-unit-webconsole : shell to add selinux rule for websm on port 443"
       shell: 
         cmd: |
           semanage port -m -t websm_port_t -p tcp 443
       
-    - name: "rhel8-unit-webconsole : create cockpit systemd drop-in directory"
+    - name: "rhel9-unit-webconsole : create cockpit systemd drop-in directory"
       file:
         path: "/etc/systemd/system/cockpit.socket.d/"
         mode: "0755"
@@ -31,7 +31,7 @@
         group: "root"
         state: directory
 
-    - name: "rhel8-unit-webconsole : deploy cockpit drop-in config"
+    - name: "rhel9-unit-webconsole : deploy cockpit drop-in config"
       vars:
         - p_port: "443"
       template:
@@ -41,19 +41,37 @@
         group: root
         mode: 0644
 
-    - name: "rhel8-unit-webconsole : service restart"
+    - name: "rhel9-unit-webconsole : service restart"
       service: name="cockpit.socket" state=restarted enabled=yes daemon-reload=yes
 
-    - name: "rhel8-unit-webconsole : firewalld service start"
+    - name: "rhel9-unit-webconsole : firewalld service start"
       service: name="firewalld" state=restarted enabled=yes
 
-    - name: "rhel8-unit-webconsole : firewall configuration"
-      firewalld: service="cockpit" permanent=yes immediate=yes state=enabled
+#    - name: "rhel9-unit-webconsole : firewall configuration"
+#      firewalld: service="cockpit" permanent=yes immediate=yes state=enabled
 
-    - name: "rhel8-unit-webconsole : firewall configuration"
-      firewalld: port=443/tcp permanent=yes immediate=yes state=enabled
+#    - name: "rhel9-unit-webconsole : firewall configuration"
+#      firewalld: port=443/tcp permanent=yes immediate=yes state=enabled
 
-    - name: "rhel8-unit-webconsole : workshop file installs"
+    - name: "rhel9-unit-webconsole : firewall service configuration"
+      include_role: name="rhel-system-roles.firewall"
+      vars:
+        firewall:
+          - service: cockpit
+            permanent: true
+            runtime: true
+            state: enabled
+
+    - name: "rhel9-unit-webconsole : additional firewall service port configuration"
+      include_role: name="rhel-system-roles.firewall"
+      vars: 
+        firewall:
+          - port:      "443/tcp"
+            permanent: true 
+            runtime:   true
+            state:     enabled
+
+    - name: "rhel9-unit-webconsole : workshop file installs"
       template:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
@@ -70,15 +88,16 @@
   become: true
   tasks:
   
-    - name: "rhel8-unit-webconsole : yum install packages"
+    - name: "rhel9-unit-webconsole : yum install packages"
       yum: name=cockpit,firewalld,sos state=installed
 
-    - name: "rhel8-unit-webconsole : service restart"
+    - name: "rhel9-unit-webconsole : service restart"
       service: name="cockpit.socket" state=restarted enabled=yes daemon-reload=yes
 
-    - name: "rhel8-unit-webconsole : firewalld service start"
+    - name: "rhel9-unit-webconsole : firewalld service start"
       service: name="firewalld" state=restarted enabled=yes
 
-    - name: "rhel8-unit-webconsole : firewall configuration"
-      firewalld: service="cockpit" permanent=yes immediate=yes state=enabled
+#    - name: "rhel9-unit-webconsole : firewall configuration"
+#      firewalld: service="cockpit" permanent=yes immediate=yes state=enabled
+
 

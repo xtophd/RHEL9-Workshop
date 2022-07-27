@@ -3,20 +3,20 @@
   become: true
   tasks:
 
-    - name: "rhel8-unit-virtualization : yum install packages"
+    - name: "rhel9-unit-virtualization : yum install packages"
       yum: name=qemu-kvm,libvirt,firewalld,virt-install,libvirt-client,libguestfs-tools,wget,cockpit-machines state=installed
       register: result
       retries: 10
       until: result is succeeded
       delay: 5
 
-    - name: "rhel8-unit-virtualization : service restart libvirtd"
+    - name: "rhel9-unit-virtualization : service restart libvirtd"
       service: name="libvirtd" state=started enabled=yes
 
-    - name: "rhel8-unit-virtualization : firewalld service start"
+    - name: "rhel9-unit-virtualization : firewalld service start"
       service: name="firewalld" state=started enabled=yes
 
-    - name: "rhel8-unit-virtualization : workshop script installs"
+    - name: "rhel9-unit-virtualization : workshop script installs"
       template:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
