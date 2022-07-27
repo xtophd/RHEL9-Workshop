@@ -63,8 +63,8 @@ Let's collect some initial data about the boot process
 
 [source,options="nowrap",subs="{markup-in-source}"]
 ----
-Startup finished in 783ms (kernel) + 1.560s (initrd) + 11.901s (userspace) = 14.246s
-multi-user.target reached after 4.073s in userspace
+Startup finished in 1.806s (kernel) + 3.082s (initrd) + 8.596s (userspace) = 13.485s
+multi-user.target reached after 7.129s in userspace
 ----
 
 Next let's inspect further details about all running units, ordered by the time they took to initialize. 
