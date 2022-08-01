@@ -44,10 +44,10 @@ all:
 
       enable_unit:
         appstream:          True
-        boom:               False
+        boom:               True
         buildah:            True
         ebpf:               True
-        firewalld:          False
+        firewalld:          True
         kpatch:             True
         nftables:           True
         podman:             True
