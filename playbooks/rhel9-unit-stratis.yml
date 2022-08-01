@@ -4,7 +4,7 @@
   tasks:
   
     - name: "rhel9-unit-stratis : yum install packages"
-      yum: name=stratisd,stratis-cli state=installed
+      yum: name=stratisd,stratis-cli,lvm2 state=installed
       register: result
       retries: 10
       until: result is succeeded
