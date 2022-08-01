@@ -15,7 +15,7 @@ endif::[]
 :disk4: /dev/sde
 :disk_glob: /dev/sd{b..e}
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
-:format_cmd_output: bash,options="nowrap"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
 ifeval::["%cloud_provider%" == "ec2"]
 :disk0: /dev/nvme0n1
 :disk1: /dev/nvme1n1
@@ -24,7 +24,6 @@ ifeval::["%cloud_provider%" == "ec2"]
 :disk4: /dev/nvme4n1
 :disk_glob: /dev/nvme{1..4}n1
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
-:format_cmd_output: bash,options="nowrap"
 endif::[]
 
 
@@ -96,17 +95,27 @@ Finally check the service status.
 
 [{format_cmd_output}]
 ----
-● stratisd.service - A daemon that manages a pool of block devices to create flexible file systems
-   Loaded: loaded (/usr/lib/systemd/system/stratisd.service; enabled; vendor preset: enabled)
-   Active: active (running) since Sat 2019-04-27 18:41:52 EDT; 10s ago
- 	Docs: man:stratisd(8)
- Main PID: 9562 (stratisd)
-	Tasks: 1 (limit: 24006)
-   Memory: 940.0K
-   CGroup: /system.slice/stratisd.service
-       	└─9562 /usr/libexec/stratisd --debug
+● stratisd.service - Stratis daemon
+     Loaded: loaded (/usr/lib/systemd/system/stratisd.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2022-08-01 21:56:27 UTC; 8min ago
+       Docs: man:stratisd(8)
+   Main PID: 43554 (stratisd)
+      Tasks: 6 (limit: 23122)
+     Memory: 1.6M
+        CPU: 257ms
+     CGroup: /system.slice/stratisd.service
+             └─43554 /usr/libexec/stratisd --log-level debug
 
-Apr 27 18:41:52 node2.example.com systemd[1]: Started A daemon that manages a pool of block devices to create flexible file systems.
+Aug 01 21:56:27 node2.qdq89.internal stratisd[43554]: [2022-08-01T21:56:27Z INFO  libstratis::stratis::run>
+Aug 01 21:56:27 node2.qdq89.internal stratisd[43554]: [2022-08-01T21:56:27Z INFO  libstratis::engine::stra>
+Aug 01 21:56:27 node2.qdq89.internal stratisd[43554]: [2022-08-01T21:56:27Z DEBUG libstratis::stratis::run>
+Aug 01 21:56:27 node2.qdq89.internal stratisd[43554]: [2022-08-01T21:56:27Z DEBUG libstratis::stratis::run>
+Aug 01 21:56:27 node2.qdq89.internal stratisd[43554]: [2022-08-01T21:56:27Z INFO  libstratis::stratis::ipc>
+Aug 01 21:56:27 node2.qdq89.internal stratisd[43554]: [2022-08-01T21:56:27Z DEBUG libstratis::stratis::run>
+Aug 01 21:56:27 node2.qdq89.internal stratisd[43554]: [2022-08-01T21:56:27Z DEBUG libstratis::stratis::run>
+Aug 01 21:56:27 node2.qdq89.internal systemd[1]: Started Stratis daemon.
+Aug 01 21:56:37 node2.qdq89.internal stratisd[43554]: [2022-08-01T21:56:37Z DEBUG libstratis::stratis::run>
+Aug 01 22:04:42 node2.qdq89.internal systemd[1]: Started Stratis daemon.
 ----
 
 == Create Storage Pool

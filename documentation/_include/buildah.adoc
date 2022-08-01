@@ -9,10 +9,9 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
-:format_cmd_output: bash,options="nowrap"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
 ifeval::["%cloud_provider%" == "ec2"]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
-:format_cmd_output: bash,options="nowrap"
 endif::[]
 
 
