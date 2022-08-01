@@ -93,13 +93,15 @@ That completes the installation and configuration of the Web Console.
 
 == Webconsole Login
 
+NOTE:  Please note that by default, the webconsole is configured to use port 9090 and accessible via a link list this: https://{targethost_fqdn}:9090/, however for the purposes of this lab and to provide the greatest degree of internet compatability the webconsole has been additionally enabled on port 443.
+
 Your instructors (or workshop portal) may provide you with a unique link and special instructions to access the web-console on the *bastion*. It is PREFERRED that you use your local web browser.
 
 Accept the various notifications about insecure ceritificates, and then login in.
 
 Use the following URL:
 
-  * link:https://{targethost_fqdn}:9090/[] 
+  * link:https://{targethost_fqdn}/[] 
 
 And the following UserID and Password:
 
@@ -169,7 +171,7 @@ systemctl restart cockpit.socket
 
 == Change Performance Profile
 
-RHEL 8 comes with several pre-canned performance tuning profiles from Tuned. Since this is a virtual machine, the default profile “virtual-guest” was selected. You can easily switch profile via the Web Console web UI. In this exercise, we will change the profile to “throughput-performance”
+RHEL 9 comes with several pre-canned performance tuning profiles from Tuned. Since this is a virtual machine, the default profile “virtual-guest” was selected. You can easily switch profile via the Web Console web UI. In this exercise, we will change the profile to “throughput-performance”
 
 ====
 image::slide6.png[Cockpit Perf Profile]
@@ -259,7 +261,7 @@ image::slide15.png[Cockpit Services]
 
 == Remote Node Management
 
-As of RHEL 8.4, the "Web Console Dashboard" plug-in has been deprecated.  The core functionality of being able to manage multiple nodes from a single interface has been intergrated into the webconsole base.  Now adding additional nodes and selecting one to manage is simple and intuitive.
+The core functionality of being able to manage multiple nodes from a single interface has been intergrated into the webconsole base.  Now adding additional nodes and selecting one to manage is simple and intuitive.
 
 We begin by selecting the pull-down in the top-left corner.
 
@@ -332,4 +334,3 @@ endif::[]
 ////
 Always end files with a blank line to avoid include problems.
 ////
-
