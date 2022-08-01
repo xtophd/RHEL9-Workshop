@@ -262,7 +262,7 @@ The actual space used by a filesystem can be shown using the `stratis fs list` c
 
 Now make sure the filesystem will mount at boot time by adjusting the systems fstab.  You've been provided a simple script to perform this edit, but the maunal steps are also outlined below in the 'Native command(s)' note.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-stratis-fstab.sh*
 ----
