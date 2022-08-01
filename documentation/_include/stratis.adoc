@@ -48,7 +48,7 @@ For these exercises, you will be using the host `node2` as user `root`.
 
 From host `bastion`, ssh to `node2`.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh node2*
 ----
