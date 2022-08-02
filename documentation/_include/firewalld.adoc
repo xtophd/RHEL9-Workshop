@@ -40,7 +40,6 @@ For these exercises, you will be using the host `node1` as user `root`.
 
 From host `bastion`, ssh to `node1`.
 
-.[student@bastion]#
 [{format_cmd_exec}]
 ----
 *ssh node1*
@@ -48,7 +47,6 @@ From host `bastion`, ssh to `node1`.
 
 Use `sudo` to elevate your priviledges.
 
-.[student@node1]#
 [{format_cmd_exec}]
 ----
 *sudo -i*
@@ -107,7 +105,6 @@ Let us examine a couple of the system's default zone files in */usr/lib/firewall
 *cat /usr/lib/firewalld/zones/public.xml*
 ----
 
-.public.xml
 [{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
@@ -125,7 +122,6 @@ Let us examine a couple of the system's default zone files in */usr/lib/firewall
 *cat /usr/lib/firewalld/zones/drop.xml*
 ----
 
-.drop.xml
 [{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
@@ -146,7 +142,6 @@ Here are a couple common configs for services defined in */usr/lib/firewalld/ser
 *cat /usr/lib/firewalld/services/ssh.xml*
 ----
 
-.ssh.xml
 [{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
@@ -162,7 +157,6 @@ Here are a couple common configs for services defined in */usr/lib/firewalld/ser
 *cat /usr/lib/firewalld/services/http.xml*
 ----
 
-.http.xml
 [{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
