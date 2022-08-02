@@ -365,10 +365,11 @@ Stratis also makes it easy to add cache devices.  For example, say the filesyste
 
 [{format_cmd_output}]
 ----
-Pool Name	Device Node    Physical Size   State   Tier
-summitpool   {disk1}                 5 GiB  In-use   Data
-summitpool   {disk2}                 5 GiB  In-use   Data
-summitpool   {disk3}                 5 GiB  In-use  Cache
+Pool Name    Device Node    Physical Size   State   Tier
+summitpool   {disk1}                5 GiB  In-use   Data
+summitpool   {disk2}                5 GiB  In-use   Data
+summitpool   {disk3}                5 GiB  In-use   Data
+summitpool   {disk4}                5 GiB  In-use  Cache
 ----
 
 == Additional Resources
