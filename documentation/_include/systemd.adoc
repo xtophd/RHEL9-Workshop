@@ -38,7 +38,7 @@ For these exercises, you will be using the host `node1` as user `root`.
 From host `bastion`, ssh to `node1`.
 
 .[student@bastion]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh node1*
 ----
@@ -46,7 +46,7 @@ From host `bastion`, ssh to `node1`.
 Use `sudo` to elevate your priviledges.
 
 .[student@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *sudo -i*
 ----
@@ -54,19 +54,111 @@ Use `sudo` to elevate your priviledges.
 Verify that you are on the right host for these exercises.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-systemd-checkhost.sh*
 ----
 
 You are now ready to proceed with these exercises.
 
-== Analyzing System Startup
+== Core Concepts
+
+=== Units
+
+The fundamental building block that systemd manages is called a "unit".  A "unit" can describe different types of objects, but the most common type is a "service".  
+
+A "unit file" is the configuration file that describes a unit and tells systemd what dependencies exist and how to start, stop and monitor the object.
+
+"unit files" are stored in 2 different directories.  One location is reserved for the default configurations as shipped by Red Hat and the other is for customization by the local administrators.
+
+  * Red Hat unit files:    /usr/lib/systemd/system/...
+  * Customizations:        /etc/systemd/system/...
+
+=== Targets
+systemd has a concept similar to SysV init runlevels, called targets.  systemd will boot to the “default target” which can be configured using the systemctl set-default command.  Some common targets and their equivalent SysV runlevels are:
+
+  * multi-user.target == runlevel 3
+  * graphical.target == runlevel 5
+
+Let's view the current default target.
+
+.[root@node1]#
+[{format_cmd_exec}]
+----
+*systemctl get-default*
+----
+
+[{format_cmd_output}]
+----
+multi-user.target
+----
+
+=== Services
+As mentioned above, systemd has another concept called a service.  A service is a type of unit which defines the traditional daemon or process.  Now let us look at what services are running on the system:
+
+.[root@node1]#
+[{format_cmd_exec}]
+----
+*systemctl -t service | head -n 15*
+----
+
+[{format_cmd_output}]
+----
+UNIT                               LOAD   ACTIVE SUB     DESCRIPTION
+auditd.service                     loaded active running Security Auditing Service
+chronyd.service                    loaded active running NTP client/server
+cloud-config.service               loaded active exited  Apply the settings specified in cloud-config
+cloud-final.service                loaded active exited  Execute cloud user/final scripts
+cloud-init-local.service           loaded active exited  Initial cloud-init job (pre-networking)
+cloud-init.service                 loaded active exited  Initial cloud-init job (metadata service crawler)
+crond.service                      loaded active running Command Scheduler
+dbus-broker.service                loaded active running D-Bus System Message Bus
+dracut-shutdown.service            loaded active exited  Restore /run/initramfs on shutdown
+firewalld.service                  loaded active running firewalld - dynamic firewall daemon
+getty@tty1.service                 loaded active running Getty on tty1
+import-state.service               loaded active exited  Import network configuration from initramfs
+irqbalance.service                 loaded active running irqbalance daemon
+kdump.service                      loaded active exited  Crash recovery kernel arming
+----
+
+Next let's view all of the services available (ie: everything installed, running or not) on the system. The following command is similar to the older chkconfig --list as it will show both enabled and disabled services:
+
+.[root@node1]#
+[{format_cmd_exec}]
+----
+*systemctl list-unit-files -t service*
+----
+
+[{format_cmd_output}]
+----
+UNIT FILE                                  STATE           VENDOR PRESET
+auditd.service                             enabled         enabled
+autovt@.service                            alias           -
+chrony-wait.service                        disabled        disabled
+chronyd.service                            enabled         enabled
+cloud-config.service                       enabled         disabled
+cloud-final.service                        enabled         disabled
+cloud-init-local.service                   enabled         disabled
+cloud-init.service                         enabled         disabled
+cockpit-motd.service                       static          -
+cockpit-wsinstance-http.service            static          -
+cockpit-wsinstance-https-factory@.service  static          -
+cockpit-wsinstance-https@.service          static          -
+cockpit.service                            static          -
+console-getty.service                      disabled        disabled
+container-getty@.service                   static          -
+
+...<output truncated>...
+----
+
+The state will  be enabled, disabled, static, or masked.  Static indicates that the unit file does not contain an "install" section used to enable the unit.  In this case, the unit typically performs a one-off action or is used as a dependency of another unit and should not be run by itself.
+
+== EXAMPLE: Analyzing System Startup
 
 Let's collect some initial data about the boot process
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemd-analyze*
 ----
@@ -77,10 +169,10 @@ Startup finished in 1.806s (kernel) + 3.082s (initrd) + 8.596s (userspace) = 13.
 multi-user.target reached after 7.129s in userspace
 ----
 
-Next let's inspect further details about all running units, ordered by the time they took to initialize. 
+Next let's inspect further details about all running units, ordered by the time they took to initialize.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemd-analyze blame | head -n 15*
 ----
@@ -106,99 +198,8 @@ Next let's inspect further details about all running units, ordered by the time 
 
 This helps to learn the “cost” of some of the default services.  To speed up boot-time, unnecessary services could potentially be removed or disabled.
 
-== Core Concepts
 
-=== Units
-
-The fundamental building block that systemd manages is called a "unit".  A "unit" can describe different types of objects, but the most common type is a "service".  
-
-A "unit file" is the configuration file that describes a unit and tells systemd what dependencies exist and how to start, stop and monitor the object.
-
-"unit files" are stored in 2 different directories.  One location is reserved for the default configurations as shipped by Red Hat and the other is for customization by the local administrators.
-
-  * Red Hat unit files:    /usr/lib/systemd/system/...
-  * Customizations:        /etc/systemd/system/...
-
-=== Targets
-systemd has a concept similar to SysV init runlevels, called targets.  systemd will boot to the “default target” which can be configured using the systemctl set-default command.  Some common targets and their equivalent SysV runlevels are:
-
-  * multi-user.target == runlevel 3
-  * graphical.target == runlevel 5
-
-Let's view the current default target.
-
-.[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*systemctl get-default*
-----
-
-[bash,options="nowrap"]
-----
-multi-user.target
-----
-
-=== Services
-As mentioned above, systemd has another concept called a service.  A service is a type of unit which defines the traditional daemon or process.  Now let us look at what services are running on the system:
-
-.[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*systemctl -t service | head -n 15*
-----
-
-[bash,options="nowrap"]
-----
-UNIT                               LOAD   ACTIVE SUB     DESCRIPTION
-auditd.service                     loaded active running Security Auditing Service
-chronyd.service                    loaded active running NTP client/server
-cloud-config.service               loaded active exited  Apply the settings specified in cloud-config
-cloud-final.service                loaded active exited  Execute cloud user/final scripts
-cloud-init-local.service           loaded active exited  Initial cloud-init job (pre-networking)
-cloud-init.service                 loaded active exited  Initial cloud-init job (metadata service crawler)
-crond.service                      loaded active running Command Scheduler
-dbus-broker.service                loaded active running D-Bus System Message Bus
-dracut-shutdown.service            loaded active exited  Restore /run/initramfs on shutdown
-firewalld.service                  loaded active running firewalld - dynamic firewall daemon
-getty@tty1.service                 loaded active running Getty on tty1
-import-state.service               loaded active exited  Import network configuration from initramfs
-irqbalance.service                 loaded active running irqbalance daemon
-kdump.service                      loaded active exited  Crash recovery kernel arming
-----
-
-Next let's view all of the services available (ie: everything installed, running or not) on the system. The following command is similar to the older chkconfig --list as it will show both enabled and disabled services:
-
-.[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*systemctl list-unit-files -t service*
-----
-
-[bash,options="nowrap"]
-----
-UNIT FILE                                  STATE           VENDOR PRESET
-auditd.service                             enabled         enabled
-autovt@.service                            alias           -
-chrony-wait.service                        disabled        disabled
-chronyd.service                            enabled         enabled
-cloud-config.service                       enabled         disabled
-cloud-final.service                        enabled         disabled
-cloud-init-local.service                   enabled         disabled
-cloud-init.service                         enabled         disabled
-cockpit-motd.service                       static          -
-cockpit-wsinstance-http.service            static          -
-cockpit-wsinstance-https-factory@.service  static          -
-cockpit-wsinstance-https@.service          static          -
-cockpit.service                            static          -
-console-getty.service                      disabled        disabled
-container-getty@.service                   static          -
-
-...<output truncated>...
-----
-
-The state will  be enabled, disabled, static, or masked.  Static indicates that the unit file does not contain an "install" section used to enable the unit.  In this case, the unit typically performs a one-off action or is used as a dependency of another unit and should not be run by itself.
-
-== Example : LAMP Stack
+== Example : Install a LAMP Stack
 
 === Install Packages
 
@@ -207,12 +208,12 @@ Now that we have a good idea of what’s installed on our system, let’s get a 
 Let us install some packages.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum install -y httpd mariadb-server mariadb*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 ...snip ...
 Package httpd-2.4.51-7.el9_0.x86_64 is already installed.
@@ -230,12 +231,12 @@ Now it's time to enable the relevant system services.
 NOTE: The "enable --now" syntax was introduced in a recent release of RHEL 7 and of course is now availbale in RHEL 8 and RHEL 9.  The option permanently enables AND immediately starts the specified services in a single command.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl enable --now httpd mariadb*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 Created symlink /etc/systemd/system/multi-user.target.wants/httpd.service → /usr/lib/systemd/system/httpd.service.
 Created symlink /etc/systemd/system/mysql.service → /usr/lib/systemd/system/mariadb.service.
@@ -246,12 +247,12 @@ Created symlink /etc/systemd/system/multi-user.target.wants/mariadb.service → 
 Now let's check the status.  You should see two separate sections in the output, one for httpd and one for mariadb.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl status httpd mariadb*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 ● httpd.service - The Apache HTTP Server
      Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
@@ -273,12 +274,12 @@ Now let's check the status.  You should see two separate sections in the output,
 Last but not least, you need to enable a firewall port.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *firewall-cmd --add-service=http*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 success
 ----
@@ -286,12 +287,12 @@ success
 So as promised, here is a workshop script that performs all of the above steps.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-systemd-lamp.sh*
 ----
 
-=== Customize Services
+=== EXAMPLE: Customize Services
 
 systemd controls more than daemons or services. For this lab, we will primarily be working with service units but it's important to know that systemd is handling the dependencies between other types: sockets, timers, mounts, swap, slices, etc.
 
@@ -308,12 +309,12 @@ Create a drop-in configuration file to extend the default httpd.service unit
 ==== Modify httpd
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-systemd-httpdconfig.sh*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 Contents of /etc/systemd/system/httpd.service.d/50-httpd.conf
 [Service]
@@ -326,7 +327,7 @@ OOMScoreAdjust is used by the Kernel's Out Of Memory killer and is an  integer b
 Notify systemd of the changes.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl daemon-reload*
 ----
@@ -340,7 +341,7 @@ This time we'll use systemctl to create the drop-in and notify systemd of the ch
 `systemctl edit` allows inserting the content for the drop-in and also handles the `systemctl daemon-reload` automatically.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl edit mariadb*
 ----
@@ -357,12 +358,12 @@ Save and quit the editor, and view the unit
 `systemctl cat` is a quick and easy way to view the contents of a unit & and it's drop-ins.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl cat mariadb*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 ...snip...
 # Restart crashed server only, on-failure would also restart, for example, when
@@ -386,12 +387,12 @@ Restart=always
 === Verify
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl status httpd*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 ● httpd.service - The Apache HTTP Server
      Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
@@ -412,12 +413,12 @@ Restart=always
 Notice that systemctl status displays that the unit has been extended with a drop-in file.
 
 .[root@node1]#
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl status mariadb*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 ● mariadb.service - MariaDB 10.5 database server
      Loaded: loaded (/usr/lib/systemd/system/mariadb.service; enabled; vendor preset: disabled)
