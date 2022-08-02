@@ -37,21 +37,21 @@ For these exercises, you will be using the host `node2` as user `root`.
 
 From host `bastion`, ssh to `node2`.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh node2*
 ----
 
 Use `sudo` to elevate your priviledges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *sudo -i*
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-nftables-checkhost.sh*
 ----
@@ -62,12 +62,12 @@ You are now ready to proceed with these exercises.
 
 Using nft, show the current state of the network tables.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft list tables*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 table ip filter
 table ip6 filter
@@ -88,12 +88,12 @@ table ip6 firewalld
 
 Using nft, show the current state of the network chains.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-# *nft list chains*
+*nft list chains*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 table ip filter {
         chain INPUT {
@@ -113,19 +113,19 @@ NOTE: The output for this can be VERY long.  You can optionally use `nft list ch
 
 == Add Single Rule
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft insert rule ip filter INPUT tcp dport http accept*
 ----
 
 Verify the rule change.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft -n -a list table ip filter*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 table ip filter { # handle 1
         chain INPUT { # handle 1
@@ -147,19 +147,19 @@ Remember the rule handle, we will use it next to delete the rule
 
 == Delete Single Rule
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft delete rule filter INPUT handle 4*
 ----
 
 Verify the rule change.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft -n -a list table ip filter*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 table ip filter { # handle 1
         chain INPUT { # handle 1
@@ -179,19 +179,19 @@ table ip filter { # handle 1
 
 == Add Multiple Rules at Once
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft insert rule ip filter INPUT tcp dport { ssh, http, https, 8181 } accept*
 ----
 
 Verify the new rules.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft -n -a list table ip filter*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 table ip filter { # handle 1
         chain INPUT { # handle 1
@@ -215,19 +215,19 @@ WARNING: DO NOT do this step unless you successfully completed "Add Multiple Rul
 
 Set the INPUT chain default policy to drop all traffic not specifically accepted.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft add chain ip filter INPUT { type filter hook input priority 0\; policy drop\; }*
 ----
 
 Verify Increased Security
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft -n -a list table ip filter*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 table ip filter { # handle 1
         chain INPUT { # handle 1
@@ -249,19 +249,19 @@ table ip filter { # handle 1
 
 Remove rules added during this exercise.  We begin by setting the INPUT chain default policy to accept all traffic.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft add chain ip filter INPUT { type filter hook input priority 0\; policy accept\; }*
 ----
 
 Now find the handle and remove the rule currently allowing access for SSH, HTTP, HTTPS, and 8181
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft -n -a list table ip filter*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 table ip filter { # handle 1
         chain INPUT { # handle 1
@@ -281,7 +281,7 @@ table ip filter { # handle 1
 
 In the output above, we determine the handle for our rule is '6'.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft delete rule filter INPUT handle 6*
 ----
@@ -290,12 +290,12 @@ NOTE: You can also use the 'flush' option to clear an entire table: `nft flush t
 
 Verify that everything is back to normal
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *nft -n -a list table ip filter*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 table ip filter { # handle 1
         chain INPUT { # handle 1
