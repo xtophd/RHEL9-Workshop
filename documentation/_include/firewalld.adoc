@@ -531,7 +531,6 @@ They are identical to the system default ones except that our additional ports (
 *cat /etc/firewalld/services/http.xml*
 ----
 
-./etc/firewalld/services/http.xml
 [{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
@@ -548,7 +547,6 @@ They are identical to the system default ones except that our additional ports (
 *cat /etc/firewalld/services/https.xml*
 ----
 
-./etc/firewalld/services/https.xml
 [{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
