@@ -37,7 +37,6 @@ For these exercises, you will be using the host `node1` as user `root`.
 
 From host `bastion`, ssh to `node1`.
 
-.[student@bastion]#
 [{format_cmd_exec}]
 ----
 *ssh node1*
@@ -45,7 +44,6 @@ From host `bastion`, ssh to `node1`.
 
 Use `sudo` to elevate your priviledges.
 
-.[student@node1]#
 [{format_cmd_exec}]
 ----
 *sudo -i*
@@ -53,7 +51,6 @@ Use `sudo` to elevate your priviledges.
 
 Verify that you are on the right host for these exercises.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *workshop-systemd-checkhost.sh*
@@ -82,7 +79,6 @@ systemd has a concept similar to SysV init runlevels, called targets.  systemd w
 
 Let's view the current default target.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl get-default*
@@ -96,7 +92,6 @@ multi-user.target
 === Services
 As mentioned above, systemd has another concept called a service.  A service is a type of unit which defines the traditional daemon or process.  Now let us look at what services are running on the system:
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl -t service | head -n 15*
@@ -123,7 +118,6 @@ kdump.service                      loaded active exited  Crash recovery kernel a
 
 Next let's view all of the services available (ie: everything installed, running or not) on the system. The following command is similar to the older chkconfig --list as it will show both enabled and disabled services:
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl list-unit-files -t service*
@@ -157,7 +151,6 @@ The state will  be enabled, disabled, static, or masked.  Static indicates that 
 
 Let's collect some initial data about the boot process
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemd-analyze*
@@ -171,7 +164,6 @@ multi-user.target reached after 7.129s in userspace
 
 Next let's inspect further details about all running units, ordered by the time they took to initialize.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemd-analyze blame | head -n 15*
@@ -207,7 +199,6 @@ Now that we have a good idea of what’s installed on our system, let’s get a 
 
 Let us install some packages.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *yum install -y httpd mariadb-server mariadb*
@@ -230,7 +221,6 @@ Now it's time to enable the relevant system services.
 
 NOTE: The "enable --now" syntax was introduced in a recent release of RHEL 7 and of course is now availbale in RHEL 8 and RHEL 9.  The option permanently enables AND immediately starts the specified services in a single command.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl enable --now httpd mariadb*
@@ -246,7 +236,6 @@ Created symlink /etc/systemd/system/multi-user.target.wants/mariadb.service → 
 
 Now let's check the status.  You should see two separate sections in the output, one for httpd and one for mariadb.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl status httpd mariadb*
@@ -273,7 +262,6 @@ Now let's check the status.  You should see two separate sections in the output,
 
 Last but not least, you need to enable a firewall port.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *firewall-cmd --add-service=http*
@@ -286,7 +274,6 @@ success
 
 So as promised, here is a workshop script that performs all of the above steps.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *workshop-systemd-lamp.sh*
@@ -308,7 +295,6 @@ Create a drop-in configuration file to extend the default httpd.service unit
 
 ==== Modify httpd
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *workshop-systemd-httpdconfig.sh*
@@ -326,7 +312,6 @@ OOMScoreAdjust is used by the Kernel's Out Of Memory killer and is an  integer b
 
 Notify systemd of the changes.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl daemon-reload*
@@ -340,7 +325,6 @@ This time we'll use systemctl to create the drop-in and notify systemd of the ch
 
 `systemctl edit` allows inserting the content for the drop-in and also handles the `systemctl daemon-reload` automatically.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl edit mariadb*
@@ -357,7 +341,6 @@ Save and quit the editor, and view the unit
 
 `systemctl cat` is a quick and easy way to view the contents of a unit & and it's drop-ins.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl cat mariadb*
@@ -386,7 +369,6 @@ Restart=always
 
 === Verify
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl status httpd*
@@ -412,7 +394,6 @@ Restart=always
 
 Notice that systemctl status displays that the unit has been extended with a drop-in file.
 
-.[root@node1]#
 [{format_cmd_exec}]
 ----
 *systemctl status mariadb*
