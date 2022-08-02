@@ -156,7 +156,7 @@ Let's collect some initial data about the boot process
 *systemd-analyze*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 Startup finished in 1.806s (kernel) + 3.082s (initrd) + 8.596s (userspace) = 13.485s
 multi-user.target reached after 7.129s in userspace
@@ -169,7 +169,7 @@ Next let's inspect further details about all running units, ordered by the time 
 *systemd-analyze blame | head -n 15*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 2.407s initrd-switch-root.service
 1.657s cloud-init-local.service
@@ -331,7 +331,7 @@ This time we'll use systemctl to create the drop-in and notify systemd of the ch
 ----
 
 .Type the following using the editor:
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_output}]
 ----
 [Service]
 Restart=always
