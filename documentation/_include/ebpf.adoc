@@ -450,8 +450,7 @@ In your second terminal, establish yourself as described below and then run the 
 
 [{format_cmd_exec2}]
 ----
-*echo 3 > /proc/sys/vm/drop_caches*
-*for i in $(seq 1 10); do dd if=/dev/urandom of=bigfile$i bs=1024 count=20000 & done*
+*ssh node2 "workshop-ebpf-cachestat.sh"*
 ----
 
 This flushes the cache and then runs a series of `dd` commands to create some I/O.
@@ -512,7 +511,7 @@ In your second terminal, establish yourself as described below and then run the 
 
 [{format_cmd_exec2}]
 ----
-*cat /etc/fstab*
+*ssh node2 "cat /etc/fstab"*
 ----
 
 [discrete]
@@ -567,7 +566,7 @@ Go ahead and Ctrl-C `trace` and then let's do one more trace, this time, tracing
 
 [{format_cmd_exec2}]
 ----
-*cat /etc/fstab*
+*ssh node2 "cat /etc/fstab"*
 ----
 
 [{format_cmd_output}]
