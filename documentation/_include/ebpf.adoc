@@ -63,6 +63,9 @@ You are now ready to proceed with these exercises.
 
 == Installation
 
+[discrete]
+==== Primary Terminal (node2)
+
 Start by installing the *BPF Compiler Collection* (bcc-tools) and kernel-devel packages for the installed kernel:
 
 [{format_cmd_exec}]
@@ -81,7 +84,7 @@ Now, we have a lot of interesting tools installed in /usr/share/bcc/tools along 
 The `tcplife` tool monitors tcp connections on the system and measures the amount of time that they've been open, the local and remote ports involved in the connection and the amount of data transferred and received in kilobytes.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
@@ -96,7 +99,7 @@ PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
 ----
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
 In your second terminal, establish yourself as described below and then run the following command:
 
@@ -111,7 +114,7 @@ In your second terminal, establish yourself as described below and then run the 
 This command should run for about 10 seconds and then exit.  
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 In the `tcplife` terminal, you should now see output similar to:
 
@@ -134,7 +137,7 @@ In the `tcplife` terminal, issue a Ctrl-C and this will return you to a prompt.
 The `execsnoop` script monitors all calls to execve() and catches all processes that follow the fork->exec sequence, as well as processes that re-exec() themselves. Processes that fork() but do not exec() won't be caught by this script.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 Continuing on host `node2`, to run `execsnoop` as follows:
 
@@ -149,12 +152,9 @@ PCOMM            PID    PPID   RET ARGS
 ----
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *bastion*
-  * user: *root*
+In your second terminal having established yourself as root, run the following command:
 
 [{format_cmd_exec2}]
 ----
@@ -162,7 +162,7 @@ In your second terminal, establish yourself as described below and then run the 
 ----
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 In the `execsnoop` terminal, you should see output similar to:
 
@@ -204,14 +204,12 @@ In the `execsnoop` terminal, issue a Ctrl-C and this will return you to a prompt
 
 
 
-
-
 == bcc-tools: mountsnoop
 
 Similar in nature to `execsnoop`, `mountsnoop` traces the mount() and umount() syscalls which show processes that are attempting to mount (or unmount) filesystems.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
@@ -226,16 +224,9 @@ COMM             PID     TID     MNT_NS      CALL
 ----
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
-*PAY ATTENTION!!! USING A DIFFERENT HOST*
-
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *node2*
-  * user: *root*
-
-Let's try to unmount a mount that we know cannot be unmounted. For this, we'll pick the root filesystem '/'.
+In your second terminal having established yourself as root, let's try to unmount a something we know can NOT be unmounted. For this, we'll pick the root filesystem '/'.
 
 [{format_cmd_exec2}]
 ----
@@ -248,7 +239,7 @@ umount: /: target is busy.
 ----
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 Taking a look at the terminal running `mountsnoop`, we see:
 
@@ -260,7 +251,7 @@ umount           20001   20001   4026531840  umount("/", 0x0) = -EBUSY
 This shows us that the mount is busy and cannot be unmounted.
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
 Now let's try to unmount a filesystem that we should be able to unmount.  But before doing so, look at the mount options to ensure we can restore it correctly.  On `node2` run the following:
 
@@ -282,7 +273,7 @@ Now proceed to umount `/dev/shm` on `node2`
 ----
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 Back to the `mountsnoop` terminal and you should see the following:
 
@@ -294,7 +285,7 @@ umount           20003   20003   4026531840  umount("/dev/shm", 0x0) = 0
 The umount command succeeded. 
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
 Proceed to restore the /dev/shm mount as follows:
 
@@ -304,7 +295,7 @@ Proceed to restore the /dev/shm mount as follows:
 ----
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 Finally, back to the `mountsnoop` terminal and you should see the following:
 
@@ -330,7 +321,7 @@ WARNING: Please verify the filesystem your host is using with the command `df -T
 The purpose of the `xfsslower` tool (also `ext4slower` and `nfsslower`) is to show you filesystem operations slower than  a particular threshold, that defaults to 10ms. It traces reads, writes, opens, and syncs and then prints out the timestamp of the operation, the process name, the ID, the type of operation, the file offset in kilobytes, the latency of the I/O measured from when it was issued by VFS to the filesystem to when it was completed, and finally, the filename being operated on.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
@@ -346,7 +337,7 @@ TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME
 ----
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
 In your second terminal, establish yourself as described below and then run the following command:
 
@@ -368,7 +359,7 @@ Now, let's execute the above command in a for loop so that we get more I/O going
 ----
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 Now you should see similar output in your `xfsslower` window:
 
@@ -426,7 +417,7 @@ In the `xfsslower` terminal, issue a Ctrl-C and this will return you to a prompt
 The `cachestat` tool traces kernel page cache functions and prints every five second summaries to aid you in workload characterization.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
@@ -441,7 +432,7 @@ To run this tool, execute the following and give it a couple of seconds to get s
 ----
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
 In your second terminal, establish yourself as described below and then run the following command:
 
@@ -456,7 +447,7 @@ In your second terminal, establish yourself as described below and then run the 
 This flushes the cache and then runs a series of `dd` commands to create some I/O.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 In the `cachestat` window, you should output similar to:
 
@@ -487,7 +478,7 @@ This tool is a swiss army knife allowing you to specify functions to trace and m
 Let's do a simple trace in which we will dynamically trace the do_sys_open() kernel function and print the names of the files opened. 
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
@@ -502,12 +493,9 @@ PID     TID     COMM            FUNC             -
 ----
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
 In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *node2*
-  * user: *root*
 
 [{format_cmd_exec2}]
 ----
@@ -515,7 +503,7 @@ In your second terminal, establish yourself as described below and then run the 
 ----
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 In the `trace` terminal, you will see something similar to:
 
@@ -562,7 +550,7 @@ Go ahead and Ctrl-C `trace` and then let's do one more trace, this time, tracing
 ----
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
 [{format_cmd_exec2}]
 ----
@@ -575,7 +563,7 @@ PID     TID     COMM            FUNC             -
 ----
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 In the `trace` terminal, you will see something similar to:
 
