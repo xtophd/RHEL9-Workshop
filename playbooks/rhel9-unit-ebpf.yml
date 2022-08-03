@@ -25,5 +25,6 @@
         - {src: 'workshop-ebpf-mountshm.j2',   dest: '/usr/local/bin/workshop-ebpf-mountshm.sh'}
         - {src: 'workshop-ebpf-iotest.j2',     dest: '/usr/local/bin/workshop-ebpf-iotest.sh'}
         - {src: 'workshop-ebpf-iotest-x10.j2', dest: '/usr/local/bin/workshop-ebpf-iotest-x10.sh'}
+        - {src: 'workshop-ebpf-cachestat.j2',  dest: '/usr/local/bin/workshop-ebpf-cachestat.sh'}
 
 

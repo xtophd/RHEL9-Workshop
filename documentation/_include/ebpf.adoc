@@ -355,7 +355,7 @@ In your second terminal, establish yourself as described below and then run the 
 
 [{format_cmd_exec2}]
 ----
-*dd if=/dev/urandom of=bigfile bs=1024 count=20000*
+*ssh node2 "workshop-ebpf-iotest.sh"*
 ----
 
 This writes out a 20M file called bigfile and should not register on your `xfsslower` window.
@@ -364,7 +364,7 @@ Now, let's execute the above command in a for loop so that we get more I/O going
 
 [{format_cmd_exec2}]
 ----
-*for i in $(seq 1 10); do dd if=/dev/urandom of=bigfile$i bs=1024 count=20000 & done*
+*ssh node2 "workshop-ebpf-iotest-x10.sh"*
 ----
 
 [discrete]
