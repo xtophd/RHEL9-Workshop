@@ -9,9 +9,11 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_exec2: source,options="nowrap",subs="{markup-in-source}",role="copy"
 :format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
 ifeval::["%cloud_provider%" == "ec2"]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+:format_cmd_exec2: source,options="nowrap",subs="{markup-in-source}",role="execute-2"
 endif::[]
 
 
@@ -101,7 +103,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *bastion*
   * user: *root*
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *ssh node2 "sudo workshop-ebpf-rootkit.sh"*
 ----
@@ -154,7 +156,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *bastion*
   * user: *root*
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *ssh node2 "sudo workshop-ebpf-rootkit.sh"*
 ----
@@ -235,7 +237,7 @@ In your second terminal, establish yourself as described below and then run the 
 
 Let's try to unmount a mount that we know cannot be unmounted. For this, we'll pick the root filesystem '/'.
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *umount /*
 ----
@@ -262,7 +264,7 @@ This shows us that the mount is busy and cannot be unmounted.
 
 Now let's try to unmount a filesystem that we should be able to unmount.  But before doing so, look at the mount options to ensure we can restore it correctly.  On `node2` run the following:
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *grep /dev/shm /proc/mounts*
 ----
@@ -274,7 +276,7 @@ tmpfs /dev/shm tmpfs *rw,seclabel,nosuid,nodev,relatime* 0 0
 
 Now proceed to umount `/dev/shm` on `node2`
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *umount /dev/shm*
 ----
@@ -296,7 +298,7 @@ The umount command succeeded.
 
 Proceed to restore the /dev/shm mount as follows:
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *mount -t tmpfs -o rw,nosuid,nodev,relatime,seclabel tmpfs /dev/shm*
 ----
@@ -313,7 +315,7 @@ mount            20004   20004   4026531840  mount("tmpfs", "/dev/shm", "tmpfs",
 
 This shows us that the mount succeeded and all the options that were passed into the system call.
 
-As you can see, the `mountsnoop` tool is very useful for seeing what processes are calling the mount and umount system calls and what the results of those calls are.
+As you can see, the `mountsnoop` tool is very useful for seeing what processes that are calling the mount and umount system calls and what the results of those calls are.
 
 In the `mountsnoop` terminal, issue a Ctrl-C and this will return you to a prompt.
 
@@ -351,7 +353,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *node2*
   * user: *root*
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *dd if=/dev/urandom of=bigfile bs=1024 count=20000*
 ----
@@ -360,7 +362,7 @@ This writes out a 20M file called bigfile and should not register on your `xfssl
 
 Now, let's execute the above command in a for loop so that we get more I/O going in parallel:
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *for i in $(seq 1 10); do dd if=/dev/urandom of=bigfile$i bs=1024 count=20000 & done*
 ----
@@ -446,7 +448,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *node2*
   * user: *root*
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *echo 3 > /proc/sys/vm/drop_caches*
 *for i in $(seq 1 10); do dd if=/dev/urandom of=bigfile$i bs=1024 count=20000 & done*
@@ -508,7 +510,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *node2*
   * user: *root*
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *cat /etc/fstab*
 ----
@@ -563,7 +565,7 @@ Go ahead and Ctrl-C `trace` and then let's do one more trace, this time, tracing
 [discrete]
 ==== Secondary Terminal
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 *cat /etc/fstab*
 ----
