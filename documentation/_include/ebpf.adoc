@@ -38,21 +38,21 @@ TIP: Now is a great time to use the multi session capability of *tmux*.  Use `Ct
 
 From host `bastion`, ssh to `node2`.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh node2*
 ----
 
 Use `sudo` to elevate your priviledges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *sudo -i*
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-ebpf-checkhost.sh*
 ----
@@ -63,7 +63,7 @@ You are now ready to proceed with these exercises.
 
 Start by installing the *BPF Compiler Collection* (bcc-tools) and kernel-devel packages for the installed kernel:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum install bcc-tools kernel-devel-$(uname -r) -y*
 ----
@@ -83,12 +83,12 @@ The `tcplife` tool monitors tcp connections on the system and measures the amoun
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 */usr/share/bcc/tools/tcplife*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
 ----
@@ -101,7 +101,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *bastion*
   * user: *root*
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh node2 "sudo workshop-ebpf-rootkit.sh"*
 ----
@@ -113,7 +113,7 @@ This command should run for about 10 seconds and then exit.
 
 In the `tcplife` terminal, you should now see output similar to:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
 28478 sshd       10.0.0.12       22    10.0.0.10       33514    14     2 9091.95
@@ -136,12 +136,12 @@ The `execsnoop` script monitors all calls to execve() and catches all processes 
 
 Continuing on host `node2`, to run `execsnoop` as follows:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 */usr/share/bcc/tools/execsnoop*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 PCOMM            PID    PPID   RET ARGS
 ----
@@ -154,7 +154,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *bastion*
   * user: *root*
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh node2 "sudo workshop-ebpf-rootkit.sh"*
 ----
@@ -164,7 +164,7 @@ In your second terminal, establish yourself as described below and then run the 
 
 In the `execsnoop` terminal, you should see output similar to:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 PCOMM            PID    PPID   RET ARGS
 sshd             28512  749      0 /usr/sbin/sshd -D -oCiphers=aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cb -oMACs=hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2- -oGSSAPIKexAlgorithms=gss-gex-sha1-,gss-group14-sha1- -oKexAlgorithms=curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-excha -oHostKeyAlgorithms=rsa-sha2-256,ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nis -oPubkeyAcceptedKeyTypes=rsa-sha2-256,ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha -R
@@ -213,12 +213,12 @@ Similar in nature to `execsnoop`, `mountsnoop` traces the mount() and umount() s
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 */usr/share/bcc/tools/mountsnoop*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 COMM             PID     TID     MNT_NS      CALL
 ----
@@ -235,12 +235,12 @@ In your second terminal, establish yourself as described below and then run the 
 
 Let's try to unmount a mount that we know cannot be unmounted. For this, we'll pick the root filesystem '/'.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *umount /*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 umount: /: target is busy.
 ----
@@ -250,7 +250,7 @@ umount: /: target is busy.
 
 Taking a look at the terminal running `mountsnoop`, we see:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 umount           20001   20001   4026531840  umount("/", 0x0) = -EBUSY
 ----
@@ -262,19 +262,19 @@ This shows us that the mount is busy and cannot be unmounted.
 
 Now let's try to unmount a filesystem that we should be able to unmount.  But before doing so, look at the mount options to ensure we can restore it correctly.  On `node2` run the following:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *grep /dev/shm /proc/mounts*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 tmpfs /dev/shm tmpfs *rw,seclabel,nosuid,nodev,relatime* 0 0
 ----
 
 Now proceed to umount `/dev/shm` on `node2`
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *umount /dev/shm*
 ----
@@ -284,7 +284,7 @@ Now proceed to umount `/dev/shm` on `node2`
 
 Back to the `mountsnoop` terminal and you should see the following:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 umount           20003   20003   4026531840  umount("/dev/shm", 0x0) = 0
 ----
@@ -296,7 +296,7 @@ The umount command succeeded.
 
 Proceed to restore the /dev/shm mount as follows:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *mount -t tmpfs -o rw,nosuid,nodev,relatime,seclabel tmpfs /dev/shm*
 ----
@@ -306,7 +306,7 @@ Proceed to restore the /dev/shm mount as follows:
 
 Finally, back to the `mountsnoop` terminal and you should see the following:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 mount            20004   20004   4026531840  mount("tmpfs", "/dev/shm", "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC|MS_SYNCHRONOUS|MS_DIRSYNC|MS_NOATIME|MS_NODIRATIME|MS_MOVE|MS_REC|MS_UNBINDABLE|MS_SLAVE|MS_SHARED|MS_I_VERSION|MS_STRICTATIME|MS_LAZYTIME|MS_NOUSER|0x7f2b30000000, "") = 0
 ----
@@ -332,12 +332,12 @@ The purpose of the `xfsslower` tool (also `ext4slower` and `nfsslower`) is to sh
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 */usr/share/bcc/tools/xfsslower*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 Tracing xfs operations slower than 10 ms
 TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME
@@ -351,7 +351,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *node2*
   * user: *root*
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *dd if=/dev/urandom of=bigfile bs=1024 count=20000*
 ----
@@ -360,7 +360,7 @@ This writes out a 20M file called bigfile and should not register on your `xfssl
 
 Now, let's execute the above command in a for loop so that we get more I/O going in parallel:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *for i in $(seq 1 10); do dd if=/dev/urandom of=bigfile$i bs=1024 count=20000 & done*
 ----
@@ -370,7 +370,7 @@ Now, let's execute the above command in a for loop so that we get more I/O going
 
 Now you should see similar output in your `xfsslower` window:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME
 20:44:43 b'dd'          32446  W 1024    778        44.11 b'bigfile1'
@@ -428,12 +428,12 @@ The `cachestat` tool traces kernel page cache functions and prints every five se
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 */usr/share/bcc/tools/cachestat*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
    TOTAL   MISSES     HITS  DIRTIES   BUFFERS_MB  CACHED_MB
 ----
@@ -446,7 +446,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *node2*
   * user: *root*
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *echo 3 > /proc/sys/vm/drop_caches*
 *for i in $(seq 1 10); do dd if=/dev/urandom of=bigfile$i bs=1024 count=20000 & done*
@@ -459,7 +459,7 @@ This flushes the cache and then runs a series of `dd` commands to create some I/
 
 In the `cachestat` window, you should output similar to:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
    TOTAL   MISSES     HITS  DIRTIES   BUFFERS_MB  CACHED_MB
        0        0        0        0            0        154
@@ -478,7 +478,7 @@ In the `cachestat` terminal, issue a Ctrl-C and this will return you to a prompt
 
 This tool is a swiss army knife allowing you to specify functions to trace and messages to be printed when certain conditions are met. You can read more about this by running:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *man 8 trace*
 ----
@@ -490,12 +490,12 @@ Let's do a simple trace in which we will dynamically trace the do_sys_open() ker
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 */usr/share/bcc/tools/trace 'p::do_sys_open "%s", arg2'*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 PID     TID     COMM            FUNC             -
 ----
@@ -508,7 +508,7 @@ In your second terminal, establish yourself as described below and then run the 
   * host: *node2*
   * user: *root*
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *cat /etc/fstab*
 ----
@@ -518,7 +518,7 @@ In your second terminal, establish yourself as described below and then run the 
 
 In the `trace` terminal, you will see something similar to:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 32559   32559   cat             do_sys_open      b'/etc/ld.so.cache'
 32559   32559   cat             do_sys_open      b'/lib64/libc.so.6'
@@ -555,7 +555,7 @@ In the `trace` terminal, you will see something similar to:
 
 Go ahead and Ctrl-C `trace` and then let's do one more trace, this time, tracing the return values out of `trace`:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 */usr/share/bcc/tools/trace 'r::do_sys_open "ret: %d", retval'*
 ----
@@ -563,12 +563,12 @@ Go ahead and Ctrl-C `trace` and then let's do one more trace, this time, tracing
 [discrete]
 ==== Secondary Terminal
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *cat /etc/fstab*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 PID     TID     COMM            FUNC             -
 ----
@@ -578,7 +578,7 @@ PID     TID     COMM            FUNC             -
 
 In the `trace` terminal, you will see something similar to:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 PID     TID     COMM            FUNC             -
 32576   32576   cat             do_sys_open      ret: 3
