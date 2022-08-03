@@ -239,7 +239,7 @@ Let's try to unmount a mount that we know cannot be unmounted. For this, we'll p
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "sudo workshop-ebpf-umountroot.sh*
+*ssh node2 "sudo workshop-ebpf-unmountroot.sh"*
 ----
 
 [{format_cmd_output}]
@@ -278,7 +278,7 @@ Now proceed to umount `/dev/shm` on `node2`
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "sudo workshop-ebpf-unmountshm.sh*
+*ssh node2 "sudo workshop-ebpf-unmountshm.sh"*
 ----
 
 [discrete]
@@ -300,7 +300,7 @@ Proceed to restore the /dev/shm mount as follows:
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "sudo workshop-ebpf-mountshm.sh*
+*ssh node2 "sudo workshop-ebpf-mountshm.sh"*
 ----
 
 [discrete]
