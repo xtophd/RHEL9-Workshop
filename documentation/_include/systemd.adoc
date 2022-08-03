@@ -419,7 +419,7 @@ Notice that systemctl status displays that the unit has been extended with a dro
 
 == Additional Resources
 
-Red Hat Documentation
+You can find more information:
 
     * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/introduction-to-systemd_configuring-basic-system-settings[Introduction to systemd]
     

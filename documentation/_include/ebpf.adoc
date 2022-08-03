@@ -70,7 +70,7 @@ Start by installing the *BPF Compiler Collection* (bcc-tools) and kernel-devel p
 
 [{format_cmd_exec}]
 ----
-*yum install bcc-tools kernel-devel-$(uname -r) -y*
+*dnf install bcc-tools kernel-devel-$(uname -r) -y*
 ----
 
 Now, we have a lot of interesting tools installed in /usr/share/bcc/tools along with accompanying man pages.
@@ -611,7 +611,7 @@ There is a lot more that you can do with this tool when you actually need to sta
 
 == Additional Resources
 
-NOTE: You are not required to reference any additional resources for these exercises.  This is informational only.
+You can find more information:
 
     * link:https://www.redhat.com/en/blog/bcc-tools-brings-dynamic-kernel-tracing-red-hat-enterprise-linux-81[bcc-tools brings dynamic kernel tracing to Red Hat Enterprise Linux 8.1]
     * link:https://www.redhat.com/en/blog/why-networkmanager-talking-staticredhatcom-find-out-bcc-tools[Why is NetworkManager talking to static.redhat.com? Find out with bcc-tools!]   
