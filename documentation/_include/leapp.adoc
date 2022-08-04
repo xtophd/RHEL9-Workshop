@@ -67,7 +67,7 @@ WARNING: Remember to skip these steps if you can connected to a Satellite or dir
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-yum-config-manager --disable my-rhel-7-server-rpms
+yum-config-manager --disable my-rhel-8-server-rpms
 
 ----
 
@@ -112,22 +112,19 @@ Install the LEAPP tools.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-yum install -y leapp cockpit-leapp
+yum install -y leapp leapp-upgrade-el8toel9 cockpit-leapp
+
 ----
 
 === LEAPP Data
 
-Download and store the latest LEAPP data file in /etc/leapp/files.  This example assumes you downloaded leapp-data14.tar.gz from redhat.com and stored it in /var/tmp
+Delete any results from previous attempts to run leapp
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-mkdir -p /etc/leapp/files; cd /etc/leapp/files
+rm -rf /root/tmp_leapp_py3
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-tar zxvf /var/tmp/leapp-data14.tar.gz
-----
 
 == LEAPP Pre-Upgrade
 
