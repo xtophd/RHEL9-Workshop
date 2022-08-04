@@ -18,7 +18,7 @@ endif::[]
 :toc:
 :toclevels: 1
 
-= Upgrading from RHEL 7 to RHEL 8
+= Upgrading from RHEL 8 to RHEL 9
 
 WARNING: THIS UNIT IS A WORK IN PROGRESS AND NOT COMPLETE
 
@@ -30,13 +30,13 @@ In this unit, we will get familiar with the upgrade tool called LEAPP.
 
 == Getting Started
 
-For these exercises, you will be using the host `node4` as user `root`.  Before you begin, confirm the node was provisioned with RHEL 7.9
+For these exercises, you will be using the host `leapp` as user `root`.  Before you begin, confirm the node was provisioned with RHEL 8.6
 
-From host `bastion`, ssh to `node4`.
+From host `bastion`, ssh to `leapp`.
 
 [bash,options="nowrap",subs="{markup-in-source}"]
 ----
-$ *ssh node4*
+$ *ssh leapp*
 ----
 
 Use `sudo` to elevate your priviledges.
@@ -59,9 +59,11 @@ You are now ready to proceed with these exercises.
 
 === Package Repositories
 
-First item of business is to ensure the proper software repositories are enabled on the host.  In our workshop environment, node4 was likely provisioned with a RHEL 7.x ISO image and configured with local static self-managed repos.
+First item of business is to ensure the proper software repositories are enabled on the host.  In our workshop environment, the leapp host was likely provisioned with a RHEL 8.x ISO image and configured with local static self-managed repos.
 
 If necessary, begin by disabling any local static repos and switching to the latest managed ones from Red Hat.
+
+WARNING: Remember to skip these steps if you can connected to a Satellite or directly to redhat.com.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
@@ -86,10 +88,10 @@ subscription-manager repos --disable=*
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-extras-rpms
+subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms --enable=rhel-8-for-x86_64-appstream-rpms --enable=rhel-8-for-x86_64-supplementary-rpms
 ----
 
-Ensure that Red Hat Subscription Manager is set to consume the latest RHEL 7 content.
+Ensure that Red Hat Subscription Manager is set to consume the latest RHEL 8 content.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
@@ -110,7 +112,7 @@ Install the LEAPP tools.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-yum install -y leapp leapp-repository leapp-repository-deps lvm2-python-boom cockpit-leapp
+yum install -y leapp cockpit-leapp
 ----
 
 === LEAPP Data
