@@ -43,7 +43,7 @@ all:
       #admin_password:       ""
 
       enable_unit:
-        appstream:          True
+        appstream:          False
         boom:               True
         buildah:            True
         ebpf:               True
