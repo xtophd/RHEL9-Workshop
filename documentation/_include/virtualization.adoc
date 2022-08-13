@@ -269,12 +269,12 @@ Once we can see the network information, now it is time to connect to the host s
 
 Now it is time to connect to the host and check out some it's characteristics.
 
-[{format_cmd_output}]
+[{format_cmd_exec}]
 ----
 *export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4,a,/\//) ; print a[1] }')*
 ----
 
-[{format_cmd_output}]
+[{format_cmd_exec}]
 ----
 *ssh $VM_IP*
 ----
