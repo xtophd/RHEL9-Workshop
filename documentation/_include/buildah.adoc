@@ -66,7 +66,7 @@ Let's get started by creating a new working container based off of the ubi image
 *buildah from ubi8/ubi*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 Getting image source signatures
 Copying blob befb03b11956 done
@@ -88,7 +88,7 @@ Let's run:
 *buildah copy ubi-working-container /var/tmp/buildah-dan-cries.txt /var/www/html/dan-cries.txt*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 34f1621a22ffd90a2ebbd58eba315089dc2704ac69a3d33d60362422e4ec26a1
 ----
@@ -97,7 +97,7 @@ At this point, you have copied your local `dan-cries.txt` into the the ubi-worki
 
 The steps you performed above is equivalent to the following OCIFile (or Dockerfile):
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 FROM ubi8/ubi
 COPY /root/dan-cries.txt /var/www/html/
@@ -116,7 +116,7 @@ We need to install an httpd server in our image, and what better way to do that 
 *buildah run ubi-working-container yum install -y httpd*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 ...SNIP...
 Installed:
@@ -152,7 +152,7 @@ Proceed to mount the root filesystem of your container with:
 *buildah mount ubi-working-container*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 /var/lib/containers/storage/overlay/3456a159b5b3c9e3056d14b97bde1f0e770500dd1cdd6168c894a52a3b3f12ee/merged
 ----
@@ -169,7 +169,7 @@ Using the long path provided by your mount command, change directories.
 *ls -lah ./var/www/html*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 total 16K
 drwxr-xr-x. 2 root root 4.0K Apr 12 21:12 .
@@ -182,10 +182,14 @@ There is our `dan-cries.txt`! Let's add an additional file:
 [{format_cmd_exec}]
 ----
 *cp /var/tmp/buildah-index.html ./var/www/html/index.html*
-*cat ./var/www/html/index.html*
 ----
 
 [{format_cmd_exec}]
+----
+*cat ./var/www/html/index.html*
+----
+
+[{format_cmd_output}]
 ----
 <html>
 <title>Stop Disabling SELinux</title>
@@ -204,7 +208,7 @@ Let us just double check contents of the httpd docroot one last time:
 *ls -lahZ ./var/www/html/*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 total 20K
 drwxr-xr-x. 2 root root system_u:object_r:container_file_t:s0:c60,c544 4.0K Apr 12 21:25 .
@@ -221,7 +225,7 @@ When you are done making direct changes to the root filesystem of your container
 *buildah unmount ubi-working-container*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 e918debcaabb5820997b1a4969fbd45284adc0a2869d1f22a1bce78f703ff3c6
 ----
@@ -235,7 +239,7 @@ At this point, we've used buildah to run commands and create a container image s
 *buildah commit ubi-working-container webserver2*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 Getting image source signatures
 Copying blob d3ada5af5602 skipped: already exists
@@ -254,7 +258,7 @@ Let's look at our images:
 *podman images*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 REPOSITORY                            TAG      IMAGE ID       CREATED          SIZE
 localhost/webserver2                  latest   a831badcea41   25 seconds ago   240 MB
@@ -279,7 +283,7 @@ Finally let's test our new webserver:
 *curl http://localhost:8080/*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 <html>
 <title>Stop Disabling SELinux</title>
@@ -298,7 +302,7 @@ and:
 *curl http://localhost:8080/dan-cries.txt*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 Every time you run setenforce 0, you make Dan Walsh weep.
 ----
@@ -314,7 +318,7 @@ Let's take a look at the webserver2:latest container that we just built:
 *skopeo inspect containers-storage:localhost/webserver2:latest*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 {
     "Name": "localhost/webserver2",
@@ -364,7 +368,7 @@ Let's look at the ubi8/ubi container that we built this off of and compare the l
 *skopeo inspect containers-storage:registry.access.redhat.com/ubi8/ubi:latest*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 {
     "Name": "registry.access.redhat.com/ubi8/ubi",
@@ -413,7 +417,7 @@ Pretty neat that we can look inside local containers, but what about containers 
 # *skopeo inspect docker://registry.access.redhat.com/ubi8/ubi-minimal:latest*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 {
     "Name": "registry.access.redhat.com/ubi8/ubi-minimal",
@@ -479,7 +483,7 @@ Next let's run:
 *podman images*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 REPOSITORY                            TAG      IMAGE ID       CREATED         SIZE
 localhost/webserver2                  latest   b660ca86ee4b   7 minutes ago   271 MB
@@ -502,7 +506,7 @@ Let's run:
 *skopeo copy docker://registry.access.redhat.com/ubi8/ubi-minimal:latest dir:/root/ubi-tarball*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 Getting image source signatures
 Copying blob b26afdf22be4 done
@@ -520,7 +524,7 @@ and now we can do:
 *ls -l*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 total 33888
 drwxr-xr-x. 2 root root     4096 Apr 13 09:48 .
@@ -539,7 +543,7 @@ Inspecting the images with the `file` command, we discover that these a couple o
 *file **
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 218f593046abe6e9f194aed3fc2a2ad622065d6800175514dffa55dfce624b56: gzip compressed data, original size 20480
 91d23a64fdf259ffce4181b40ce3dafa982a9e4a76ae6a88c1e662c6166c7324: ASCII text, with very long lines
@@ -555,7 +559,7 @@ Let's take a test view of the contents of the largest gzip file (examine "origin
 # *tar tvzf b26afdf22be4e9c30220796780a297b91549a3b3041b6fdcbda71bf48a6912e7*
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 dr-xr-xr-x root/root         0 2020-03-31 10:48 ./
 lrwxrwxrwx root/root         0 2018-08-12 05:46 ./lib64 -> usr/lib64
