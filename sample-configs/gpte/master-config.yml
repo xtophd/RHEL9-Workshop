@@ -53,7 +53,7 @@ all:
         podman:             True
         stratis:            True
         systemd:            True
-        tlog:               False
+        tlog:               True
         imagebuilder:       True
         virtualization:     True
         vdo:                True

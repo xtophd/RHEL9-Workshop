@@ -1,19 +1,39 @@
 ---
 - hosts: node1
   become: true
-  tasks:
+
+  vars:
+    tlog_scope_sssd: some
+    tlog_users_sssd: 
+      - other-user
+
+  pre_tasks:
   
     - name: "rhel9-unit-tlog : yum install packages"
-      yum: name=tlog,cockpit-session-recording state=installed
+      yum: name=rhel-system-roles state=installed
       register: result
       retries: 10
       until: result is succeeded
       delay: 5
       
     - name: "rhel9-unit-tlog USER create and/or reset users"
-      user: name="other-user"
+      user: 
+        name:     "other-user"
+        password: "{{ 'redhat' | password_hash('sha512') }}"
 
-    - name: "rhel9-unit-tlog : sudo Configuration"
+
+    - name: Enabling SSH password login
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: PasswordAuthentication yes
+
+    - name: restarted sshd service
+      ansible.builtin.service:
+        name: sshd
+        state: reloaded
+
+    - name: "rhel9-unit-tlog : sudo configuration"
       vars:
         t_studentName: "other-user"
       template:
@@ -24,16 +44,6 @@
         mode: 0600
       with_items:
         - {src: 'sudoers-student.j2', dest: '/etc/sudoers.d/other-user'}
-
-    - name: "rhel9-unit-tlog : config file installs"
-      template:
-        src: "{{ item.src }}"
-        dest: "{{ item.dest }}"
-        owner: root
-        group: root
-        mode: 0600
-      with_items:
-        - {src: 'tlog-config.j2', dest: '/etc/sssd/conf.d/sssd-session-recording.conf'} 
 
     - name: "rhel9-unit-tlog : workshop file installs"
       template:
@@ -46,5 +56,6 @@
         - {src: 'workshop-checkhost.j2', dest: '/usr/local/bin/workshop-tlog-checkhost.sh'} 
         - {src: 'workshop-tlog-playback.j2', dest: '/usr/local/bin/workshop-tlog-playback.sh'} 
 
-    - name: "rhel9-unit-tlog : service restart"
-      service: name="sssd" state=restarted enabled=yes
+  roles:
+
+    - rhel-system-roles.tlog
