@@ -52,7 +52,7 @@ From host `bastion`, ssh to `node2`.
 *ssh node2*
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
@@ -74,7 +74,7 @@ Install the required packages - this will pull in several Python related depende
 
 [{format_cmd_exec}]
 ----
-*yum install -y stratisd stratis-cli*
+*dnf install -y stratisd stratis-cli*
 ----
 
 Next we need to enable the `stratisd` service

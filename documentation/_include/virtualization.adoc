@@ -34,16 +34,16 @@ Provided your hardware is reasonably modern, chances are that it supports virtua
 
 For these exercises, you will be using the host `bastion` as user `root`.
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *sudo -i*
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-virt-checkhost.sh*
 ----
@@ -61,12 +61,12 @@ This is done with the following simple commands.
 
 You can start by examining the CPU flags (capabilities) advertised by your system.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *grep -E 'svm|vmx' /proc/cpuinfo*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 
 clflush mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon rep_good
@@ -80,12 +80,12 @@ pke avx512_vnni md_clear arch_capabilities
 
 You are looking for either the Intel flag (vmx) or the AMD flag (svm).  A more sophisticated command makes it a little easier to determine.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *if grep -qE 'svm|vmx' /proc/cpuinfo ; then echo "Virt Supported" ; else echo "WARNING!! Virt NOT Supported"; fi*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 Virt Supported
 ----
@@ -103,9 +103,9 @@ System needs to be configure with access to the following repos:
 
 Install the required packages.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*yum install -y qemu-kvm libvirt virt-install libvirt-client libguestfs-tools cockpit-machines*
+*dnf install -y qemu-kvm libvirt virt-install libvirt-client libguestfs-tools cockpit-machines*
 ----
 
 Next we need to enable the various services.
@@ -116,7 +116,7 @@ If for some reason the webconsole is not enabled, please visit that unit for ins
 
 To enable the necessary services for this unit:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl enable --now libvirtd*
 ----
@@ -125,7 +125,7 @@ NOTE: The "enable --now" syntax is new in RHEL 8.  It allows for permanently ena
 
 Finally check the service status.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl status libvirtd*
 ----
@@ -134,12 +134,12 @@ Finally check the service status.
 
 One simple command checks various hardware and software configurations for support of virtualization.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *virt-host-validate*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
   QEMU: Checking for hardware virtualization                                 : PASS
   QEMU: Checking if device /dev/kvm exists                                   : PASS
@@ -167,12 +167,12 @@ Fortunately, that's precisely what you did in the previous unit with Image Build
 
 In the previous exercise, you built a custom QCOW2 image using Image Builder.  The result of that work should be a vm image named vmguest.qcow2 
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ls /var/lib/libvirt/images*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 vmguest.qcow2
 ----
@@ -187,7 +187,7 @@ Now you need to do a few more things to your image:
     * selinux relabel files in the guest
     * remove the cloud-init package
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *virt-customize \
     -a /var/lib/libvirt/images/vmguest.qcow2 \
@@ -203,7 +203,7 @@ Now you need to do a few more things to your image:
 
 It is now time to launch the VM
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *virt-install \
    --import \
@@ -222,14 +222,14 @@ Give the VM a few moments to boot.
 
 To determine what IP address was assigned to the new host, we can using some options to the virsh utility
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *virsh net-dhcp-leases default*
 ----
 
 The output will show us the clients MAC address and the IP address it was assigned via the libvirt integrated dnsmasq service.
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
  Expiry Time           MAC address         Protocol   IP address          Hostname   Client ID or DUID
 -----------------------------------------------------------------------------------------------------------
@@ -238,12 +238,12 @@ The output will show us the clients MAC address and the IP address it was assign
 
 Another mechanism determine the ip address of the client is to use the 'domifaddr' option.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *virsh domifaddr vmguest*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
  Name       MAC address          Protocol     Address
 -------------------------------------------------------------------------------
@@ -255,12 +255,12 @@ not completed it's bootstrap.  Just give it a few more moments and try again.
 
 Once we can see the network information, now it is time to connect to the host so 
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4,a,/\//) ; print a[1] }')*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *curl $VM_IP*
 ----
@@ -269,12 +269,12 @@ Once we can see the network information, now it is time to connect to the host s
 
 Now it is time to connect to the host and check out some it's characteristics.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4,a,/\//) ; print a[1] }')*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh $VM_IP*
 ----
@@ -286,21 +286,21 @@ be able to access it from the bastion via ssh, or from the webconsole.
 
 Verify that the httpd daemon is running.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl status httpd*
 ----
 
 Verifiy that the index.html is installed.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ls /var/www/html/index.html*
 ----
 
 Exit back to the host
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *exit*
 ----
@@ -327,12 +327,12 @@ WARN: It is IMPORTANT to shutdown the deployed VMs.  Leaving any VM running in t
 
 Using either the CLI (or the Web-Console), be sure to shutdown the VM(s) you deployed to ensure additional workshop exercises perform reasonably.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *virsh list --all*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *virsh shutdown vmguest*
 ----

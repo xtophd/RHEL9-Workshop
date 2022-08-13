@@ -42,7 +42,7 @@ From host `bastion`, ssh to `node1`.
 *ssh node1*
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
@@ -201,7 +201,7 @@ Let us install some packages.
 
 [{format_cmd_exec}]
 ----
-*yum install -y httpd mariadb-server mariadb*
+*dnf install -y httpd mariadb-server mariadb*
 ----
 
 [{format_cmd_output}]

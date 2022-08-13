@@ -60,28 +60,28 @@ operational commands remain the same.
 
 To prevent possible installation conflicts (overrides), we specifically exclude 'osbuild' components when installing the lorax-composer.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-**yum install --exclude=osbuild* -y lorax-composer composer-cli**
+*dnf install --exclude=osbuild* -y lorax-composer composer-cli*
 ----
 
 Ensure everything is stopped.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl stop lorax-composer.socket*
 ----
 
 Next we need to enable and start the `lorax-composer.socket` service
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl enable --now lorax-composer.socket*
 ----
 
 Finally check the service status.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *systemctl status lorax-composer.socket*
 ----
@@ -91,12 +91,12 @@ Finally check the service status.
 Blueprints are defined by a TOML configuration file.  A sample has been provided to get us started with a very basic definition.
 
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *cat /usr/local/etc/imagebuilder-sample.toml*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 name = "sample-webserver"
 description = "standard apache httpd webserver"
@@ -129,7 +129,7 @@ Looking over the bludprint, it should be apparent that this image blueprint buil
 
 Now we need to push the blueprint to our image builder catalog.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *composer-cli blueprints push /usr/local/etc/imagebuilder-sample.toml*
 ----
@@ -137,12 +137,12 @@ Now we need to push the blueprint to our image builder catalog.
 
 == List Blueprints
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *composer-cli blueprints list*
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 example-atlas
 example-development
@@ -152,14 +152,14 @@ sample-webserver
 
 A nice quick way to determine if the local `Image Builder` can resolve all dependencies for the blueprint is to run  it thorugh a `depsolve`.  Here you can also see a full list of rpms that will be installed on the image.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *composer-cli blueprints depsolve sample-webserver*
 ----
 
 If everything is in order, you output should look something like this.
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 blueprint: sample-webserver v0.0.1
     acl-2.2.53-1.el8.x86_64
@@ -180,27 +180,27 @@ If you see errors or packages that can not be resolved, this is likely a problem
 
 We are now ready to compose the blueprint into an image.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *composer-cli compose start sample-webserver qcow2*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec}]
 ----
 Compose 812019dd-20e5-4528-a99b-09fbe47ca2d8 added to the queue
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *composer-cli compose status*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *composer-cli compose list*
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 812019dd-20e5-4528-a99b-09fbe47ca2d8 *FINISHED* sample-webserver 0.0.1 qcow2
 ----
@@ -213,40 +213,40 @@ It may take a few minutes, but eventually you should see a "FINISHED" status
 
 We need to grab a copy of the image and put it in the right place for our platform.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *cd /var/lib/libvirt/images*
 ----
 
 Take a moment to identify the UUID of the created image.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *composer-cli compose list*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec}]
 ----
 812019dd-20e5-4528-a99b-09fbe47ca2d8 *FINISHED* sample-webserver 0.0.1 qcow2
 ----
 
 Here is a helpful way to store the last FINISHED image UUID to an environment variable.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *export IMAGE_UUID=$(composer-cli compose list | grep -m 1 FINISHED | awk '{print $1}')*
 ----
 
 Now use the UUID from your ouput to extract the QCOW image.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *composer-cli compose image $IMAGE_UUID*
 ----
 
 Finally you can rename it to something a little more convinient
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *mv $IMAGE_UUID-disk.qcow2 vmguest.qcow2*
 ----

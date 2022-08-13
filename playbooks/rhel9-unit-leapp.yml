@@ -1,0 +1,12 @@
+---
+- hosts: leapp
+  become: true
+  tasks:
+  
+    - name: "rhel9-unit-leapp : yum install firewalld"
+      yum: name=firewalld state=installed
+      register: result
+      retries: 10
+      until: result is succeeded
+      delay: 5
+

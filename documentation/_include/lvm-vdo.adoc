@@ -47,21 +47,21 @@ For these exercises, you will be using the host `node3` as user `root`.
 
 From host `bastion`, ssh to `node3`.
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec}]
 ----
 $ *ssh node3*
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *sudo -i*
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-vdo-checkhost.sh*
 ----
@@ -72,9 +72,9 @@ You are now ready to proceed with these exercises.
 
 Install the required packages - this will pull in several related dependencies.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*yum install -y vdo*
+*dnf install -y vdo*
 ----
 
 That's it!  All LVM components are a standard part of RHEL.  Only the vdo kmod and related utilities need to be installed.
@@ -169,48 +169,48 @@ We will begin with a simple linear volume (concatination).
 
 Since we will be reusing the same resources for many exercises, we will begin by wiping everything clean.  Don't worry if you get an error message.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *umount /mnt/lab**
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *vgremove -ff vg_lab*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *pvremove {disk_glob}*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *wipefs -a {disk_glob}*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *partprobe*
 ----
 
 === Physical Volume Creation
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *pvcreate {disk1}*
 ----
 
 === Volume Group (Pool) Creation
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *vgcreate vg_lab {disk1}*
 ----
 
 === Logical Volume Creation
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *lvcreate -y -n lab1 -l 95%FREE vg_lab*
 ----
@@ -218,17 +218,17 @@ Since we will be reusing the same resources for many exercises, we will begin by
 === Make and Mount Filesystem
 
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *mkfs -t ext4 /dev/vg_lab/lab1*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *mkdir -p /mnt/lab1*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *mount /dev/vg_lab/lab1 /mnt/lab1*
 ----
@@ -237,12 +237,12 @@ NOTE: If this were going to be a persistent filesystem, you would also need to a
 
 === Examine Your Work
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *lvs*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
   LV     VG      Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
   lab1   vg_lab  -wi-ao---- <4.75g
@@ -253,45 +253,45 @@ NOTE: If this were going to be a persistent filesystem, you would also need to a
   var    vg_rhel -wi-ao---- <3.91g
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *lvs vg_lab/lab1*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
   LV   VG     Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
   lab1 vg_lab -wi-ao---- <4.75g
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *lvs -o lv_name,lv_size,lv_attr,segtype,devices vg_lab/lab1*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
   LV   LSize  Attr       Type   Devices
   lab1 <4.75g -wi-ao---- linear {disk1}(0)
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *lvs --units g -o +devices vg_lab/lab1*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
   LV   VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert Devices
   lab1 vg_lab -wi-ao---- 4.75g                                                     {disk1}(0)
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *df /mnt/lab1*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
 Filesystem              1K-blocks  Used Available Use% Mounted on
 /dev/mapper/vg_lab-lab1   4832912 19448   4548248   1% /mnt/lab1
@@ -299,22 +299,22 @@ Filesystem              1K-blocks  Used Available Use% Mounted on
 
 == Extend and Resize a Linear Volume
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *pvcreate {disk2}*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *vgextend vg_lab {disk2}*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *lvresize -l 95%VG /dev/vg_lab/lab1*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *resize2fs /dev/vg_lab/lab1*
 ----
@@ -329,24 +329,24 @@ Let us take a look at the logical volume.  Notice a few things:
   * the second segment is almost used, but has some space remaining
   * Over all, the volume group has approximately 500mb remaining
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *lvs -o vg_name,vg_free,lv_name,lv_size,seg_size,segtype,devices vg_lab/lab1*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
   VG     VFree   LV   LSize  SSize  Type   Devices
   vg_lab 508.00m lab1 <9.50g <5.00g linear {disk1}(0)
   vg_lab 508.00m lab1 <9.50g  4.50g linear {disk2}(0)
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *df /mnt/lab1*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
 Filesystem              1K-blocks  Used Available Use% Mounted on
 /dev/mapper/vg_lab-lab1   9735476 21840   9249360   1% /mnt/lab1
@@ -366,56 +366,56 @@ We will be leveraging devices /dev/vd{b..e}.  As before, we will cleanup up prio
 
 Since we will be reusing the same resources for many exercises, we will begin by wiping everything clean.  Don't worry if you get an error message.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *umount /mnt/lab**
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *vdo stop --all*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *vdo remove --all --force*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *vgremove -ff vg_lab*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *pvremove {disk_glob}*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *wipefs -a {disk_glob}*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *partprobe*
 ----
 
 === Physical Volume Creation
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *pvcreate {disk_glob}*
 ----
 
 === Volume Group Creation
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *vgcreate vg_lab {disk_glob}*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
 Volume group "vg_lab" successfully created
 ----
@@ -424,29 +424,29 @@ Volume group "vg_lab" successfully created
 
 This time, we are going to use all four disks to create a mirrored set of striped disks.  Otherwise known as RAID10
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *lvcreate -y --type raid10 -m1 -i 2 -n lv_raid10 -l 95%FREE vg_lab*
 ----
 
 === Add VDO Deduplication
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *vdo create --name=lab2 --device=/dev/vg_lab/lv_raid10 --vdoLogicalSize=30G*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *mkfs.xfs -K /dev/mapper/lab2*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *mkdir /mnt/lab2*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *mount /dev/mapper/lab2 /mnt/lab2*
 ----
@@ -457,7 +457,7 @@ NOTE: To make the mount persistent across reboots, you would still need to eithe
 
 Let us now populate the filesystem with some content.  Create a bunch of random subdirectories in our new filesystems with the following command.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *for i in {1..100} ; do mktemp -d /mnt/lab2/XXXXXX ; done*
 ----
@@ -466,7 +466,7 @@ Now we will copy the same content into each of the folders as follows.
 
 NOTE: This could take a few minutes.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *for i in /mnt/lab2/** *; do echo "${i}" ; cp -rf /usr/share/locale $i ; done*
 ----
@@ -477,17 +477,17 @@ The prevoius command should have copied approximately 100MB in 100 folders yield
 
 Let us now check some statistics.  
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *du -sh /mnt/lab2*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *df /mnt/lab2*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *vdostats --human-readable*
 ----

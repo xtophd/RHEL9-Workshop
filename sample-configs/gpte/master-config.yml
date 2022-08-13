@@ -58,6 +58,7 @@ all:
         virtualization:     True
         vdo:                True
         wayland:            False
+        leapp:              True
         webconsole:         True
 
     workshop_extras:

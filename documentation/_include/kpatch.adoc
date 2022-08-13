@@ -33,21 +33,21 @@ For these exercises, you will be using the host `node2` as user `root`.
 
 From host `bastion`, ssh to `node2`.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh node2*
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *sudo -i*
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-kpatch-checkhost.sh*
 ----
@@ -58,34 +58,34 @@ You are now ready to proceed with these exercises.
 
 Let's start by looking at the current kernel version:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *rpm -q kernel*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
 kernel-4.18.0-305.el8.x86_64
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *uname -r*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
 4.18.0-305.el8.x86_64
 ----
 
 Here we can see that we are running the 4.18.0-305 kernel. Now we install all kpatches for our kernel:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-# *yum install "kpatch-patch = $(uname -r)" -y*
+# *dnf install "kpatch-patch = $(uname -r)" -y*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
 Updating Subscription Management repositories.
 ...
@@ -95,12 +95,12 @@ Note that kpatches are cumulative, so you cannot pick and choose a specific set 
 
 Further, if you'd like to look at which CVEs are included by the kpatch installed on the system, you can do:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 # *rpm -qi --changelog kpatch-patch-4_18_0-305*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
 Name        : kpatch-patch-4_18_0-305
 Version     : 1
@@ -118,12 +118,12 @@ Group       : System Environment/Kernel
 
 This tells us that we are now protected against CVE-2021-3501. Let's check `kpatch list`:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *kpatch list*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
 Loaded patch modules:
 kpatch_4_18_0_305_1_1 [enabled]
@@ -144,12 +144,12 @@ If you do update the kernel prior to rebooting, on the next reboot, you'll boot 
 
 At that point, kpatch list would look something like this:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *kpatch list*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
 Loaded patch modules:
 
