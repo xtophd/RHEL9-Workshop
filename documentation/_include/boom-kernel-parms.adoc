@@ -103,7 +103,7 @@ NOTE: In this example, the root disk is identified by a UUID.  As a result, `boo
 _Native command(s) to make boom profile_
 [{format_cmd_output}]
 ----
-*boom profile create --from-host --uname-pattern el8 --kernel-pattern="/boot/vmlinuz-%{version}" --initramfs-pattern="/boot/initramfs-%{version}.img"*
+boom profile create --from-host --uname-pattern el8 --kernel-pattern="/boot/vmlinuz-%{version}" --initramfs-pattern="/boot/initramfs-%{version}.img"
 ----
 ====
 
@@ -185,10 +185,10 @@ _Native command(s) to make grub entry_
 [{format_cmd_output}]
 ----
 # For LVM base root
-*boom create --title "RHEL 8 Workshop" --rootlv <VG>/<LV>*
+boom create --title "RHEL 8 Workshop" --rootlv <VG>/<LV>
 
 # For block device base root
-*boom create --title "RHEL 8 Workshop" --root-device <ROOT-DEVICE>*
+boom create --title "RHEL 8 Workshop" --root-device <ROOT-DEVICE>
 ----
 ====
 

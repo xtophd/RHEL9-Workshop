@@ -55,23 +55,7 @@ The following exercises will cover some of the capabilities of the Web Console o
 
 == Getting Started
 
-For these exercises, you will be using the host `bastion` as user `root`.
-
-Use `sudo` to elevate your priviledges.
-
-[bash,options="nowrap",subs="{markup-in-source}"]
-----
-$ *sudo -i*
-----
-
-Verify that you are on the right host for these exercises.
-
-[bash,options="nowrap",subs="{markup-in-source}"]
-----
-# *workshop-cockpit-checkhost.sh*
-----
-
-You are now ready to proceed with these exercises.
+The following instructions to install and configure the webconsole are only provided as informational.  All of the exercises will actually be performed using a dedicated web broswer.
 
 == Installation and Configuration
 
@@ -82,6 +66,7 @@ For your convenience, the webconsole has already been installed and configured o
 [NOTE]
 ====
 _Native command(s) to install and enable the Web Console_
+[{format_cmd_output}]
 ----
 dnf install -y cockpit firewalld tuned
 systemctl enable --now cockpit.socket
@@ -164,6 +149,7 @@ To configure and enable stored metrics by hand, you can use follow the commands 
 [NOTE]
 ====
 _Native command(s) to enable stored metrics_
+[{format_cmd_output}]
 ----
 dnf install -y cockpit-pcp
 systemctl restart cockpit.socket
