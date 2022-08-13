@@ -96,7 +96,7 @@ Customizations for the firewall configuration belong in */etc/firewalld*.  These
 
 Firewalld uses zones to assign a level of trust to a network and its associated connections and interfaces. The zone files include definitions of Services, Ports (ranges) with protocols, Rich rules, Internet Control Message Protocol (ICMP) blocks , Masquerading and Port/packet forwarding. There are several built-in zones: block, dmz, drop, external, home, internal, public, trusted, work - and you can also create new zones 
 
-Each zone is similar to a complete firewall and there is a single zone selection per environment or connection. The public zone is the Initial default. Zones are identified in ifcfg files or NetworkManager configuration using: ZONE=<name> 
+Each zone is similar to a complete firewall and there is a single zone selection per environment or connection. The public zone is the Initial default. Zones are identified in the NetworkManager configuration using: ZONE=<name> 
 
 Let us examine a couple of the system's default zone files in */usr/lib/firewalld/zones*
 
