@@ -118,7 +118,7 @@ NOTE: If the presenter (or partner) has some slides to show, this is a good plac
   * System Compiler: GCC 11.2.1, LLVM 13.0.1
   * Hardware Architectures: Intel/AMD 64-bit, IBM Power LE, IBM z Systems, ARM 64-bit
   * Default File System: XFS
-  * Package Management: dnf 4.1.0 (with yum 4.10 integration)
+  * Package Management: dnf 4.10
   * Time Sync: Chrony
   * Networking: Network Manager
 

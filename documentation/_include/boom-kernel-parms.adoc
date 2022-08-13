@@ -64,7 +64,7 @@ The following set of instructions will install Boom.
 
 [{format_cmd_exec}]
 ----
-*yum install -y boom-boot*
+*dnf install -y boom-boot*
 ----
 
 That was easy!

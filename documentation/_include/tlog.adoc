@@ -213,7 +213,7 @@ Clearly we have taken the liberty to pre-configure TLOG for this lab.  But, it w
 
 [{format_cmd_exec}]
 ----
-yum install tlog cockpit-session-recording
+dnf install tlog cockpit-session-recording
 ----
 
 Here is what the config file looks like _/etc/sssd/conf.d/sssd-session-recording.conf_

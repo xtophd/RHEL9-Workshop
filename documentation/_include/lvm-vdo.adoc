@@ -74,7 +74,7 @@ Install the required packages - this will pull in several related dependencies.
 
 [{format_cmd_exec}]
 ----
-*yum install -y vdo*
+*dnf install -y vdo*
 ----
 
 That's it!  All LVM components are a standard part of RHEL.  Only the vdo kmod and related utilities need to be installed.

@@ -62,7 +62,7 @@ To prevent possible installation conflicts (overrides), we specifically exclude 
 
 [{format_cmd_exec}]
 ----
-**yum install --exclude=osbuild* -y lorax-composer composer-cli**
+*dnf install --exclude=osbuild* -y lorax-composer composer-cli*
 ----
 
 Ensure everything is stopped.

@@ -105,7 +105,7 @@ Install the required packages.
 
 [{format_cmd_exec}]
 ----
-*yum install -y qemu-kvm libvirt virt-install libvirt-client libguestfs-tools cockpit-machines*
+*dnf install -y qemu-kvm libvirt virt-install libvirt-client libguestfs-tools cockpit-machines*
 ----
 
 Next we need to enable the various services.

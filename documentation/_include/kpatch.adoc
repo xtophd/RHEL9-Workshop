@@ -82,7 +82,7 @@ Here we can see that we are running the 4.18.0-305 kernel. Now we install all kp
 
 [{format_cmd_exec}]
 ----
-# *yum install "kpatch-patch = $(uname -r)" -y*
+# *dnf install "kpatch-patch = $(uname -r)" -y*
 ----
 
 [{format_cmd_exec}]

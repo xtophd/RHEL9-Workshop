@@ -62,7 +62,7 @@ The following set of instructions will install Boom.
 
 [bash,options="nowrap",subs="{markup-in-source}"]
 ----
-# *yum install -y boom-boot*
+# *dnf install -y boom-boot*
 ----
 
 That was easy!

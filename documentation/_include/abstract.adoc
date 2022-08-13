@@ -19,7 +19,7 @@ endif::[]
 This hands-on lab will lead you through a mix of self-paced and proctored exercises covering core and updated 
 capabilities of Red Hat Enterprise Linux 9.  Led by your favorite Red Hat field solution architects, key areas covered include:
 
-    * Ease of use: web console, yum 4, application-streams
+    * Ease of use: web console, dnf
     * Security: Simple system-level disk encryption, session recording with tlog, net-filter and nft-tools
     * Performance: Tracing with ebpf, Cgroups v1 vs. v2, XFS enhancements
     * Management: Gold image creation with image builder, Containers with podman, skopio, buildah, boot image management with Boom.

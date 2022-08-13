@@ -716,8 +716,8 @@ A configuration file for a podman build has already been supplied for your syste
 ----
 FROM ubi9/ubi
 
-RUN yum install -y httpd
-RUN yum clean all
+RUN dnf install -y httpd
+RUN dnf clean all
 
 RUN echo "The Web Server is Running" > /var/www/html/index.html
 

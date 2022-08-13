@@ -109,11 +109,11 @@ But wait there's more!!!
 
 === Install Additional Packages
 
-We need to install an httpd server in our image, and what better way to do that than a simple `yum install`.
+We need to install an httpd server in our image, and what better way to do that than a simple `dnf install`.
 
 [{format_cmd_exec}]
 ----
-*buildah run ubi-working-container yum install -y httpd*
+*buildah run ubi-working-container dnf install -y httpd*
 ----
 
 [{format_cmd_output}]

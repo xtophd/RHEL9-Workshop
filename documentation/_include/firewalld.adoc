@@ -73,7 +73,7 @@ _Native command(s) to enable firewalld_
 ----
 systemctl stop nftables
 systemctl disable nftables
-yum install firewalld
+dnf install firewalld
 systemctl enable --now firewalld 
 systemctl status -l firewalld 
 ----
