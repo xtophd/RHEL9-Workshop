@@ -40,7 +40,7 @@ From host `bastion`, ssh to `node3`.
 $ *ssh node3*
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
 [bash,options="nowrap",subs="{markup-in-source}"]
 ----

@@ -37,7 +37,7 @@ From host `bastion`, ssh to `node1`.
 *ssh node1*
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
@@ -55,7 +55,7 @@ You are now ready to proceed with these exercises.
 
 == Creating a Session Log
 
-The system has been configured with an additional non-priviledged user called `other-user`.  Run the following command to change to the `other-user`.
+The system has been configured with an additional non-privileged user called `other-user`.  Run the following command to change to the `other-user`.
 
 NOTE: The command is 'su' + 'dash' + 'other-user'.  Don't forget the dash!
 
@@ -127,7 +127,7 @@ ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
 cat: /etc/shadow: Permission denied
 ----
 
-Oh wait, you need root priviledges to see the contents of _/etc/shadow_.  You can use sudo for that!
+Oh wait, you need root privileges to see the contents of _/etc/shadow_.  You can use sudo for that!
 
 [{format_cmd_exec}]
 ----

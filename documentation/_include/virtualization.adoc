@@ -34,7 +34,7 @@ Provided your hardware is reasonably modern, chances are that it supports virtua
 
 For these exercises, you will be using the host `bastion` as user `root`.
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
