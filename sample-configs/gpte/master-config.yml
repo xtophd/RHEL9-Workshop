@@ -102,4 +102,6 @@ myNodes:
     node1:
     node2:
     node3:
-    node4:
+
+    leapp:
+      ansible_user: "ec2-user" 
