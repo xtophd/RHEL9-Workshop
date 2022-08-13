@@ -201,7 +201,7 @@ Let us install some packages.
 
 [{format_cmd_exec}]
 ----
-*yum install -y httpd mariadb-server mariadb*
+*dnf install -y httpd mariadb-server mariadb*
 ----
 
 [{format_cmd_output}]
