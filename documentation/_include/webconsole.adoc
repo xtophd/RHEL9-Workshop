@@ -247,13 +247,13 @@ Now that you enabled a NTP firewall rule, let’s make sure an NTP service provi
 Remember that RHEL 8 uses a provider called 'chrony' for ntp.  So you can search for either 'chrony' or 'ntp'.
 
 ====
-image::slide14.png[Cockpit Services]
+image::Slide16.PNG[Cockpit Services]
 ====
 
 Turns out, chronyd is already enabled and active.  Nothing to do here...
 
 ====
-image::slide15.png[Cockpit Services]
+image::Slide17.PNG[Cockpit Services]
 ====
 
 
@@ -265,13 +265,13 @@ The core functionality of being able to manage multiple nodes from a single inte
 We begin by selecting the pull-down in the top-left corner.
 
 ====
-image::slide16.png[Cockpit Services]
+image::Slide18.PNG[Cockpit Services]
 ====
 
 Now it is only a matter of selecting 'Add new host' and entering a few data points.
 
 ====
-image::slide17.png[Cockpit Services]
+image::Slide19.PNG[Cockpit Services]
 ====
 
 Add the additional systems from your workshop cluster.
@@ -292,19 +292,19 @@ Add the additional systems from your workshop cluster.
 ----
 
 ====
-image::slide18.png[Cockpit Add Nodes]
+image::Slide20.PNG[Cockpit Add Nodes]
 ====
 
 Now when you hit the pull-down, you have complete access and managibility of the additional nodes.
 
 ====
-image::slide19.png[Cockpit Remote Nodes]
+image::Slide21.PNG[Cockpit Remote Nodes]
 ====
 
 Go ahead and select node1 and then access a terminal session. Very handy!
 
 ====
-image::slide20.png[Cockpit Remote Terminal]
+image::Slide22.PNG[Cockpit Remote Terminal]
 ====
 
 == Conclusion
