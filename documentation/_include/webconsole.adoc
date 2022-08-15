@@ -114,11 +114,13 @@ After you successfully sign-on, you will land on the overview page which present
   * Disk I/O
   * Network traffic
 
-Also make note that your userid has "Administrative Access", meaning that your userid is configured on the host as part of the "wheel" security group.
+Also make note that your userid needs "Administrative Access", and since the userid is configured on the host as part of the "wheel" security group you are presented with the option to turn administrative access on.
 
 ====
 image::Slide2.PNG[Cockpit Overview]
 ====
+
+Please proceed to enable administrative access and then verify.
 
 ====
 image::Slide3.PNG[Cockpit Overview]
@@ -131,7 +133,7 @@ It's nice that certain statistics about your system are available for inspection
 Start by clicking on the link "Enable stored metrics".
 
 ====
-image::slide3.png[Cockpit Enable Stored Metrics]
+image::Slide4.PNG[Cockpit Enable Stored Metrics]
 ====
 
 If your system has not already had the Performance Copilot packages installed, a dialog box should have appeared to confirm the automatic install.  In our case, the software is already installed and you can proceed to view some performance data by selecting "View Details" on the "Usage" card.
