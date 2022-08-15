@@ -142,6 +142,10 @@ Next, we need to enable the collection of metrics data.
 image::Slide5.PNG[Metrics Settings]
 ====
 
+====
+image::Slide6.PNG[Metrics Settings]
+====
+
 If your system has not already had the Performance Copilot packages installed, a dialog box should have appeared to confirm the automatic install.  In our case, the software is already installed and you can proceed to view some performance data by selecting "View Details" on the "Usage" card.
 
 Take a moment to review the available performance information.  Since the workshop likely has not be up for very long, there is probably nothing interesting to see yet.  Towards the end of the workshop, return to this page and see your performance data.
