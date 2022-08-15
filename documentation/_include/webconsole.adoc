@@ -1,7 +1,7 @@
 :sectnums:
 :sectnumlevels: 3
 :markup-in-source: verbatim,attributes,quotes
-:imagesdir: ./_images/rhel8.4-cockpit
+:imagesdir: ./_images/cockpit-rhel90
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -102,7 +102,7 @@ And the following UserID and Password:
 ----
 
 ====
-image::slide1.png[Cockpit Login]
+image::Slide1.PNG[Cockpit Login]
 ====
 
 == Webconsole Overview
