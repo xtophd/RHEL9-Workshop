@@ -143,15 +143,15 @@ image::Slide5.PNG[Metrics Settings]
 ====
 
 ====
-image::Slide6.PNG[Metrics Settings]
+image::Slide6.PNG[Enable Metrics]
 ====
 
-If your system has not already had the Performance Copilot packages installed, a dialog box should have appeared to confirm the automatic install.  In our case, the software is already installed and you can proceed to view some performance data by selecting "View Details" on the "Usage" card.
+If your system has not already had the Performance Copilot packages installed, a dialog box should have appeared to confirm the automatic install.  In our case, the software is already installed and you can proceed to view some performance data.
 
 Take a moment to review the available performance information.  Since the workshop likely has not be up for very long, there is probably nothing interesting to see yet.  Towards the end of the workshop, return to this page and see your performance data.
 
 ====
-image::slide5.png[Performance Charts]
+image::Slide7.PNG[Performance Charts]
 ====
 
 To configure and enable stored metrics by hand, you can use follow the commands below.
@@ -173,13 +173,13 @@ systemctl restart cockpit.socket
 RHEL 9 comes with several pre-canned performance tuning profiles from Tuned. Since this is a virtual machine, the default profile “virtual-guest” was selected. You can easily switch profile via the Web Console web UI. In this exercise, we will change the profile to “throughput-performance”
 
 ====
-image::slide6.png[Cockpit Perf Profile]
+image::Slide8.PNG[Cockpit Perf Profile]
 ====
 
 A dialog box will appear.  Scroll and find "throughput-performance" and select.
 
 ====
-image::slide7.png[Cockpit Perf Throughout]
+image::Slide9.PNG[Cockpit Perf Throughout]
 ====
 
 
