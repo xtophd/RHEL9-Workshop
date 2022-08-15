@@ -189,7 +189,7 @@ image::Slide9.PNG[Cockpit Perf Throughout]
 Under the log section, you can inspect the system's logs.
 
 ====
-image::slide8.png[Cockpit Logs]
+image::Slide9.PNG[Cockpit Logs]
 ====
 
 Have a look at the search capabilities and notice that you can set criteria by:
@@ -199,7 +199,7 @@ Have a look at the search capabilities and notice that you can set criteria by:
   * Service
 
 ====
-image::slide9.png[Cockpit Logs Criteria]
+image::Slide10.PNG[Cockpit Logs Criteria]
 ====
 
 
@@ -211,7 +211,7 @@ Under the networking section, you can monitor and manage current networking acti
 Due to the nature of workshops, we refrain from making and saving changes to the network at this time but feel free to explore.
 
 ====
-image::slide10.png[Cockpit Network]
+image::Slide11.PNG[Cockpit Network]
 ====
 
 
@@ -223,19 +223,19 @@ Also under the networking section, you can configure your firewall rules.
 For the next exercise, let's enable a rule for NTP (Network Time Protocol).  Begin by selecting the Networking category and "Edit rules and zones".
 
 ====
-image::slide11.png[Cockpit Firewall]
+image::Slide12.PNG[Cockpit Firewall]
 ====
 
 Now you should see a list of active services and ports.  Proceed to select "Add services"
 
 ====
-image::slide12.png[Cockpit Firewall Service]
+image::Slide13.PNG[Cockpit Firewall Service]
 ====
 
 In the dialog box enter 'ntp' as the filter, select 'ntp' and hit "Add services".
 
 ====
-image::slide13.png[Cockpit Firewall Dialog]
+image::Slide14.PNG[Cockpit Firewall Dialog]
 ====
 
 
