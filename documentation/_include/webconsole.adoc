@@ -117,7 +117,11 @@ After you successfully sign-on, you will land on the overview page which present
 Also make note that your userid has "Administrative Access", meaning that your userid is configured on the host as part of the "wheel" security group.
 
 ====
-image::slide2.png[Cockpit Overview]
+image::Slide2.PNG[Cockpit Overview]
+====
+
+====
+image::Slide3.PNG[Cockpit Overview]
 ====
 
 == Enable Persistent Metrics
