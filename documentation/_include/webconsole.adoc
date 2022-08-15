@@ -34,7 +34,7 @@ endif::[]
 
 == Overview
 
-Web Console is a Red Hat Enterprise Linux 8 web-based graphical user interface designed for managing and monitoring your local system.  The Web Console can also be extended to manage multiple servers located in your network.
+Web Console is a Red Hat Enterprise Linux 9 web-based graphical user interface designed for managing and monitoring your local system.  The Web Console can also be extended to manage multiple servers located in your network.
 
 Features of the Web Console include:
 
@@ -51,7 +51,7 @@ Features of the Web Console include:
   * Managing System Subscriptions
   * more...
 
-The following exercises will cover some of the capabilities of the Web Console on RHEL 8, as well as basic installation and set up.
+The following exercises will cover some of the capabilities of the Web Console on RHEL 9, as well as basic installation and set up.
 
 == Getting Started
 
@@ -244,7 +244,7 @@ image::Slide15.PNG[Cockpit Firewall Dialog]
 
 Now that you enabled a NTP firewall rule, let’s make sure an NTP service provider is enabled and running under the Web Console Services section.
 
-Remember that RHEL 8 uses a provider called 'chrony' for ntp.  So you can search for either 'chrony' or 'ntp'.
+Remember that RHEL 9 uses a provider called 'chrony' for ntp.  So you can search for either 'chrony' or 'ntp'.
 
 ====
 image::Slide16.PNG[Cockpit Services]
@@ -311,7 +311,7 @@ image::Slide22.PNG[Cockpit Remote Terminal]
 
 This concludes a short exercise with Web Console. Feel free to click through and explore other sections:
 
-* Under *Accounts* section, you can manage user accounts on your RHEL 8 server
+* Under *Accounts* section, you can manage user accounts on your RHEL 9 server
 * *Diagnostic Reports* allows you to create sosreport for Red Hat support
 * Under *Kernel Dump*, you can enable/disable kdump
 
@@ -321,7 +321,7 @@ You will get an opportunity to manager Virtual Machines and Build System Images 
 
 You can find more information:
 
-    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/managing_systems_using_the_rhel_8_web_console/[Managing Systems Using the Web Console]
+    * link::https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/managing_systems_using_the_rhel_9_web_console/index[Managing Systems Using the Web Console]
 
 [discrete]
 == End of Unit
