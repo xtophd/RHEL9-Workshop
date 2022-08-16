@@ -22,7 +22,7 @@ endif::[]
 
 == Overview
 
-BOOM is a boot manager for Linux systems that support the 'BootLoader Specification' for boot entry configuration (ie: RHEL8 with GRUB2). It simplifies the creation of new or modified boot entries: for example, to boot snapshot images of the system created using LVM.
+BOOM is a boot manager for Linux systems that support the 'BootLoader Specification' for boot entry configuration. It simplifies the creation of new or modified boot entries: for example, to boot snapshot images of the system created using LVM.
 
 BOOM does not modify the existing boot loader configuration, and *only inserts* additional entries. The existing configuration is maintained, and any distribution integration, such as kernel installation and update scripts, continue to function as before.
 
@@ -167,11 +167,11 @@ Determining root device...
 UUID reduction if necessary...
 Creating GRUB2 entry...
 
-DEBUG: boom create --title 'RHEL 8 Workshop' --root-device /dev/vda1
+DEBUG: boom create --title 'RHEL 9 Workshop' --root-device /dev/vda1
 
 WARNING - Boom grub2 integration is disabled in '/boot/../etc/default/boom'
 Created entry with boot_id : 40d2351
-  title RHEL 8 Workshop
+  title RHEL 9 Workshop
   machine-id 4739d97a827c41e2a71d911afb7941af
   version 4.18.0-147.el8.x86_64
   linux /vmlinuz-4.18.0-147.el8.x86_64
@@ -185,10 +185,10 @@ _Native command(s) to make grub entry_
 [{format_cmd_output}]
 ----
 # For LVM base root
-boom create --title "RHEL 8 Workshop" --rootlv <VG>/<LV>
+boom create --title "RHEL 9 Workshop" --rootlv <VG>/<LV>
 
 # For block device base root
-boom create --title "RHEL 8 Workshop" --root-device <ROOT-DEVICE>
+boom create --title "RHEL 9 Workshop" --root-device <ROOT-DEVICE>
 ----
 ====
 
@@ -243,11 +243,11 @@ Determining root device...
 UUID reduction if necessary...
 Creating GRUB2 entry...
 
-DEBUG: boom create --title 'RHEL 8 Workshop' --root-device /dev/vda1 -a custom_value=true
+DEBUG: boom create --title 'RHEL 9 Workshop' --root-device /dev/vda1 -a custom_value=true
 
 WARNING - Boom grub2 integration is disabled in '/boot/../etc/default/boom'
 Created entry with boot_id a07736e:
-  title RHEL 8 Workshop
+  title RHEL 9 Workshop
   machine-id 4739d97a827c41e2a71d911afb7941af
   version 4.18.0-147.el8.x86_64
   linux /vmlinuz-4.18.0-147.el8.x86_64
@@ -274,10 +274,10 @@ the currently configured GRUB menu options.
 [{format_cmd_output}]
 ----
      0  title="Red Hat Enterprise Linux (4.18.0-147.el8.x86_64) 8.1 (Ootpa)"
-     1  title="RHEL 8 Workshop"
+     1  title="RHEL 9 Workshop"
 ----
 
-Let us now inspect the GRUB configuration for `RHEL 8 Workshop`, which in this example is entry #1. 
+Let us now inspect the GRUB configuration for `RHEL 9 Workshop`, which in this example is entry #1. 
 
 [{format_cmd_exec}]
 ----
@@ -291,13 +291,13 @@ kernel="/boot/vmlinuz-4.18.0-147.el8.x86_64"
 args="ro custom_value=true"
 root="/dev/vda1"
 initrd="/boot/initramfs-4.18.0-147.el8.x86_64.img"
-title="RHEL 8 Workshop"
+title="RHEL 9 Workshop"
 id="44d81e936d7e445797933e8cbc199cea-b8f0549-4.18.0-147.el8.x86_64"
 ----
 
 WARNING: *DO NOT PROCEED TO REBOOT* unless both `kernel=` and `initrd=` include the path `/boot/<filename>`.
 
-We want to reboot to our "RHEL 8 Workshop", so again in this example the entry is #1.
+We want to reboot to our "RHEL 9 Workshop", so again in this example the entry is #1.
 
 [{format_cmd_exec}]
 ----
@@ -355,7 +355,7 @@ Wahoo! You are done.  If you have any questions, please ask.
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////
