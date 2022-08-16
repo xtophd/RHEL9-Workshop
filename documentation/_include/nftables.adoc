@@ -23,26 +23,36 @@ endif::[]
 
 == Overview
 
-Without getting too technical on a VERY technical topic, let it be known that network packets flow through a complex series of rules in the linux kernel known as the 'netfilter'.  How those rules are established and maintained is done through a set of tools which have been updated and replaced from time to time.
+NFTables is the subsystem of the Linux kernel which provides filtering and classification of network packets, datagrams, or frames. This software provides an in-kernel packet classification framework that is based on a network-specific Virtual Machine (VM) and a new nft userspace command line tool.
 
-Significant updates include:
+Primary benefits:
+
+  * Better performance
+  * Better usability
+
+=== History
+
+Without getting too technical on a VERY technical topic, let it be known that a network packet flows through a complex series of rules in the linux kernel known as the 'netfilter'.  How those rules are established and maintained is done through a set of tools which have been updated and replaced from time to time.
+
+Significant changes include:
 
   * ip-firewall (linux kernel v2.0, managed with ipfwadm)
   * ip-chains (linux kernel v2.2, managed with ipchains)
   * ip-tables (linux kernel v2.4, managed with iptables)
   * nf-tables (linux kernel v3.13, managed with nft)
 
-NFTables is the subsystem of the Linux kernel which provides filtering and classification of network packets, datagrams, or frames. This software provides an in-kernel packet classification framework that is based on a network-specific Virtual Machine (VM) and a new nft userspace command line tool.
+=== Recommended Usage
 
 In which scenario should you use one of the following?
 
-  * firewalld: for simple firewall use cases. It is easy to use and covers the typical use cases.
-  * nftables: for complex and performance critical firewalls.
-  * iptables: Red Hat Enterprise Linux uses the nf_tables kernel API instead of the legacy back end, thus the nf_tables API provides backward compatibility so that scripts that use iptables commands still work on. For new firewall scripts, Red Hat recommends to use nftables.
+  * *firewalld*: for simple firewall use cases. It is easy to use and covers the typical use cases.
+  * *nftables*: for complex and performance critical firewalls.
+  * *iptables*: Red Hat Enterprise Linux uses the nf_tables kernel API instead of the legacy back end, thus the nf_tables API provides backward compatibility so that scripts that use iptables commands still work. For new firewall scripts, Red Hat recommends to use nftables.
 
 The default firewall management tool in RHEL 9 continues to be firewalld _(firewall-cmd)_, which gained support for nftables with version 0.6.0.
 
 NOTE: For 99% of all use cases the firewalld tools are the best choice.  For this lab however we are trying to introduce `nft` and demonstrate some differences to the former `iptables`.
+
 
 == Getting Started
 
@@ -71,7 +81,45 @@ Verify that you are on the right host for these exercises.
 
 You are now ready to proceed with these exercises.
 
+== Disable Firewalld
+
+
+[{format_cmd_exec}]
+----
+*systemctl disable firewalld --now*
+----
+
+[{format_cmd_exec}]
+----
+*systemctl enable nftables --now*
+----
+
+
 == nft Fundamentals
+
+
+=== Tables
+
+Tables are the top-level construct within the nftables ruleset.
+
+A table consists of:
+
+  * *chains*
+  * *sets*
+  * *maps*
+  * *flowtables*
+  * *stateful objects*
+
+Each table belongs to exactly one family:
+
+  * *ip* - IPv4
+  * *ip6* - IPv6
+  * *inet* - both IPv4 and IPv6
+  * *arp* 
+  * *bridge*
+  * *netdev*
+
+So your ruleset requires at least one table for each family you want to filter.
 
 Using nft, show the current state of the network tables.
 
@@ -80,10 +128,27 @@ Using nft, show the current state of the network tables.
 *nft list tables*
 ----
 
+There is nothing there, so let us create a new table called 'filter'
+
+[{format_cmd_exec}]
+----
+*nft add table inet filter*
+----
+
+[{format_cmd_exec}]
+----
+*nft list tables*
+----
+
+
 [{format_cmd_output}]
 ----
-table inet firewalld
+table inet filter
 ----
+
+=== Chains
+
+
 
 Using nft, show the current state of the network chains.
 
@@ -119,11 +184,16 @@ table inet firewalld {
 
 NOTE: The output for this can be VERY long.  You can optionally use `nft list chains | less` if you would like a pageable view of the output.
 
+
+So what you have seen so far is the table and chains within that were created by firewalld.
+
+
+
 == Add Single Rule
 
 [{format_cmd_exec}]
 ----
-*nft insert rule ip filter INPUT tcp dport http accept*
+*nft insert rule ip firewalld INPUT tcp dport http accept*
 ----
 
 Verify the rule change.
