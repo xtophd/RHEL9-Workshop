@@ -6,6 +6,22 @@
 - import_playbook: rhel9-prep.yml
   tags: prep
 
+## 
+##    NOTE: webconsole has a caveat
+##
+##          IF 
+##            the user is running the workshop
+##            on the websconsole terminal 
+##          THEN 
+##            they'll be disconnected during setup
+##          SO
+##            use tmux, log back in, rejoin tmux session
+## 
+
+- import_playbook: rhel9-unit-webconsole.yml
+  when: workshop_vars.enable_unit.webconsole
+  tags: webconsole
+
 - import_playbook: rhel9-unit-wayland.yml
   when: workshop_vars.enable_unit.wayland
   tags: wayland
@@ -73,8 +89,3 @@
 - import_playbook: rhel9-finish.yml
   tags: finish
 
-## Save the webconsole for last since it will discconect webconsole session on service restart
-
-- import_playbook: rhel9-unit-webconsole.yml
-  when: workshop_vars.enable_unit.webconsole
-  tags: webconsole

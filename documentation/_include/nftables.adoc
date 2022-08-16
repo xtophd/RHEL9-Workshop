@@ -82,21 +82,7 @@ Using nft, show the current state of the network tables.
 
 [{format_cmd_output}]
 ----
-table ip filter
-table ip6 filter
-table bridge filter
-table ip security
-table ip raw
-table ip mangle
-table ip nat
-table ip6 security
-table ip6 raw
-table ip6 mangle
-table ip6 nat
-table bridge nat
 table inet firewalld
-table ip firewalld
-table ip6 firewalld
 ----
 
 Using nft, show the current state of the network chains.
@@ -108,15 +94,24 @@ Using nft, show the current state of the network chains.
 
 [{format_cmd_output}]
 ----
-table ip filter {
-        chain INPUT {
-                type filter hook input priority 0; policy accept;
+table inet firewalld {
+        chain mangle_PREROUTING {
+                type filter hook prerouting priority mangle + 10; policy accept;
         }
-        chain FORWARD {
-                type filter hook forward priority 0; policy accept;
+        chain mangle_PREROUTING_POLICIES_pre {
         }
-        chain OUTPUT {
-                type filter hook output priority 0; policy accept;
+        chain mangle_PREROUTING_ZONES {
+        }
+        chain mangle_PREROUTING_POLICIES_post {
+        }
+        chain nat_PREROUTING {
+                type nat hook prerouting priority dstnat + 10; policy accept;
+        }
+        chain nat_PREROUTING_POLICIES_pre {
+        }
+        chain nat_PREROUTING_ZONES {
+        }
+        chain nat_PREROUTING_POLICIES_post {
         }
 }
 ...<snip>...
