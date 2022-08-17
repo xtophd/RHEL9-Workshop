@@ -32,14 +32,14 @@ Primary benefits:
 
 === History
 
-Without getting too technical on a VERY technical topic, let it be known that a network packet flows through a complex series of rules in the linux kernel known as the 'netfilter'.  How those rules are established and maintained is done through a set of tools which have been updated and replaced from time to time.
-
-Significant changes include:
+It is not unusual for this subsystem of the linux kernel to get replaced from time to time.  You may be familiar with some of the prior filter systems:
 
   * ip-firewall (linux kernel v2.0, managed with ipfwadm)
   * ip-chains (linux kernel v2.2, managed with ipchains)
   * ip-tables (linux kernel v2.4, managed with iptables)
   * nf-tables (linux kernel v3.13, managed with nft)
+
+There are others, but these are the most famliar ones that appeared in the major distributions.
 
 === Recommended Usage
 
@@ -95,10 +95,10 @@ You are now ready to proceed with these exercises.
 ----
 
 
-== nft Fundamentals
 
+== Tables
 
-=== Tables
+Fundamentally speaking, filter rules are organized into chains and the chains are then further organized into tables.
 
 Tables are the top-level construct within the nftables ruleset.
 
@@ -128,11 +128,11 @@ Using nft, show the current state of the network tables.
 *nft list tables*
 ----
 
-There is nothing there, so let us create a new table called 'filter'
+There is nothing there, so let us create a new table called 'workshop'
 
 [{format_cmd_exec}]
 ----
-*nft add table inet filter*
+*nft add table inet workshop*
 ----
 
 [{format_cmd_exec}]
@@ -143,12 +143,29 @@ There is nothing there, so let us create a new table called 'filter'
 
 [{format_cmd_output}]
 ----
-table inet filter
+table inet workshop
 ----
 
-=== Chains
+== Chains
 
+NOTE: Unlike in iptables, there are no predefined chains like INPUT, OUTPUT, etc. 
 
+A *chain* is a collection of attached *rules* that take action on network packets (ie: accept, drop).
+
+Chain types are:
+
+  * *filter* -  filters packets (supported by the arp, bridge, ip, ip6 and inet families)
+  * *route* - reroutes packets (supported by the ip, ip6 and inet families)
+  * *nat* -  performs Networking Address Translation (supported by the ip, ip6 and inet families)
+
+Hooks you can use:
+
+  * *ingress* - sees packets immediately after passed up from NIC driver, before prerouting (only in netdev family since Linux kernel 4.2, and inet family since Linux kernel 5.10)
+  * *prerouting* : sees all incoming packets, before any routing decision has been made
+  * *input* : sees incoming packets that are addressed to and have now been routed to the local system
+  * *forward* : sees incoming packets that are not addressed to the local system
+  * *output* : sees packets that originated from processes in the local machine
+  * *postrouting* : sees all packets after routing, just before they leave the local system
 
 Using nft, show the current state of the network chains.
 
@@ -157,43 +174,109 @@ Using nft, show the current state of the network chains.
 *nft list chains*
 ----
 
-[{format_cmd_output}]
-----
-table inet firewalld {
-        chain mangle_PREROUTING {
-                type filter hook prerouting priority mangle + 10; policy accept;
-        }
-        chain mangle_PREROUTING_POLICIES_pre {
-        }
-        chain mangle_PREROUTING_ZONES {
-        }
-        chain mangle_PREROUTING_POLICIES_post {
-        }
-        chain nat_PREROUTING {
-                type nat hook prerouting priority dstnat + 10; policy accept;
-        }
-        chain nat_PREROUTING_POLICIES_pre {
-        }
-        chain nat_PREROUTING_ZONES {
-        }
-        chain nat_PREROUTING_POLICIES_post {
-        }
-}
-...<snip>...
-----
+Again there is nothing there, so let use create a new chain in our table called 'INPUT'.
 
-NOTE: The output for this can be VERY long.  You can optionally use `nft list chains | less` if you would like a pageable view of the output.
-
-
-So what you have seen so far is the table and chains within that were created by firewalld.
-
-
-
-== Add Single Rule
+NOTE: nft re-uses special characters (ie: curly braces and semicolons) so using single quotes is needed in this case
 
 [{format_cmd_exec}]
 ----
-*nft insert rule ip firewalld INPUT tcp dport http accept*
+*nft 'add chain inet workshop INPUT { type filter hook input priority 0 ; }'*
+----
+
+[{format_cmd_exec}]
+----
+*nft list chains*
+----
+
+[{format_cmd_output}]
+----
+table inet workshop {
+        chain INPUT {
+                type filter hook input priority filter; policy accept;
+        }
+}
+----
+
+
+== Rules
+
+=== Add Single Rule
+
+[{format_cmd_exec}]
+----
+*nft insert rule inet workshop INPUT tcp dport http counter*
+----
+
+Verify the rule change.
+
+[{format_cmd_exec}]
+----
+*nft -n -a list table inet workshop*
+----
+
+[{format_cmd_output}]
+----
+table inet workshop { # handle 2
+        chain INPUT { # handle 1
+                type filter hook input priority 0; policy accept;
+                tcp dport 80 counter packets 0 bytes 0 # handle 4
+        }
+}
+----
+
+Now is a good time to point out that the exercises in this unit are deliberately meant to be nondestructive.  Meaning, we don't want this machine to be unusable due to an error in rule insertion or deletion.
+
+So what does the previos rule do?  It merely counts packaets that arrived at port 80 on our machine.  Let's send some packets.
+
+[{format_cmd_exec}]
+----
+*curl localhost*
+----
+
+There is no web server running on this system so you will get a failed connection message.  However, now we reexamine the counters.
+
+[{format_cmd_exec}]
+----
+*nft -n -a list table inet workshop*
+----
+
+[{format_cmd_output}]
+----
+table inet workshop { # handle 2
+        chain INPUT { # handle 1
+                type filter hook input priority 0; policy accept;
+                tcp dport 80 counter packets 2 bytes 140 # handle 4
+        }
+}
+----
+
+Not too exciting, but now you know how to add a rule.
+
+=== Delete Single Rule
+
+Deleting rules takes a little care in that you have to identify a *handle*.  Again, listing the rules make note of the *handle* provided next to each rule.
+
+[{format_cmd_exec}]
+----
+*nft -n -a list table inet workshop*
+----
+
+
+[{format_cmd_output}]
+----
+table inet workshop { # handle 2
+        chain INPUT { # handle 1
+                type filter hook input priority 0; policy accept;
+                tcp dport 80 counter packets 2 bytes 140 # *handle 4*
+        }
+}
+----
+
+We can now use that *handle* to delete the rule.
+
+[{format_cmd_exec}]
+----
+*nft delete rule workshop INPUT handle 4*
 ----
 
 Verify the rule change.
@@ -205,61 +288,19 @@ Verify the rule change.
 
 [{format_cmd_output}]
 ----
-table ip filter { # handle 1
+table inet workshop { # handle 2
         chain INPUT { # handle 1
                 type filter hook input priority 0; policy accept;
-                tcp dport http accept # handle 4
-        }
-
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
-        }
-
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
-        }
-}
-----
-
-Remember the rule handle, we will use it next to delete the rule
-
-== Delete Single Rule
-
-[{format_cmd_exec}]
-----
-*nft delete rule filter INPUT handle 4*
-----
-
-Verify the rule change.
-
-[{format_cmd_exec}]
-----
-*nft -n -a list table ip filter*
-----
-
-[{format_cmd_output}]
-----
-table ip filter { # handle 1
-        chain INPUT { # handle 1
-                type filter hook input priority 0; policy accept;
-        }
-
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
-        }
-
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
         }
 }
 ----
 
 
-== Add Multiple Rules at Once
+=== Add Multiple Rules at Once
 
 [{format_cmd_exec}]
 ----
-*nft insert rule ip filter INPUT tcp dport { ssh, http, https, 8181 } accept*
+*nft insert rule inet workshop INPUT tcp dport { ssh, http, https, 8181 } counter*
 ----
 
 Verify the new rules.
@@ -271,18 +312,10 @@ Verify the new rules.
 
 [{format_cmd_output}]
 ----
-table ip filter { # handle 1
+table inet workshop { # handle 2
         chain INPUT { # handle 1
                 type filter hook input priority 0; policy accept;
-                tcp dport { ssh, http, https, 8181 } accept # handle 6
-        }
-
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
-        }
-
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
+                tcp dport { 22, 80, 443, 8181 } counter packets 10 bytes 712 # handle 6
         }
 }
 ----
