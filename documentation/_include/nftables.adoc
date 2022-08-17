@@ -25,7 +25,9 @@ endif::[]
 
 NFTables is the subsystem of the Linux kernel which provides filtering and classification of network packets, datagrams, or frames. This software provides an in-kernel packet classification framework that is based on a network-specific Virtual Machine (VM) and a new nft userspace command line tool.
 
-Primary benefits:
+That is a lot of words to say: NFTables is a system that inspects network packets to and from your system, and based on a set of rules does something with those packets (ie: accept, deny, forward).
+
+Primary benefits over the older system (iptables):
 
   * Better performance
   * Better usability
@@ -320,108 +322,103 @@ table inet workshop { # handle 2
 }
 ----
 
-== Increase Network Security
-
-WARNING: DO NOT do this step unless you successfully completed "Add Multiple Rules at Once" above.  You will get locked out of your network connection to node2.example.com if you have not.
-
-Set the INPUT chain default policy to drop all traffic not specifically accepted.
-
-[{format_cmd_exec}]
-----
-*nft add chain ip filter INPUT { type filter hook input priority 0\; policy drop\; }*
-----
-
-Verify Increased Security
-
-[{format_cmd_exec}]
-----
-*nft -n -a list table ip filter*
-----
-
-[{format_cmd_output}]
-----
-table ip filter { # handle 1
-        chain INPUT { # handle 1
-                type filter hook input priority 0; policy drop;
-                tcp dport { ssh, http, https, 8181 } accept # handle 6
-        }
-
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
-        }
-
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
-        }
-}
-----
+Again, our chosen hook (counter) is meant primarily to be a nondestructive rule.  By using the *input* hook and applying the *accept* and *drop* policies, you get into the business of recreating a firewall.  Let's go ahead and cleanup and restore firewalld and take one last look at the state of the system.
 
 == Cleanup
 
-Remove rules added during this exercise.  We begin by setting the INPUT chain default policy to accept all traffic.
+Remove the chain added during this exercise.
 
 [{format_cmd_exec}]
 ----
-*nft add chain ip filter INPUT { type filter hook input priority 0\; policy accept\; }*
+*nft flush table inet workshop*
 ----
 
-Now find the handle and remove the rule currently allowing access for SSH, HTTP, HTTPS, and 8181
+Now delete the table
 
 [{format_cmd_exec}]
 ----
-*nft -n -a list table ip filter*
+*nft delete table inet workshop*
+----
+
+[{format_cmd_exec}]
+----
+*systemctl enable firewalld --now*
+----
+
+And now check out how firewalld has built the ruleset in the netfilter.
+
+[{format_cmd_exec}]
+----
+*nft list tabels*
 ----
 
 [{format_cmd_output}]
 ----
-table ip filter { # handle 1
-        chain INPUT { # handle 1
-                type filter hook input priority 0; policy accept;
-                tcp dport { ssh, http, https, 8181 } accept # handle 6
-        }
-
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
-        }
-
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
-        }
-}
+table inet firewalld
 ----
 
-In the output above, we determine the handle for our rule is '6'.
+Word of caution, the output here is long...
 
 [{format_cmd_exec}]
 ----
-*nft delete rule filter INPUT handle 6*
-----
-
-NOTE: You can also use the 'flush' option to clear an entire table: `nft flush table ip filter`
-
-Verify that everything is back to normal
-
-[{format_cmd_exec}]
-----
-*nft -n -a list table ip filter*
+*nft -n -a list table inet firewalld*
 ----
 
 [{format_cmd_output}]
 ----
-table ip filter { # handle 1
-        chain INPUT { # handle 1
-                type filter hook input priority 0; policy accept;
+table inet firewalld { # handle 3
+        chain mangle_PREROUTING { # handle 127
+                type filter hook prerouting priority -140; policy accept;
+                jump mangle_PREROUTING_ZONES # handle 131
         }
 
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
+        chain mangle_PREROUTING_POLICIES_pre { # handle 128
+                jump mangle_PRE_policy_allow-host-ipv6 # handle 297
         }
 
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
+        chain mangle_PREROUTING_ZONES { # handle 129
+                iifname "eth0" goto mangle_PRE_public # handle 306
+                goto mangle_PRE_public # handle 261
         }
-}
+
+        chain mangle_PREROUTING_POLICIES_post { # handle 130
+        }
+
+        chain nat_PREROUTING { # handle 132
+                type nat hook prerouting priority -90; policy accept;
+                jump nat_PREROUTING_ZONES # handle 136
+        }
+
+<... SNIP ...>
 ----
+
+
+Now consider all of those rules to implement these basic firewall policies...
+
+[{format_cmd_exec}]
+----
+firewall-cmd --list-all
+----
+
+[{format_cmd_output}]
+----
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: eth0
+  sources:
+  services: cockpit dhcpv6-client ssh
+  ports:
+  protocols:
+  forward: yes
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+----
+
+Which is why we encourage you to use firewalld and firewall-cmd for 99% of your netfilter needs.
 
 == Additional Resources
 
