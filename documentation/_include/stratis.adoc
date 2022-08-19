@@ -378,6 +378,8 @@ summitpool   {disk4}                5 GiB  Cache
 
 Red Hat Documentation
 
+This lab does not get into more advanced topics like encryption or snapshots.  For more information on these and more details on Stratis in general, see the official Red Hat documentation here:
+
     * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/managing_file_systems/setting-up-stratis-file-systems_managing-file-systems[Managing Filesystems: Chapter 39. Setting Up Stratis File Systems]
 
 [discrete]
