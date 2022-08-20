@@ -468,12 +468,122 @@ In the `cachestat` terminal, issue a Ctrl-C and this will return you to a prompt
 
 == bcc-tools: trace
 
-This tool is a swiss army knife allowing you to specify functions to trace and messages to be printed when certain conditions are met. You can read more about this by running:
+This tool is a swiss army knife allowing you to specify functions to trace and messages to be printed when certain conditions are met.
+
+Let's use start this educational journey by examining what system calls a simple command executes.  The command is 'cat /etc/fstab' and we will use strace to see what happens.
+
 
 [{format_cmd_exec}]
 ----
-*man 8 trace*
+*strace -c cat /etc/fstab > /dev/null*
 ----
+
+[{format_cmd_output}]
+----
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 35.36    0.000169           5        31        13 openat
+ 23.01    0.000110           5        22           mmap
+ 10.67    0.000051           2        20           close
+ 10.04    0.000048           2        19           newfstatat
+  8.37    0.000040          10         4           mprotect
+  6.28    0.000030          15         2           munmap
+  2.93    0.000014           2         5           read
+  1.05    0.000005           1         3           brk
+  0.63    0.000003           3         1           getrandom
+  0.42    0.000002           2         1           write
+  0.42    0.000002           2         1           futex
+  0.42    0.000002           2         1           fadvise64
+  0.42    0.000002           2         1           prlimit64
+  0.00    0.000000           0         4           pread64
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         2         1 arch_prctl
+  0.00    0.000000           0         1           set_tid_address
+  0.00    0.000000           0         1           set_robust_list
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000478           3       121        15 total
+----
+
+
+In this case, what we see is that our command used the 'openat' systemcall 31 times.  There were also 13 errors, but 
+most of those are likely harmless attempts to open files that do not exist.
+
+[discrete]
+==== Primary Terminal (node2)
+
+Next, let us use bpftrace to watch file opens as they happen and print process names and file paths.
+
+    * *tracepoint:syscalls:sys_enter_openat*: is the tracepoint probe type (kernel static tracing)
+    * trigger when the *openat()* syscall is entered. 
+    * *comm* is a builtin variable that has the current process's name.
+    * *args* is a pointer to a struct containing all the tracepoint arguments (members of this struct can be found with: bpftrace -vl tracepoint:syscalls:sys_enter_openat)
+
+[{format_cmd_exec}]
+----
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%s %s\n", comm, str(args->filename)); }'
+----
+
+[discrete]
+==== Secondary Terminal (bastion)
+
+To trigger some file opens, use the second terminal from bastion:
+
+[{format_cmd_exec2}]
+----
+*ssh node2 "cat /etc/fstab"*
+----
+
+
+[discrete]
+==== Results
+
+Before analyzing the results, return to your primary terminal and press CTRL-C  to interrupt the bpftrace.
+
+
+
+Somewhere in your output should have been a block something like this:
+
+[{format_cmd_output}]
+----
+<... SNIP ...>
+
+cat /usr/lib/locale/en_US.utf8/LC_ADDRESS
+cat /usr/lib/locale/en_US.UTF-8/LC_NAME
+cat /usr/lib/locale/en_US.utf8/LC_NAME
+cat /usr/lib/locale/en_US.UTF-8/LC_PAPER
+cat /usr/lib/locale/en_US.utf8/LC_PAPER
+cat /usr/lib/locale/en_US.UTF-8/LC_MESSAGES
+cat /usr/lib/locale/en_US.utf8/LC_MESSAGES
+cat /usr/lib/locale/en_US.utf8/LC_MESSAGES/SYS_LC_MESSAGES
+cat /usr/lib/locale/en_US.UTF-8/LC_MONETARY
+cat /usr/lib/locale/en_US.utf8/LC_MONETARY
+cat /usr/lib/locale/en_US.UTF-8/LC_COLLATE
+cat /usr/lib/locale/en_US.utf8/LC_COLLATE
+cat /usr/lib/locale/en_US.UTF-8/LC_TIME
+cat /usr/lib/locale/en_US.utf8/LC_TIME
+cat /usr/lib/locale/en_US.UTF-8/LC_NUMERIC
+cat /usr/lib/locale/en_US.utf8/LC_NUMERIC
+cat /usr/lib/locale/en_US.UTF-8/LC_CTYPE
+cat /usr/lib/locale/en_US.utf8/LC_CTYPE
+cat /etc/fstab
+
+<... SNIP ...>
+----
+
+From this outpu we can see the 'cat' program trying to open files including /etc/fstab.
+
+
+
+
+== WORK IN PROGRESS
+
+
+[{format_cmd_exec}]
+----
+*perf probe -F *open**
+----
+
 
 Let's do a simple trace in which we will dynamically trace the do_sys_open() kernel function and print the names of the files opened. 
 
