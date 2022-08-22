@@ -26,7 +26,10 @@ endif::[]
 
 eBPF (The Extended Berkeley Packet Filter) is an in-kernel virtual machine that allows code execution in the kernel space, in a restricted sandbox environment with access to a limited set of functions. There are numerous components shipped by Red Hat that utilize the eBPF virtual machine. Each component is in a different development phase, and thus not all components are currently fully supported. Those that are not supported are available as a *Technology Preview* and are not intended for production use.For information on Red Hat scope of support for Technology Preview features, see: link:https://access.redhat.com/support/offerings/techpreview/[Technology Preview Features Support Scope]
 
-In this unit, we will be focusing on the kernel tracing offering shipped as bcc-tools (BPF Compiler Collection Tools). There are just over 100 tools shipped in this package. A few things of note:
+In this unit, we will be focusing on the kernel tracing offering shipped as bcc-tools (BPF Compiler Collection Tools).   We will also touch on bpftrace which is a tool  to compile scripts to BPF-bytecode.  
+
+
+There are just over 100 tools shipped in this package. A few things of note:
 
      * All of these tools live in `/usr/share/bcc/tools`.
      * These tools must run as the root user as any eBPF program can read kernel data. As such, injecting eBPF bytecode as a regular user is not allowed in RHEL 8.
@@ -466,16 +469,28 @@ In the `cachestat` terminal, issue a Ctrl-C and this will return you to a prompt
 
 
 
-== bcc-tools: trace
+== bpftrace
 
 This tool is a swiss army knife allowing you to specify functions to trace and messages to be printed when certain conditions are met.
 
-Let's use start this educational journey by examining what system calls a simple command executes.  The command is 'cat /etc/fstab' and we will use strace to see what happens.
+bpftrace makes use of:
+
+  * BCC for interacting with the Linux BPF system
+  * as well as existing Linux tracing capabilities: 
+    * kernel dynamic tracing (kprobes)
+    * user-level dynamic tracing (uprobes)
+    * tracepoints
+ 
+
+Let us start this educational journey by examining what system calls a simple command executes.  
+The command we will evaluate is `cat /dev/null` and we will use strace to list the system calls
+made and with what frequency (count).  Using /dev/null as our target file is simply a means to 
+displaying an empty file and not cluttering our output.
 
 
 [{format_cmd_exec}]
 ----
-*strace -c cat /etc/fstab > /dev/null*
+*strace -c cat /dev/null*
 ----
 
 [{format_cmd_output}]
@@ -506,48 +521,120 @@ Let's use start this educational journey by examining what system calls a simple
 ----
 
 
-In this case, what we see is that our command used the 'openat' systemcall 31 times.  There were also 13 errors, but 
-most of those are likely harmless attempts to open files that do not exist.
+What we see is that our command used the 'openat' systemcall 31 times.  Among those calls, 13 resulted in errors but 
+are likely harmless attempts to open files that do not exist.
+
+
+
+=== bpftrace: count all syscalls 
+
+Next, let's use *bpftrace* to create a similar output of counted system calls.  We will use a wildcarded tracepoint 'sys_enter_*'
+to get all the relevant syscalls.
+
+[{format_cmd_exec}]
+----
+bpftrace -e 'tracepoint:syscalls:sys_enter_* { if (comm == "cat") { @[probe] = count(); } }' -c "cat /dev/null"
+----
+
+[{format_cmd_output}]
+----
+----
+
+This should line up almost 1-to-1 with the previous output from strace.
+
+
+
+=== bpftrace: count specific syscall 
+
+Now we are going to limit the probe to only 'sys_enter_openat' thereby only setting 1 probe and collecting a count.
+
+[{format_cmd_exec}]
+----
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat { if (comm == "cat") { @[probe] = count(); } }' -c "cat /dev/null"
+----
+
+[{format_cmd_output}]
+----
+----
+
+
+
+=== bpftrace: set probe on specific file
+
+For this last exercise we will utilize both terminal sessions again.  The objective is to set a probe and identify any process that opens our targeted file.
+
+[discrete]
+==== Primary Terminal (node2)
+
+[{format_cmd_exec}]
+----
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat { if (str(args->filename) == "/dev/null") { printf( "%s %s\n", comm, str(args->filename)); } } '
+----
+
+
+[discrete]
+==== Secondary Terminal (bastion)
+
+To generate some output, you will need to utilize the second terminal.  We will open the file with a couple of different tools.  From the bastion host, run the following:
+
+[{format_cmd_exec2}]
+----
+*ssh node2 "cat /dev/null"*
+----
+
+[{format_cmd_exec2}]
+----
+*ssh node2 "more /dev/null"*
+----
+
+[{format_cmd_exec2}]
+----
+*ssh node2 "grep something /dev/null"*
+----
+
+
+
+## CLEANUP EVERYTHING BELOW THIS LINE
+
+
+
 
 [discrete]
 ==== Primary Terminal (node2)
 
 Next, let us use bpftrace to watch file opens as they happen and print process names and file paths.
 
-    * *tracepoint:syscalls:sys_enter_openat*: is the tracepoint probe type (kernel static tracing)
-    * trigger when the *openat()* syscall is entered. 
-    * *comm* is a builtin variable that has the current process's name.
-    * *args* is a pointer to a struct containing all the tracepoint arguments (members of this struct can be found with: bpftrace -vl tracepoint:syscalls:sys_enter_openat)
+    * -e [PROBE CODE]
+      * *tracepoint:syscalls:sys_enter_openat*: is the tracepoint probe type (kernel static tracing)
+      * trigger when the *openat()* syscall is entered. 
+      * *comm* is a builtin variable that has the current process's name.
+      * *args* is a pointer to a struct containing all the tracepoint arguments (members of this struct can be found with: bpftrace -vl tracepoint:syscalls:sys_enter_openat)
+    * -c [COMMAND] 
+      * the command to run after the probe is set, executed and then exit
 
 [{format_cmd_exec}]
 ----
-bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%s %s\n", comm, str(args->filename)); }'
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%s %s\n", comm, str(args->filename)); }' -c 'cat /etc/fstab'
 ----
-
-[discrete]
-==== Secondary Terminal (bastion)
-
-To trigger some file opens, use the second terminal from bastion:
-
-[{format_cmd_exec2}]
-----
-*ssh node2 "cat /etc/fstab"*
-----
-
-
-[discrete]
-==== Results
-
-Before analyzing the results, return to your primary terminal and press CTRL-C  to interrupt the bpftrace.
-
-
-
-Somewhere in your output should have been a block something like this:
 
 [{format_cmd_output}]
 ----
-<... SNIP ...>
-
+Attaching 1 probe...
+UUID=11019b3d-1dea-4654-a9e2-10759d8abef6       /boot   xfs     defaults        0       0
+UUID=2af18441-b487-4dac-9729-2c12f5adc6ed       /       xfs     defaults        0       0
+UUID=7B77-95E7  /boot/efi       vfat    defaults,uid=0,gid=0,umask=077,shortname=winnt  0       2
+cat /etc/ld.so.cache
+cat /lib64/libc.so.6
+cat /usr/lib/locale/locale-archive
+cat /usr/share/locale/locale.alias
+cat /usr/lib/locale/en_US.UTF-8/LC_IDENTIFICATION
+cat /usr/lib/locale/en_US.utf8/LC_IDENTIFICATION
+cat /usr/lib64/gconv/gconv-modules.cache
+cat /usr/lib/locale/en_US.UTF-8/LC_MEASUREMENT
+cat /usr/lib/locale/en_US.utf8/LC_MEASUREMENT
+cat /usr/lib/locale/en_US.UTF-8/LC_TELEPHONE
+cat /usr/lib/locale/en_US.utf8/LC_TELEPHONE
+cat /usr/lib/locale/en_US.UTF-8/LC_ADDRESS
 cat /usr/lib/locale/en_US.utf8/LC_ADDRESS
 cat /usr/lib/locale/en_US.UTF-8/LC_NAME
 cat /usr/lib/locale/en_US.utf8/LC_NAME
@@ -566,29 +653,18 @@ cat /usr/lib/locale/en_US.UTF-8/LC_NUMERIC
 cat /usr/lib/locale/en_US.utf8/LC_NUMERIC
 cat /usr/lib/locale/en_US.UTF-8/LC_CTYPE
 cat /usr/lib/locale/en_US.utf8/LC_CTYPE
-cat /etc/fstab
-
-<... SNIP ...>
+cat /dev/null
 ----
 
-From this outpu we can see the 'cat' program trying to open files including /etc/fstab.
+From this output we can see the 'cat' command opened a whole series of files including /etc/fstab.  Mixed into your output will be the contents of the file
 
+==== Primary Terminal (node2)
 
-
-
-== WORK IN PROGRESS
-
-
-[{format_cmd_exec}]
-----
-*perf probe -F *open**
-----
 
 
 Let's do a simple trace in which we will dynamically trace the do_sys_open() kernel function and print the names of the files opened. 
 
 [discrete]
-==== Primary Terminal (node2)
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
