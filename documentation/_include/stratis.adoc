@@ -199,7 +199,7 @@ Verify your work and confirm the existence of the new storage pool with the comb
 [{format_cmd_output}]
 ----
 Name                        Total Physical   Properties           UUID
-summitpool   10 GiB / 41.63 MiB / 9.96 GiB      ~Ca,~Cr   4b86ce9b-...
+summitpool   10 GiB / 41.63 MiB / 9.96 GiB      \~Ca,\~Cr   4b86ce9b-...
 ----
 
 The output should show a total of 10 GiB, with 41MiB used and 9.96GiB available.  The Properties indicate whether or not the pool has a cache (Ca) and/or is encrypted (Cr).  The "~" character is used to indicate negative, so your output is showing no cache and not encrypted.
