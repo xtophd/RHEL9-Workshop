@@ -597,22 +597,19 @@ NOTE: For this last exercise we will utilize both terminal sessions again.
 The objective is to set a probe and identify any process that opens our targeted file.
 
     * -e [PROBE CODE]
-
-      + *tracepoint:syscalls:sys_enter_openat: is the tracepoint probe type (kernel static tracing)
-      + conditional if() to evaluate args->filename for a match
-      + print the desired output 
-
-        . typical *pid*, *uid*, *gid* fields
-        . *comm* is process's name
-        . *args->filename* is the filename being accessed
-
-    * -c [COMMAND] 
-      * the command to run after the probe is set, executed and then exit
-
+    ** *tracepoint:syscalls:sys_enter_openat:* is the tracepoint probe type (kernel static tracing)
+    ** conditional if() to evaluate args->filename for a match
+    ** print() the desired output
+    *** typical *pid*, *uid*, *gid* fields
+    *** *comm* is process's name
+    *** *args->filename* is the filename being accessed
+    * -c [COMMAND] to run command after probes are set and exit
 
 
 [discrete]
 ==== Primary Terminal (node2)
+
+Proceed to set the probe in the primary terminal.
 
 [{format_cmd_exec}]
 ----
@@ -623,7 +620,7 @@ bpftrace -e 'tracepoint:syscalls:sys_enter_openat { if (str(args->filename) == "
 [discrete]
 ==== Secondary Terminal (bastion)
 
-To generate some output, you will need to utilize the second terminal.  We will open the file with a couple of different tools.  From the bastion host, run the following:
+To generate some output, you will need to utilize the second terminal and open the target with a couple of different tools.  From the bastion host, run the following:
 
 [{format_cmd_exec2}]
 ----
@@ -641,15 +638,30 @@ To generate some output, you will need to utilize the second terminal.  We will 
 ----
 
 
+[discrete]
+==== Primary Terminal (node2)
 
+Finally back to the primary terminal you should have seen some output like this:
 
+[{format_cmd_output}]
+----
+Attaching 1 probe...
+2741 0 0 cat /tmp/workshop.tmp
+2757 0 0 grep /tmp/workshop.tmp
+2772 0 0 bash /tmp/workshop.tmp
+----
+
+This displays the process-id along with the user and group ids of programs that tried to access our file.
+
+Go ahead and hit CTL-C in the primary terminal to exit bpftrace.
+
+This concludes the exercises related to EBPF.
 
 == Additional Resources
 
 You can find more information:
 
     * link:https://github.com/iovisor/bpftrace/blob/master/docs/tutorial_one_liners.md[The bpftrace One-Liner Tutorial]
-
     * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_and_managing_networking/assembly_understanding-the-ebpf-features-in-rhel_configuring-and-managing-networking[Understanding eBPF Features]
     * link:https://lab.redhat.com/ebpf-tracing[Performance observability in practice with bcc-tools: A lab on lab.redhat.com]
     * link:http://www.brendangregg.com/ebpf.html[Linux Extended BPF (eBPF Tracing Tools) - Brendan Gregg]
