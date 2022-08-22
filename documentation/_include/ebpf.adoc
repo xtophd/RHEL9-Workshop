@@ -32,7 +32,7 @@ In this unit, we will be focusing on the kernel tracing offering shipped as bcc-
 There are just over 100 tools shipped in this package. A few things of note:
 
      * All of these tools live in `/usr/share/bcc/tools`.
-     * These tools must run as the root user as any eBPF program can read kernel data. As such, injecting eBPF bytecode as a regular user is not allowed in RHEL 8.
+     * These tools must run as the root user as any eBPF program can read kernel data. As such, injecting eBPF bytecode as a regular user is not allowed in RHEL 9.
      * Each tool has a man page to view the man page, run `man <tool name>`. These man pages include descriptions of the tools, provide the options that can be called and have information on the expected overhead of the specific tool.
 
 == Getting Started
@@ -304,7 +304,7 @@ Finally, back to the `mountsnoop` terminal and you should see the following:
 
 [{format_cmd_output}]
 ----
-mount            20004   20004   4026531840  mount("tmpfs", "/dev/shm", "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC|MS_SYNCHRONOUS|MS_DIRSYNC|MS_NOATIME|MS_NODIRATIME|MS_MOVE|MS_REC|MS_UNBINDABLE|MS_SLAVE|MS_SHARED|MS_I_VERSION|MS_STRICTATIME|MS_LAZYTIME|MS_NOUSER|0x7f2b30000000, "") = 0
+mount            48024   48024   1832832     mount("tmpfs", "/dev/shm", "tmpfs", MS_NOSUID|MS_NODEV, "seclabel,inode64") = 0
 ----
 
 This shows us that the mount succeeded and all the options that were passed into the system call.
@@ -312,106 +312,6 @@ This shows us that the mount succeeded and all the options that were passed into
 As you can see, the `mountsnoop` tool is very useful for seeing what processes that are calling the mount and umount system calls and what the results of those calls are.
 
 In the `mountsnoop` terminal, issue a Ctrl-C and this will return you to a prompt.
-
-
-
-
-
-== bcc-tools: xfsslower
-
-WARNING: Please verify the filesystem your host is using with the command `df -T /`.  If your host is configured with ext4, then substitute the command `ext4slower` in place of `xfsslower`.
-
-The purpose of the `xfsslower` tool (also `ext4slower` and `nfsslower`) is to show you filesystem operations slower than  a particular threshold, that defaults to 10ms. It traces reads, writes, opens, and syncs and then prints out the timestamp of the operation, the process name, the ID, the type of operation, the file offset in kilobytes, the latency of the I/O measured from when it was issued by VFS to the filesystem to when it was completed, and finally, the filename being operated on.
-
-[discrete]
-==== Primary Terminal (node2)
-
-To run this tool, execute the following and give it a couple of seconds to get set up:
-
-[{format_cmd_exec}]
-----
-*/usr/share/bcc/tools/xfsslower*
-----
-
-[{format_cmd_output}]
-----
-Tracing xfs operations slower than 10 ms
-TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME
-----
-
-[discrete]
-==== Secondary Terminal (bastion)
-
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *node2*
-  * user: *root*
-
-[{format_cmd_exec2}]
-----
-*ssh node2 "workshop-ebpf-iotest.sh"*
-----
-
-This writes out a 20M file called bigfile and should not register on your `xfsslower` window.
-
-Now, let's execute the above command in a for loop so that we get more I/O going in parallel:
-
-[{format_cmd_exec2}]
-----
-*ssh node2 "workshop-ebpf-iotest-x10.sh"*
-----
-
-[discrete]
-==== Primary Terminal (node2)
-
-Now you should see similar output in your `xfsslower` window:
-
-[{format_cmd_output}]
-----
-TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME
-20:44:43 b'dd'          32446  W 1024    778        44.11 b'bigfile1'
-20:44:43 b'dd'          32455  W 1024    818        55.11 b'bigfile10'
-20:44:43 b'dd'          32452  W 1024    1712       44.11 b'bigfile7'
-20:44:43 b'dd'          32455  W 1024    1778       55.02 b'bigfile10'
-20:44:43 b'dd'          32451  W 1024    2850       44.11 b'bigfile6'
-20:44:43 b'dd'          32447  W 1024    3598       44.10 b'bigfile2'
-20:44:43 b'dd'          32451  W 1024    3805       55.11 b'bigfile6'
-20:44:43 b'dd'          32446  W 1024    4612       44.28 b'bigfile1'
-20:44:43 b'dd'          32446  W 1024    5529       33.01 b'bigfile1'
-20:44:43 b'dd'          32454  W 1024    4504       55.11 b'bigfile9'
-20:44:43 b'dd'          32447  W 1024    7335       44.10 b'bigfile2'
-20:44:43 b'dd'          32455  W 1024    7545       44.02 b'bigfile10'
-20:44:43 b'dd'          32446  W 1024    8344       49.16 b'bigfile1'
-20:44:43 b'dd'          32448  W 1024    8183       44.18 b'bigfile3'
-20:44:43 b'dd'          32447  W 1024    9168       55.10 b'bigfile2'
-20:44:43 b'dd'          32449  W 1024    9728       54.10 b'bigfile4'
-20:44:43 b'dd'          32454  W 1024    10244      33.11 b'bigfile9'
-20:44:43 b'dd'          32447  W 1024    10989      55.02 b'bigfile2'
-20:44:43 b'dd'          32453  W 1024    11276      54.10 b'bigfile8'
-20:44:43 b'dd'          32453  W 1024    12169      33.10 b'bigfile8'
-20:44:43 b'dd'          32451  W 1024    13292      91.11 b'bigfile6'
-20:44:43 b'dd'          32453  W 1024    13108      47.24 b'bigfile8'
-20:44:43 b'dd'          32448  W 1024    13788      44.01 b'bigfile3'
-20:44:43 b'dd'          32454  W 1024    14137      44.23 b'bigfile9'
-20:44:43 b'dd'          32446  W 1024    16076      44.02 b'bigfile1'
-20:44:43 b'dd'          32447  W 1024    15796      44.26 b'bigfile2'
-20:44:44 b'dd'          32446  W 1024    17004      44.10 b'bigfile1'
-20:44:44 b'dd'          32455  W 1024    16697      44.16 b'bigfile10'
-20:44:44 b'dd'          32450  W 1024    18505      44.01 b'bigfile5'
-20:44:44 b'dd'          32451  W 1024    19056      44.17 b'bigfile6'
-20:44:44 b'dd'          32446  W 1024    19868      44.38 b'bigfile1'
-20:44:44 b'dd'          32452  W 1024    19272      44.14 b'bigfile7'
-20:44:44 b'dd'          32455  W 1024    19168      30.75 b'bigfile10'
-20:44:44 b'dd'          32453  W 1024    19612      31.16 b'bigfile8'
-20:44:44 b'dd'          32454  W 1024    19460      24.59 b'bigfile9'
-20:44:44 b'dd'          32447  W 1024    19508      36.20 b'bigfile2'
-----
-
-So we can see that when writing these files in parallel, we have xfs operations taking longer than 10ms to complete.
-
-In the `xfsslower` terminal, issue a Ctrl-C and this will return you to a prompt.
-
-
 
 
 
@@ -426,7 +326,7 @@ To run this tool, execute the following and give it a couple of seconds to get s
 
 [{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/cachestat*
+*/usr/share/bcc/tools/cachestat 5*
 ----
 
 [{format_cmd_output}]
@@ -456,12 +356,13 @@ In the `cachestat` window, you should output similar to:
 
 [{format_cmd_output}]
 ----
-   TOTAL   MISSES     HITS  DIRTIES   BUFFERS_MB  CACHED_MB
-       0        0        0        0            0        154
-   14773      901    13872    44133            1        200
+    HITS   MISSES  DIRTIES HITRATIO   BUFFERS_MB  CACHED_MB
+   16016     1216        0   92.94%            0        266
+    8891        0        0  100.00%            0        322
+       0        0        0    0.00%            0        322
 ----
 
-This shows that we had 901 page cache misses during a five second period while running the above loop, but during that same second, there were 9,821 hits, indicating great performance from the page cache.
+This shows that we had 1216 page cache misses during a five second period while running the above loop but during that same period, there were 16016 hits, indicating great performance from the page cache.
 
 In the `cachestat` terminal, issue a Ctrl-C and this will return you to a prompt.
 
