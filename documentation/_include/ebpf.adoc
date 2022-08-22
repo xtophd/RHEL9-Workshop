@@ -73,7 +73,7 @@ Start by installing the *BPF Compiler Collection* (bcc-tools) and kernel-devel p
 
 [{format_cmd_exec}]
 ----
-*dnf install bcc-tools bpftracestrace kernel-devel-$(uname -r) -y*
+*dnf install bcc-tools bpftrace strace kernel-devel-$(uname -r) -y*
 ----
 
 Now, we have a lot of interesting tools installed in /usr/share/bcc/tools along with accompanying man pages.
