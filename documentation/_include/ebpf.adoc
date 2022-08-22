@@ -483,14 +483,20 @@ bpftrace makes use of:
  
 
 Let us start this educational journey by examining what system calls a simple command executes.  
-The command we will evaluate is `cat /dev/null` and we will use strace to list the system calls
-made and with what frequency (count).  Using /dev/null as our target file is simply a means to 
-displaying an empty file and not cluttering our output.
 
+To begin, we need a test file to use as our target.
 
 [{format_cmd_exec}]
 ----
-*strace -c cat /dev/null*
+*touch /tmp/workshop.tmp*
+----
+
+The command we will evaluate is `cat /tmp/workshop.tmp` and we will use strace to list the system calls
+made and with what frequency (count). 
+
+[{format_cmd_exec}]
+----
+*strace -c cat /tmp/workshop.tmp*
 ----
 
 [{format_cmd_output}]
@@ -519,7 +525,6 @@ displaying an empty file and not cluttering our output.
 100.00    0.000925           7       119        15 total
 ----
 
-
 What we see is that our command used the 'openat' systemcall 31 times.  Among those calls, 13 resulted in errors but 
 are likely harmless attempts to open files that do not exist.
 
@@ -532,7 +537,7 @@ to get all the relevant syscalls.
 
 [{format_cmd_exec}]
 ----
-bpftrace -e 'tracepoint:syscalls:sys_enter_* { if (comm == "cat") { @[probe] = count(); } }' -c "cat /dev/null"
+bpftrace -e 'tracepoint:syscalls:sys_enter_* { if (comm == "cat") { @[probe] = count(); } }' -c "cat /tmp/workshop.tmp"
 ----
 
 [{format_cmd_output}]
@@ -571,7 +576,7 @@ Now we are going to limit the probe to only show 'sys_enter_openat' thereby only
 
 [{format_cmd_exec}]
 ----
-bpftrace -e 'tracepoint:syscalls:sys_enter_openat { if (comm == "cat") { @[probe] = count(); } }' -c "cat /dev/null"
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat { if (comm == "cat") { @[probe] = count(); } }' -c "cat /tmp/workshop.tmp"
 ----
 
 [{format_cmd_output}]
@@ -589,18 +594,14 @@ Attaching 1 probe...
 
 NOTE: For this last exercise we will utilize both terminal sessions again.  
 
-The objective is to set a probe and identify any process that opens our targeted file.  The target file in this case
-will be a non-existent file, reason being that /dev/null is accessed quite a bit by normal system activity and we
-want our probe to stay active for a longer period of time.
-
-So, we will use a file "/tmp/does-not-exist" as our activity target.
+The objective is to set a probe and identify any process that opens our targeted file.
 
 [discrete]
 ==== Primary Terminal (node2)
 
 [{format_cmd_exec}]
 ----
-bpftrace -e 'tracepoint:syscalls:sys_enter_openat { if (str(args->filename) == "/tmp/does-not-exist") { printf( "%s %s\n", comm, str(args->filename)); }}'
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat { if (str(args->filename) == "/tmp/workshop.tmp") { printf( "%s %s\n", comm, str(args->filename)); }}'
 ----
 
 
@@ -611,17 +612,17 @@ To generate some output, you will need to utilize the second terminal.  We will 
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "cat /tmp/does-not-exist"*
+*ssh node2 "cat /tmp/workshop.tmp"*
 ----
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "more /tmp/does-not-exist"*
+*ssh node2 "more /tmp/workshop.tmp"*
 ----
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "grep something /tmp/does-not-exist"*
+*ssh node2 "grep something /tmp/workshop.tmp"*
 ----
 
 
