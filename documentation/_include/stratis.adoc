@@ -198,9 +198,11 @@ Verify your work and confirm the existence of the new storage pool with the comb
 
 [{format_cmd_output}]
 ----
-Name      	Total Physical Size  Total Physical Used
-summitpool                 10 GiB               56 MiB
+Name                        Total Physical   Properties           UUID
+summitpool   10 GiB / 41.63 MiB / 9.96 GiB      \~Ca,~Cr   4b86ce9b-...
 ----
+
+The output should show a total of 10 GiB, with 41MiB used and 9.96GiB available.  The Properties indicate whether or not the pool has a cache (Ca) and/or is encrypted (Cr).  The "~" character is used to indicate negative, so your output is showing no cache and not encrypted.
 
 Check the status of the block devices
 
@@ -211,9 +213,9 @@ Check the status of the block devices
 
 [{format_cmd_output}]
 ----
-Pool Name   Device Node     Physical Size   State  Tier
-summitpool  {disk1}                 5 GiB  In-use  Data
-summitpool  {disk2}                 5 GiB  In-use  Data
+Pool Name    Device Node    Physical Size   Tier
+summitpool  {disk1}                 5 GiB   Data
+summitpool  {disk2}                 5 GiB   Data
 ----
 
 == Create Filesystem
@@ -267,7 +269,7 @@ tmpfs                                      379M     0  379M   0% /run/user/1000
 
 The actual space used by a filesystem can be shown using the `stratis fs list` command as shown above.  Notice how the summitdir filesystem has a virtual size of 1T.  If the data in a filesystem actually approaches its virtual size, Stratis will automatically grow the filesystem.
 
-== Create Mount Point
+== Create Permanent Mount
 
 Now make sure the filesystem will mount at boot time by adjusting the systems fstab.  You've been provided a simple script to perform this edit, but the maunal steps are also outlined below in the 'Native command(s)' note.
 
@@ -316,7 +318,7 @@ tmpfs                                      379M     0  379M   0% /run/user/1000
 
 == Grow Storage Pool
 
-Finally, Stratis also makes it easy to add space to a pool.  Suppose the “summitfs” filesystem is growing close to the physical space in “summitpool”, adding an additional disk/block device is done using:
+Stratis also makes it easy to add space to a pool.  Suppose the “summitfs” filesystem is growing close to the physical space in “summitpool”.  Adding an additional disk/block device is done using:
 
 [{format_cmd_exec}]
 ----
@@ -330,10 +332,10 @@ Finally, Stratis also makes it easy to add space to a pool.  Suppose the “summ
 
 [{format_cmd_output}]
 ----
-Pool Name    Device Node    Physical Size   State   Tier
-summitpool   {disk1}                5 GiB  In-use   Data
-summitpool   {disk2}                5 GiB  In-use   Data
-summitpool   {disk3}                5 GiB  In-use   Data
+Pool Name    Device Node    Physical Size   Tier
+summitpool   {disk1}                5 GiB   Data
+summitpool   {disk2}                5 GiB   Data
+summitpool   {disk3}                5 GiB   Data
 ----
 
 Verify that the pool shows the additional space, and that the amount used is now in a safe range.
@@ -345,13 +347,13 @@ Verify that the pool shows the additional space, and that the amount used is now
 
 [{format_cmd_output}]
 ----
-Name          Total Physical Size   Total Physical Used
-summitpool                 15 GiB               606 MiB
+Name                          Total Physical   Properties          UUID
+summitpool   15 GiB / 590.65 MiB / 14.42 GiB      ~Ca,~Cr   4b86ce9b...
 ----
 
 == Add Cache Device
 
-Stratis also makes it easy to add cache devices.  For example, say the filesystem we just created runs into some I/O performance issues.  You bought an SSD (solid state disk) and need to configure it into the system to act as a high speed cache.  Use the following commands to add the drive (/dev/vdd) and check its status:
+Stratis also makes it easy to add cache devices.  For example, say the filesystem we just created runs into some I/O performance issues.  You bought an SSD (solid state disk) and need to configure it into the system to act as a high speed cache.  Use the following commands to add the drive {disk4} and check its status:
 
 [{format_cmd_exec}]
 ----
@@ -365,16 +367,18 @@ Stratis also makes it easy to add cache devices.  For example, say the filesyste
 
 [{format_cmd_output}]
 ----
-Pool Name    Device Node    Physical Size   State   Tier
-summitpool   {disk1}                5 GiB  In-use   Data
-summitpool   {disk2}                5 GiB  In-use   Data
-summitpool   {disk3}                5 GiB  In-use   Data
-summitpool   {disk4}                5 GiB  In-use  Cache
+Pool Name    Device Node    Physical Size   Tier
+summitpool   {disk1}                5 GiB   Data
+summitpool   {disk2}                5 GiB   Data
+summitpool   {disk3}                5 GiB   Data
+summitpool   {disk4}                5 GiB  Cache
 ----
 
 == Additional Resources
 
 Red Hat Documentation
+
+This lab does not get into more advanced topics like encryption or snapshots.  For more information on these and more details on Stratis in general, see the official Red Hat documentation here:
 
     * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/managing_file_systems/setting-up-stratis-file-systems_managing-file-systems[Managing Filesystems: Chapter 39. Setting Up Stratis File Systems]
 
