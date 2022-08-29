@@ -369,13 +369,15 @@ rhel-9-for-x86_64-supplementary-rpms       Red Hat Enterprise Linux 9 for x86_64
 ----
 
 
-== Summary
+== A Word About Web Console Integration
 
 This exercise has illustrated a very simple example of upgrading a RHEL8 system in place to a RHEL9 system, with a single issue that was easy to remediate and no applications running on top of the OS.  In the real world, there are likely to be more issues that need to be addressed and in some cases there are known issues that will prevent an in place upgrade (see official Red Hat documentation link below).  There is a Web Console plugin that makes it easier to visualize and in many cases remediate upgrade inhibitors that arise.  The rpm is called "cockpit-leapp" and once installed will enable visualization like this
 
 ====
 image::leapp-weboconsole-sample.png[Sample Leapp PreUpgrade Web Console Report]
 ====
+
+== Final Summary
 
 Whether upgrading in place is right is a decision that needs to be made from one environment to the next, one group to the next, even from one system to the next.  What makes sense for one application might not make sense for another.  As with any OS upgrade, test in the lab and do backups!
 
