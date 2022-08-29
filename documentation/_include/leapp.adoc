@@ -53,6 +53,28 @@ Verify that you are on the right host for these exercises.
 # *workshop-leapp-checkhost.sh*
 ----
 
+== Host Preparation
+
+Verify through a few commands that this is currently running RHEL8.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
+----
+cat /etc/redhat-release
+---
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
+----
+uname -r
+---
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
+----
+yum repolist
+---
+
 You are now ready to proceed with these exercises.
 
 == Host Preparation
