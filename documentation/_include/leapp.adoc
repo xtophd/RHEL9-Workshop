@@ -229,14 +229,14 @@ head /var/log/leapp/leapp-report.txt
 
 The first two lines indicate a Risk Factor, in this case high/inhibitor meaning that this issue will prevent the upgrade from proceeding.  Followed by a Summary of the issue:
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 Summary: Firewalld has enabled configuration option "AllowZoneDrifiting" which has been removed in RHEL-9. New behavior is as if "AllowZoneDrifiting" was set to "no".
 ----
 
 This tells us that there is a Firewalld configuration that was allowed in RHEL8 that is no longer allowed in RHEL9.  The next line tells us a "hint" at how to remediate the issue so that the upgrade can proceed:
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 Remediation: [hint] Set AllowZoneDrifting=no in /etc/firewalld/firewalld.conf
 ----
