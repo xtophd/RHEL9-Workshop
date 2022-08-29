@@ -246,7 +246,6 @@ And the following line gives an actual command that can be used to make the chan
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 sed -i "s/^AllowZoneDrifting=.*/AllowZoneDrifting=no/" /etc/firewalld/firewalld.conf
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 
 Now re-run the preupgrade, this time there should be no inhibitors
