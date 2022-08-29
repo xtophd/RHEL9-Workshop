@@ -53,7 +53,7 @@ Verify that you are on the right host for these exercises.
 # *workshop-leapp-checkhost.sh*
 ----
 
-== Host Preparation
+== Current RHEL Version Verification
 
 Verify through a few commands that this is currently running RHEL8.  These will show the current version of RHEL, the version of the running kernel and the rpm repos available to the system.
 
