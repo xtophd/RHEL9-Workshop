@@ -67,7 +67,7 @@ WARNING: Remember to skip these steps if you can connected to a Satellite or dir
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-yum-config-manager --disable my-rhel-8-server-rpms
+yum-config-manager --disable my-rhel-8-server-rpm-repo
 
 ----
 
@@ -88,7 +88,7 @@ subscription-manager repos --disable=*
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms --enable=rhel-8-for-x86_64-appstream-rpms --enable=rhel-8-for-x86_64-supplementary-rpms
+subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms --enable=rhel-8-for-x86_64-appstream-rpms
 ----
 
 Ensure that Red Hat Subscription Manager is set to consume the latest RHEL 8 content.
@@ -108,25 +108,42 @@ yum versionlock clear
 == LEAPP Installation
 
 === LEAPP Tools
-Install the LEAPP tools.
+Install the LEAPP tools and any dependencies
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-yum install -y leapp leapp-upgrade-el8toel9 cockpit-leapp
+yum install -y leapp-upgrade
 
 ----
 
 === LEAPP Data
 
-Delete any results from previous attempts to run leapp
+Delete any results from any possible previous attempts to run leapp
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 rm -rf /root/tmp_leapp_py3
 ----
 
+== LEAPP Local Files for Disconnected Upgrade
+
+=== Package Repositories
+
+There are several files needed to complete the upgrade that are available online, which are not accessible if the system is not able to access the internet (see link at bottom of exercise).  For this workshop, the following command will put them where they need to go:
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+cd /etc/leapp/files
+----
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+tar -xzvf /usr/local/share/leapp-data17.tar.gz
+----
 
 == LEAPP Pre-Upgrade
+
+Now run the preupgrade option to generate a preliminary report to see if there are any issues found that could prevent the upgrade from proceeding smoothly.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
@@ -139,35 +156,96 @@ The output from the previous command should have listed a few items that are inh
 
 [source,options="nowrap",subs="{markup-in-source}"]
 ----
-============================================================                                                               
-                     UPGRADE INHIBITED                                                                                     
-============================================================                                                               
-                                                                                                                           
-Upgrade has been inhibited due to the following problems:                                                                  
-    1. Inhibitor: Firewalld Configuration AllowZoneDrifting Is Unsupported                                                 
-Consult the pre-upgrade report for details and possible remediation.                                                       
-                                                                                                                           
-============================================================                                                               
-                     UPGRADE INHIBITED                                                                                     
-============================================================
+=======================================================
+                     UPGRADE INHIBITED
+=======================================================
+
+
+Debug output written to /var/log/leapp/leapp-preupgrade.log
+
+=======================================================
+                           REPORT
+=======================================================
+
+A report has been generated at /var/log/leapp/leapp-report.json
+A report has been generated at /var/log/leapp/leapp-report.txt
+
+=======================================================
+                       END OF REPORT
+=======================================================
+
+Answerfile has been generated at /var/log/leapp/answerfile
+
 ----
 
-Notice that the output refers you to the pre-upgrade report for details and remediations.  If your system has the cockpit-leap package installed, you can switch to using a web-broswer to step through each item and inspect the remediation options.
+Notice that the output refers you to the pre-upgrade report for details and remediations.  If your system has the cockpit-leapp package installed, you can switch to using a web-broswer to step through each item and inspect the remediation options.
 
-A report has been generated at /var/log/leapp/leapp-report.txt
+Look at the first several lines of the report mentioned above, /var/log/leapp/leapp-report.txt
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-less /var/log/leapp/leapp-report.txt
+head /var/log/leapp/leapp-report.txt
 ----
 
-Update sshd_config
+The first two lines indicate a Risk Factor, in this case high/inhibitor meaning that this issue will prevent the upgrade from proceeding.  Followed by a Summary of the issue:
 
-Remove kernel modules
+[source,options="nowrap",subs="{markup-in-source}"]
+----
+Summary: Firewalld has enabled configuration option "AllowZoneDrifiting" which has been removed in RHEL-9. New behavior is as if "AllowZoneDrifiting" was set to "no".
+----
 
-Python
+This tells us that there is a Firewalld configuration that was allowed in RHEL8 that is no longer allowed in RHEL9.  The next line tells us a "hint" at how to remediate the issue so that the upgrade can proceed:
 
-== Create Custom Actor
+[source,options="nowrap",subs="{markup-in-source}"]
+----
+Remediation: [hint] Set AllowZoneDrifting=no in /etc/firewalld/firewalld.conf
+----
+
+And the following line gives an actual command that can be used to make the change without having to edit the file directly:
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+sed -i "s/^AllowZoneDrifting=.*/AllowZoneDrifting=no/" /etc/firewalld/firewalld.conf
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+
+Now re-run the preupgrade, this time there should be no inhibitors
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+leapp preupgrade
+----
+
+[source,options="nowrap",subs="{markup-in-source}"]
+----
+
+============================================================
+                           REPORT
+============================================================
+
+A report has been generated at /var/log/leapp/leapp-report.json
+A report has been generated at /var/log/leapp/leapp-report.txt
+
+============================================================
+                       END OF REPORT
+============================================================
+
+Answerfile has been generated at /var/log/leapp/answerfile
+
+== LEAPP Upgrade
+
+Everything should be ready to run the upgrade.  This will 
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+leapp upgrade
+----
+
+
+
+
+
+
 
 
 == Summary
@@ -176,9 +254,8 @@ Python
 [discrete]
 == Additional Reference Materials
 
-* link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/upgrading_from_rhel_7_to_rhel_8[UPGRADING FROM RHEL 7 TO RHEL 8]
-* link:https://access.redhat.com/articles/3664871[Data required by the Leapp utility for an in-place upgrade from RHEL 7 to RHEL 8]
-* link:https://www.redhat.com/en/blog/upgrading-rhel-7-rhel-8-leapp-and-boom[Upgrading from RHEL 7 to RHEL 8 with Leapp and BOOM - Victor Hernando]
+* link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/upgrading_from_rhel_8_to_rhel_9/index[UPGRADING FROM RHEL 7 TO RHEL 8]
+* link:https://access.redhat.com/articles/3664871[Data required by the Leapp utility for a disconnected RHEL in-place upgrade]
 
 [discrete]
 == End of Unit
