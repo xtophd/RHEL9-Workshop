@@ -53,6 +53,23 @@ Verify that you are on the right host for these exercises.
 # *workshop-leapp-checkhost.sh*
 ----
 
+Also verify through a few commands that this is currently running RHEL8.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+cat /etc/redhat-release
+---
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+uname -r
+---
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+yum repolist
+---
+
 You are now ready to proceed with these exercises.
 
 == Host Preparation
@@ -243,6 +260,57 @@ Everything should be ready to run the upgrade.  This will install several rpms, 
 ----
 leapp upgrade
 ----
+
+After several minutes (5 - 8) you should see an almost identical report output indicating that phase one of the upgrade has completed
+
+[source,options="nowrap",subs="{markup-in-source}"]
+----
+
+============================================================
+                           REPORT
+============================================================
+
+A report has been generated at /var/log/leapp/leapp-report.json
+A report has been generated at /var/log/leapp/leapp-report.txt
+
+============================================================
+                       END OF REPORT
+============================================================
+
+Answerfile has been generated at /var/log/leapp/answerfile
+----
+
+And that a reboot is now required for the upgrade to proceed.  Without console access you won't be able to see the final steps of the upgrade, but after another 7 - 10 minutes, you should be able to ssh back in from the bastion host
+
+[bash,options="nowrap",subs="{markup-in-source}"]
+----
+$ *ssh leapp*
+----
+
+Use `sudo` to elevate your privileges.
+
+[bash,options="nowrap",subs="{markup-in-source}"]
+----
+$ *sudo -i*
+----
+
+Finally run a couple of commands to verify that the leapp node has actually been upgraded to RHEL9
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+cat /etc/redhat-release
+---
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+uname -r
+---
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+dnf repolist
+---
+
 
 == Summary
 
