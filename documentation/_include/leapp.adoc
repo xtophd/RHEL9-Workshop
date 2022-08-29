@@ -330,6 +330,8 @@ Use `sudo` to elevate your privileges.
 $ *sudo -i*
 ----
 
+== Final RHEL Version Verification
+
 Finally, re-run the commands from earlier to verify that the leapp node has actually been upgraded to RHEL9
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
