@@ -194,7 +194,7 @@ leapp preupgrade
 
 The output from the previous command should have listed a few items that are inhibiting the upgrade of the host.
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 =================================================
                      UPGRADE INHIBITED
