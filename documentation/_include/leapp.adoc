@@ -368,6 +368,9 @@ rhel-9-for-x86_64-supplementary-rpms       Red Hat Enterprise Linux 9 for x86_64
 
 == Summary
 
+====
+image::leapp-weboconsole-sample.png[Cockpit Login]
+====
 
 [discrete]
 == Additional Reference Materials
