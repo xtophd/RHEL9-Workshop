@@ -234,19 +234,12 @@ Answerfile has been generated at /var/log/leapp/answerfile
 
 == LEAPP Upgrade
 
-Everything should be ready to run the upgrade.  This will 
+Everything should be ready to run the upgrade.  This will install several rpms, make some repo and other configuration changes, and will take several minutes (6 to 10 in our vm testing).  
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 leapp upgrade
 ----
-
-
-
-
-
-
-
 
 == Summary
 
