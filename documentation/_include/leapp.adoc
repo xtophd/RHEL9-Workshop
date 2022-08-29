@@ -285,7 +285,7 @@ leapp upgrade
 
 After several minutes (5 - 8) you should see an almost identical report output indicating that phase one of the upgrade has completed
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 
 =================================================
@@ -302,7 +302,20 @@ A report has been generated at /var/log/leapp/leapp-report.txt
 Answerfile has been generated at /var/log/leapp/answerfile
 ----
 
-And that a reboot is now required for the upgrade to proceed.  Without console access you won't be able to see the final steps of the upgrade, but after another 7 - 10 minutes, you should be able to ssh back in from the bastion host
+And that a reboot is now required for the upgrade to proceed.  Without console access you won't be able to see the final steps of the upgrade.
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+# reboot
+----
+
+[{format_cmd_output}]
+----
+Connection to leapp closed by remote host.
+Connection to leapp closed.
+----
+
+after another 7 - 10 minutes, you should be able to ssh back in from the bastion host
 
 [bash,options="nowrap",subs="{markup-in-source}"]
 ----
