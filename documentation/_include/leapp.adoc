@@ -216,6 +216,8 @@ Now re-run the preupgrade, this time there should be no inhibitors
 leapp preupgrade
 ----
 
+This time we expect the output to come back clean without any inhibitors that would prevent the upgrade.
+
 [source,options="nowrap",subs="{markup-in-source}"]
 ----
 
@@ -231,6 +233,7 @@ A report has been generated at /var/log/leapp/leapp-report.txt
 ============================================================
 
 Answerfile has been generated at /var/log/leapp/answerfile
+----
 
 == LEAPP Upgrade
 
