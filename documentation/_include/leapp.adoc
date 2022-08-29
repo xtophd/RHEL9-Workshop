@@ -334,19 +334,35 @@ Finally, re-run the commands from earlier to verify that the leapp node has actu
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 cat /etc/redhat-release
+----
 
+[{format_cmd_output}]
+----
+Red Hat Enterprise Linux release 9.0 (Plow)
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 uname -r
+----
 
+[{format_cmd_output}]
+----
+5.14.0-70.17.1.el9_0.x86_64
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 dnf repolist
+----
 
+[{format_cmd_output}]
+----
+Updating Subscription Management repositories.
+repo id                                    repo name
+rhel-9-for-x86_64-appstream-rpms           Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
+rhel-9-for-x86_64-baseos-rpms              Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
+rhel-9-for-x86_64-supplementary-rpms       Red Hat Enterprise Linux 9 for x86_64 - Supplementary (RPMs)
 ----
 
 
