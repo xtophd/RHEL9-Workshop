@@ -60,23 +60,38 @@ Verify through a few commands that this is currently running RHEL8.  These will 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 cat /etc/redhat-release
+----
 
+[{format_cmd_output}]
+----
+Red Hat Enterprise Linux release 8.6 (Ootpa)
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 uname -r
+----
 
+[{format_cmd_output}]
+----
+4.18.0-372.9.1.el8.x86_64
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 yum repolist
-
 ----
 
+[{format_cmd_output}]
+----
+Updating Subscription Management repositories.
+repo id                                    repo name
+rhel-8-for-x86_64-appstream-rpms           Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
+rhel-8-for-x86_64-baseos-rpms              Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
+rhel-8-for-x86_64-supplementary-rpms       Red Hat Enterprise Linux 8 for x86_64 - Supplementary (RPMs)----
+----
 
-You are now ready to proceed with these exercises.
+You are now ready to proceed with the exercises.
 
 == Host Preparation
 
