@@ -56,16 +56,19 @@ Verify that you are on the right host for these exercises.
 Also verify through a few commands that this is currently running RHEL8.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
 ----
 cat /etc/redhat-release
 ---
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
 ----
 uname -r
 ---
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
 ----
 yum repolist
 ---
