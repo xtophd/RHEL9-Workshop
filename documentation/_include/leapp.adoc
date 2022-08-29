@@ -80,13 +80,15 @@ You are now ready to proceed with these exercises.
 
 == Host Preparation
 
+NOTE: The steps listed here are for reference outside of this workshop only.  None of these steps need to be performed for the exercise to function.
+
 === Package Repositories
 
 First item of business is to ensure the proper software repositories are enabled on the host.  In our workshop environment, the leapp host was likely provisioned with a RHEL 8.x ISO image and configured with local static self-managed repos.
 
 If necessary, begin by disabling any local static repos and switching to the latest managed ones from Red Hat.
 
-WARNING: Remember to skip these steps if you can connected to a Satellite or directly to redhat.com.
+WARNING: You can probably skip this step if you can connect to a Satellite or directly to redhat.com.
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
