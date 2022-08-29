@@ -300,22 +300,25 @@ Use `sudo` to elevate your privileges.
 $ *sudo -i*
 ----
 
-Finally run a couple of commands to verify that the leapp node has actually been upgraded to RHEL9
+Finally, re-run the commands from earlier to verify that the leapp node has actually been upgraded to RHEL9
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 cat /etc/redhat-release
----
+
+----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 uname -r
----
+
+----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 dnf repolist
----
+
+----
 
 
 == Summary
