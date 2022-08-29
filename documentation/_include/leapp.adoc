@@ -179,23 +179,23 @@ The output from the previous command should have listed a few items that are inh
 
 [source,options="nowrap",subs="{markup-in-source}"]
 ----
-=======================================================
+=================================================
                      UPGRADE INHIBITED
-=======================================================
+=================================================
 
 
 Debug output written to /var/log/leapp/leapp-preupgrade.log
 
-=======================================================
+=================================================
                            REPORT
-=======================================================
+=================================================
 
 A report has been generated at /var/log/leapp/leapp-report.json
 A report has been generated at /var/log/leapp/leapp-report.txt
 
-=======================================================
+=================================================
                        END OF REPORT
-=======================================================
+=================================================
 
 Answerfile has been generated at /var/log/leapp/answerfile
 
@@ -244,16 +244,16 @@ This time we expect the output to come back clean without any inhibitors that wo
 [source,options="nowrap",subs="{markup-in-source}"]
 ----
 
-============================================================
+=================================================
                            REPORT
-============================================================
+=================================================
 
 A report has been generated at /var/log/leapp/leapp-report.json
 A report has been generated at /var/log/leapp/leapp-report.txt
 
-============================================================
+=================================================
                        END OF REPORT
-============================================================
+=================================================
 
 Answerfile has been generated at /var/log/leapp/answerfile
 ----
@@ -272,16 +272,16 @@ After several minutes (5 - 8) you should see an almost identical report output i
 [source,options="nowrap",subs="{markup-in-source}"]
 ----
 
-============================================================
+=================================================
                            REPORT
-============================================================
+=================================================
 
 A report has been generated at /var/log/leapp/leapp-report.json
 A report has been generated at /var/log/leapp/leapp-report.txt
 
-============================================================
+=================================================
                        END OF REPORT
-============================================================
+=================================================
 
 Answerfile has been generated at /var/log/leapp/answerfile
 ----
