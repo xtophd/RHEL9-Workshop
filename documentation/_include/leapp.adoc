@@ -284,7 +284,7 @@ Everything should be ready to run the upgrade.  This will install several rpms, 
 leapp upgrade
 ----
 
-After several minutes (5 - 8) you should see an almost identical report output indicating that phase one of the upgrade has completed
+After several minutes you should see an almost identical report output indicating that phase one of the upgrade has completed
 
 [{format_cmd_output}]
 ----
@@ -316,7 +316,7 @@ Connection to leapp closed by remote host.
 Connection to leapp closed.
 ----
 
-after another 7 - 10 minutes, you should be able to ssh back in from the bastion host
+after another 6 - 9 minutes, you should be able to ssh back in from the bastion host
 
 [bash,options="nowrap",subs="{markup-in-source}"]
 ----
