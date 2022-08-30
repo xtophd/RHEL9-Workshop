@@ -508,15 +508,13 @@ fc07b3e29378  registry.access.redhat.com/ubi9/ubi:latest  echo hello world  3 mi
 eb8556004620  registry.access.redhat.com/ubi9/ubi:latest  echo hello world  About a minute ago  Exited (0) About a minute ago              peaceful_sutherland
 ----
 
-Using the container UIDs from the above output, you can now clean up the 'exited' containers.
-
+Using the container UIDs from the above output, you could clean up the 'exited' containers individually using `podman rm <CONTAINER-ID> <CONTAINER-ID>`, 
+but we are lazy and will cleanup up the containers with a single command:
 
 [{format_cmd_exec}]
 ----
-*podman rm <CONTAINER-ID> <CONTAINER-ID>*
+*podman rm --all*
 ----
-
-NOTE: if you are lazy, you can also cleanup up the containers with `podman rm --all`
 
 Now you should be able to run 'podman ps -a' again, and the results should come back empty.
 
