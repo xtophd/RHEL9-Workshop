@@ -63,15 +63,18 @@ Let's get started by creating a new working container based off of the ubi image
 
 [{format_cmd_exec}]
 ----
-*buildah from ubi8/ubi*
+*buildah from ubi9/ubi*
 ----
 
 [{format_cmd_output}]
 ----
+Resolved "ubi9/ubi" as an alias (/etc/containers/registries.conf.d/000-shortnames.conf)
+Trying to pull registry.access.redhat.com/ubi9/ubi:latest...
 Getting image source signatures
-Copying blob befb03b11956 done
-Copying blob ee2244abc66f done
-Copying config 8121a9f530 done
+Checking if image destination supports signatures
+Copying blob bf30f05a2532 done
+Copying blob c6e5292cfd5f done
+Copying config 168c58a383 done
 Writing manifest to image destination
 Storing signatures
 ubi-working-container
@@ -99,7 +102,7 @@ The steps you performed above is equivalent to the following OCIFile (or Dockerf
 
 [{format_cmd_output}]
 ----
-FROM ubi8/ubi
+FROM ubi9/ubi
 COPY /root/dan-cries.txt /var/www/html/
 ----
 
@@ -120,16 +123,10 @@ We need to install an httpd server in our image, and what better way to do that 
 ----
 ...SNIP...
 Installed:
-  httpd-2.4.37-16.module+el8.1.0+4134+e6bad0ed.x86_64
-  apr-util-bdb-1.6.1-6.el8.x86_64
-  apr-util-openssl-1.6.1-6.el8.x86_64
-  mailcap-2.1.48-3.el8.noarch
-  redhat-logos-httpd-81.1-1.el8.noarch
-  apr-util-1.6.1-6.el8.x86_64
-  httpd-tools-2.4.37-16.module+el8.1.0+4134+e6bad0ed.x86_64
-  apr-1.6.3-9.el8.x86_64
-  mod_http2-1.11.3-3.module+el8.1.0+4134+e6bad0ed.x86_64
-  httpd-filesystem-2.4.37-16.module+el8.1.0+4134+e6bad0ed.noarch
+  apr-1.7.0-11.el9.x86_64               apr-util-1.6.1-20.el9.x86_64   apr-util-bdb-1.6.1-20.el9.x86_64
+  apr-util-openssl-1.6.1-20.el9.x86_64  httpd-2.4.51-7.el9_0.x86_64    httpd-filesystem-2.4.51-7.el9_0.noarch
+  httpd-tools-2.4.51-7.el9_0.x86_64     libbrotli-1.0.9-6.el9.x86_64   mailcap-2.1.49-5.el9.noarch
+  mod_http2-1.15.19-2.el9.x86_64        mod_lua-2.4.51-7.el9_0.x86_64  redhat-logos-httpd-90.4-1.el9.noarch
 ----
 
 === Configure the Entry Point
@@ -161,7 +158,7 @@ Using the long path provided by your mount command, change directories.
 
 [{format_cmd_exec}]
 ----
-*cd /var/lib/containers/storage/overlay/3456a159b5b3c9e3056d14b97bde1f0e770500dd1cdd6168c894a52a3b3f12ee/merged*
+*cd $( buildah mount ubi-working-container )*
 ----
 
 [{format_cmd_exec}]
@@ -320,90 +317,113 @@ Let's take a look at the webserver2:latest container that we just built:
 
 [{format_cmd_output}]
 ----
+INFO[0000] Not using native diff for overlay, this may cause degraded performance for building images: kernel h
+as CONFIG_OVERLAY_FS_REDIRECT_DIR enabled
 {
     "Name": "localhost/webserver2",
-    "Digest": "sha256:15ad1feee74c68a16031b2120793873432572d2592e0818bc4cff9842696b651",
+    "Digest": "sha256:de96603b490c97da37f44d7c34e48701e4f78e219faae988ebc2f61f6c6885f9",
     "RepoTags": [],
-    "Created": "2020-04-13T02:17:40.873320811Z",
+    "Created": "2022-08-30T21:53:33.255790153Z",
     "DockerVersion": "",
     "Labels": {
         "architecture": "x86_64",
-        "authoritative-source-url": "registry.access.redhat.com",
-        "build-date": "2020-03-31T14:54:13.907559",
-        "com.redhat.build-host": "cpt-1007.osbs.prod.upshift.rdu2.redhat.com",
-        "com.redhat.component": "ubi8-container",
+        "build-date": "2022-08-02T22:00:29.261592",
+        "com.redhat.build-host": "cpt-1005.osbs.prod.upshift.rdu2.redhat.com",
+        "com.redhat.component": "ubi9-container",
         "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
-        "description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+        "description": "The Universal Base Image is designed and engineered to be the base layer for all of you
+r containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat
+only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red
+Hat and updated regularly.",
         "distribution-scope": "public",
-        "io.k8s.description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
-        "io.k8s.display-name": "Red Hat Universal Base Image 8",
+        "io.buildah.version": "1.24.2",
+        "io.k8s.description": "The Universal Base Image is designed and engineered to be the base layer for all
+ of your containerized applications, middleware and utilities. This base image is freely redistributable, but R
+ed Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained
+by Red Hat and updated regularly.",
+        "io.k8s.display-name": "Red Hat Universal Base Image 9",
         "io.openshift.expose-services": "",
-        "io.openshift.tags": "base rhel8",
+        "io.openshift.tags": "base rhel9",
         "maintainer": "Red Hat, Inc.",
-        "name": "ubi8",
-        "release": "408",
-        "summary": "Provides the latest release of Red Hat Universal Base Image 8.",
-        "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8/images/8.1-408",
-        "vcs-ref": "26f36bfa3e3a04c8c866b250924c1aefc34f01c9",
+        "name": "ubi9",
+        "release": "1604",
+        "summary": "Provides the latest release of Red Hat Universal Base Image 9.",
+        "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi9/images/9.0.0-1604",
+        "vcs-ref": "feeb37c0babd21fde366517b0e3d245d1f9c9b44",
         "vcs-type": "git",
         "vendor": "Red Hat, Inc.",
-        "version": "8.1"
+        "version": "9.0.0"
     },
     "Architecture": "amd64",
     "Os": "linux",
     "Layers": [
-        "sha256:d3ada5af5602bd0da378e4f0144f8fe8bdbe3f5a65f367dd9ebe759756bada68",
-        "sha256:668db11eda933a46ae8030a8643b96088218dae0efeac54bc6dbc88488725c1b",
-        "sha256:d9142adf6c6796bbbccc6065c57508e87138921d3aea0e9fc368f9861606da68"
+        "sha256:0af4e7a4615347222241b7433d811e09270c0d12de37bb39e105d53e87979094",
+        "sha256:713fdd8fb380d3da5ec955e63d0ee9317e5273b2c127f22951a4ab9bbff32efe",
+        "sha256:9e9116661d76f06601138c7bba369d54d6f840e2cf84981d9211239016b32a04"
+    ],
+    "Env": [
+        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "container=oci"
     ]
 }
 ----
 
 We will see that this container is based on the Red Hat UBI image. 
 
-Let's look at the ubi8/ubi container that we built this off of and compare the layers section:
+Let's look at the ubi9/ubi container that we built this off of and compare the layers section:
 
 [{format_cmd_exec}]
 ----
-*skopeo inspect containers-storage:registry.access.redhat.com/ubi8/ubi:latest*
+*skopeo inspect containers-storage:registry.access.redhat.com/ubi9/ubi:latest*
 ----
 
 [{format_cmd_output}]
 ----
+INFO[0000] Not using native diff for overlay, this may cause degraded performance for building images: kernel h
+as CONFIG_OVERLAY_FS_REDIRECT_DIR enabled
 {
-    "Name": "registry.access.redhat.com/ubi8/ubi",
-    "Digest": "sha256:f6648a87c8c52099bacd19b112beb3b65407ae6d3441f9b559ba53c4112c57a4",
+    "Name": "registry.access.redhat.com/ubi9/ubi",
+    "Digest": "sha256:d4533ff8a6938fe8eb13c798188850013f02c3778fbea9a80d13acc49e97c99c",
     "RepoTags": [],
-    "Created": "2020-03-31T14:54:42.119985Z",
+    "Created": "2022-08-02T22:00:50.63877Z",
     "DockerVersion": "1.13.1",
     "Labels": {
         "architecture": "x86_64",
-        "authoritative-source-url": "registry.access.redhat.com",
-        "build-date": "2020-03-31T14:54:13.907559",
-        "com.redhat.build-host": "cpt-1007.osbs.prod.upshift.rdu2.redhat.com",
-        "com.redhat.component": "ubi8-container",
+        "build-date": "2022-08-02T22:00:29.261592",
+        "com.redhat.build-host": "cpt-1005.osbs.prod.upshift.rdu2.redhat.com",
+        "com.redhat.component": "ubi9-container",
         "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
-        "description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+        "description": "The Universal Base Image is designed and engineered to be the base layer for all of you
+r containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat
+only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red
+Hat and updated regularly.",
         "distribution-scope": "public",
-        "io.k8s.description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
-        "io.k8s.display-name": "Red Hat Universal Base Image 8",
+        "io.k8s.description": "The Universal Base Image is designed and engineered to be the base layer for all
+ of your containerized applications, middleware and utilities. This base image is freely redistributable, but R
+ed Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained
+by Red Hat and updated regularly.",
+        "io.k8s.display-name": "Red Hat Universal Base Image 9",
         "io.openshift.expose-services": "",
-        "io.openshift.tags": "base rhel8",
+        "io.openshift.tags": "base rhel9",
         "maintainer": "Red Hat, Inc.",
-        "name": "ubi8",
-        "release": "408",
-        "summary": "Provides the latest release of Red Hat Universal Base Image 8.",
-        "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8/images/8.1-408",
-        "vcs-ref": "26f36bfa3e3a04c8c866b250924c1aefc34f01c9",
+        "name": "ubi9",
+        "release": "1604",
+        "summary": "Provides the latest release of Red Hat Universal Base Image 9.",
+        "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi9/images/9.0.0-1604",
+        "vcs-ref": "feeb37c0babd21fde366517b0e3d245d1f9c9b44",
         "vcs-type": "git",
         "vendor": "Red Hat, Inc.",
-        "version": "8.1"
+        "version": "9.0.0"
     },
     "Architecture": "amd64",
     "Os": "linux",
     "Layers": [
-        "sha256:ee2244abc66ff9c6a4bf50fe19041fec82a95c87d18ee3a3660368cb274927c7",
-        "sha256:befb03b11956169cf23096fc58081ca35034a6545fc37d63605bf0d200fe5eda"
+        "sha256:c6e5292cfd5f417f82087927a861b9b349ecffad839e4e97bc3c660cb23008ab",
+        "sha256:bf30f05a2532d2f4f1fe8b0af0e7c1b85ef77066e9faa6d6396e824eca1a8b24"
+    ],
+    "Env": [
+        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "container=oci"
     ]
 }
 ----
@@ -414,62 +434,66 @@ Pretty neat that we can look inside local containers, but what about containers 
 
 [{format_cmd_exec}]
 ----
-# *skopeo inspect docker://registry.access.redhat.com/ubi8/ubi-minimal:latest*
+# *skopeo inspect docker://registry.access.redhat.com/ubi9/ubi-minimal:latest*
 ----
 
 [{format_cmd_output}]
 ----
-{
-    "Name": "registry.access.redhat.com/ubi8/ubi-minimal",
-    "Digest": "sha256:df6f9e5d689e4a0b295ff12abc6e2ae2932a1f3e479ae1124ab76cf40c3a8cdd",
+{                                                                                                      [0/1823]
+    "Name": "registry.access.redhat.com/ubi9/ubi-minimal",
+    "Digest": "sha256:4ba4d3e2da3a7edb8a8e79fd38e95702f445aa4d5a66a1b1667260b5f1405acc",
     "RepoTags": [
-        "8.1",
-        "8.0",
-        "8.1-409-source",
-        "8.0-127",
-        "8.0-204",
-        "8.1-398-source",
-        "8.0-213",
-        "8.0-159",
-        "8.1-328",
-        "8.1-398",
-        "8.1-409",
-        "8.1-407-source",
-        "8.1-407",
-        "8.1-279",
-        "latest",
-        "8.0-131"
+        "9.0.0-1580-source",
+        "9.0.0-1608",
+        "9.0.0-1575",
+        "9.0.0-1608-source",
+        "9.0.0-1471-source",
+        "9.0.0-1471",
+        "9.0.0",
+        "9.0.0-1580",
+        "9.0.0-1471.1655190711-source",
+        "9.0.0-1471.1655190711",
+        "9.0.0-1575-source",
+        "latest"
     ],
-    "Created": "2020-03-31T14:52:10.793843Z",
+    "Created": "2022-08-02T22:00:04.442988Z",
     "DockerVersion": "1.13.1",
     "Labels": {
         "architecture": "x86_64",
-        "authoritative-source-url": "registry.access.redhat.com",
-        "build-date": "2020-03-31T14:51:49.719962",
-        "com.redhat.build-host": "cpt-1002.osbs.prod.upshift.rdu2.redhat.com",
-        "com.redhat.component": "ubi8-minimal-container",
+        "build-date": "2022-08-02T21:59:38.836547",
+        "com.redhat.build-host": "cpt-1008.osbs.prod.upshift.rdu2.redhat.com",
+        "com.redhat.component": "ubi9-minimal-container",
         "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
-        "description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+        "description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as a packa
+ge manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through s
+ubscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
         "distribution-scope": "public",
-        "io.k8s.description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
-        "io.k8s.display-name": "Red Hat Universal Base Image 8 Minimal",
+        "io.k8s.description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as
+a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies th
+rough subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+        "io.k8s.display-name": "Red Hat Universal Base Image 9 Minimal",
         "io.openshift.expose-services": "",
-        "io.openshift.tags": "minimal rhel8",
+        "io.openshift.tags": "minimal rhel9",
         "maintainer": "Red Hat, Inc.",
-        "name": "ubi8-minimal",
-        "release": "409",
-        "summary": "Provides the latest release of the minimal Red Hat Universal Base Image 8.",
-        "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8-minimal/images/8.1-409",
-        "vcs-ref": "8c3c7acc321ed054dded6e6e13b5c09c043f42dc",
+        "name": "ubi9-minimal",
+        "release": "1608",
+        "summary": "Provides the latest release of the minimal Red Hat Universal Base Image 9.",
+        "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi9-minimal/images/9.0.0-160
+8",
+        "vcs-ref": "69baa8c703c4abd84cd4042de1b765f1f20e4ab0",
         "vcs-type": "git",
         "vendor": "Red Hat, Inc.",
-        "version": "8.1"
+        "version": "9.0.0"
     },
     "Architecture": "amd64",
     "Os": "linux",
     "Layers": [
-        "sha256:b26afdf22be4e9c30220796780a297b91549a3b3041b6fdcbda71bf48a6912e7",
-        "sha256:218f593046abe6e9f194aed3fc2a2ad622065d6800175514dffa55dfce624b56"
+        "sha256:961425e673a750fb2d17875c2a4bf5a319c8681e4fdf81a5a6e2d819cef95e35",
+        "sha256:743b2fff6512b752ffd624ae8b45a951ca8378f3d84a912061cdaf508db1a29d"
+    ],
+    "Env": [
+        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "container=oci"
     ]
 }
 ----
@@ -485,12 +509,12 @@ Next let's run:
 
 [{format_cmd_output}]
 ----
-REPOSITORY                            TAG      IMAGE ID       CREATED         SIZE
-localhost/webserver2                  latest   b660ca86ee4b   7 minutes ago   271 MB
-registry.access.redhat.com/ubi8/ubi   latest   8121a9f5303b   12 days ago     240 MB
+REPOSITORY                           TAG         IMAGE ID      CREATED        SIZE
+localhost/webserver2                 latest      a73c079cbc1d  4 minutes ago  281 MB
+registry.access.redhat.com/ubi9/ubi  latest      168c58a38365  4 weeks ago    228 MB
 ----
 
-Notice that ubi8/ubi-minimal is not local to our registry. Skopeo provided that inspection completely remotely.
+Notice that ubi9/ubi-minimal is not local to our registry. Skopeo provided that inspection completely remotely.
 
 === Obtaining tarballs of containers in remote registries for further inspection
 
@@ -503,15 +527,16 @@ Let's run:
 
 [{format_cmd_exec}]
 ----
-*skopeo copy docker://registry.access.redhat.com/ubi8/ubi-minimal:latest dir:/root/ubi-tarball*
+*skopeo copy docker://registry.access.redhat.com/ubi9/ubi-minimal:latest dir:/root/ubi-tarball*
 ----
 
 [{format_cmd_output}]
 ----
 Getting image source signatures
-Copying blob b26afdf22be4 done
-Copying blob 218f593046ab done
-Copying config 91d23a64fd done
+Checking if image destination supports signatures
+Copying blob 961425e673a7 done
+Copying blob 743b2fff6512 done
+Copying config 4a8128b051 done
 Writing manifest to image destination
 Storing signatures
 ----
@@ -526,14 +551,18 @@ and now we can do:
 
 [{format_cmd_output}]
 ----
-total 33888
-drwxr-xr-x. 2 root root     4096 Apr 13 09:48 .
-dr-xr-x---. 5 root root     4096 Apr 13 09:48 ..
--rw-r--r--. 1 root root     1529 Apr 13 09:48 218f593046abe6e9f194aed3fc2a2ad622065d6800175514dffa55dfce624b56
--rw-r--r--. 1 root root     4457 Apr 13 09:48 91d23a64fdf259ffce4181b40ce3dafa982a9e4a76ae6a88c1e662c6166c7324
--rw-r--r--. 1 root root 34668948 Apr 13 09:48 b26afdf22be4e9c30220796780a297b91549a3b3041b6fdcbda71bf48a6912e7
--rw-r--r--. 1 root root      737 Apr 13 09:48 manifest.json
--rw-r--r--. 1 root root       33 Apr 13 09:48 version
+total 46096
+-rw-r--r--. 1 root root     4296 Aug 30 21:59 4a8128b051b8bfafcc6bd540db324a5244aff1ef7bd9f6dda7ecd10680c4fbbe
+-rw-r--r--. 1 root root     1745 Aug 30 21:59 743b2fff6512b752ffd624ae8b45a951ca8378f3d84a912061cdaf508db1a29d
+-rw-r--r--. 1 root root 47154255 Aug 30 21:59 961425e673a750fb2d17875c2a4bf5a319c8681e4fdf81a5a6e2d819cef95e35
+-rw-r--r--. 1 root root      737 Aug 30 21:59 manifest.json
+-rw-r--r--. 1 root root      876 Aug 30 21:59 signature-1
+-rw-r--r--. 1 root root      884 Aug 30 21:59 signature-2
+-rw-r--r--. 1 root root      880 Aug 30 21:59 signature-3
+-rw-r--r--. 1 root root      869 Aug 30 21:59 signature-4
+-rw-r--r--. 1 root root      875 Aug 30 21:59 signature-5
+-rw-r--r--. 1 root root      868 Aug 30 21:59 signature-6
+-rw-r--r--. 1 root root       33 Aug 30 21:59 version
 ----
 
 Inspecting the images with the `file` command, we discover that these a couple of text file along with a couple of zipped (compressed) tar files.
@@ -545,10 +574,16 @@ Inspecting the images with the `file` command, we discover that these a couple o
 
 [{format_cmd_output}]
 ----
-218f593046abe6e9f194aed3fc2a2ad622065d6800175514dffa55dfce624b56: gzip compressed data, original size 20480
-91d23a64fdf259ffce4181b40ce3dafa982a9e4a76ae6a88c1e662c6166c7324: ASCII text, with very long lines
-b26afdf22be4e9c30220796780a297b91549a3b3041b6fdcbda71bf48a6912e7: gzip compressed data, original size 108462080
-manifest.json:                                                    ASCII text
+4a8128b051b8bfafcc6bd540db324a5244aff1ef7bd9f6dda7ecd10680c4fbbe: JSON data
+743b2fff6512b752ffd624ae8b45a951ca8378f3d84a912061cdaf508db1a29d: gzip compressed data, original size modulo 2^32 20480
+961425e673a750fb2d17875c2a4bf5a319c8681e4fdf81a5a6e2d819cef95e35: gzip compressed data, original size modulo 2^32 129249280
+manifest.json:                                                    JSON data
+signature-1:                                                      data
+signature-2:                                                      data
+signature-3:                                                      data
+signature-4:                                                      data
+signature-5:                                                      data
+signature-6:                                                      data
 version:                                                          ASCII text
 ----
 
@@ -556,32 +591,34 @@ Let's take a test view of the contents of the largest gzip file (examine "origin
 
 [{format_cmd_exec}]
 ----
-# *tar tvzf b26afdf22be4e9c30220796780a297b91549a3b3041b6fdcbda71bf48a6912e7*
+# *tar tvzf 961425e673a750fb2d17875c2a4bf5a319c8681e4fdf81a5a6e2d819cef95e35*
 ----
 
 [{format_cmd_output}]
 ----
-dr-xr-xr-x root/root         0 2020-03-31 10:48 ./
-lrwxrwxrwx root/root         0 2018-08-12 05:46 ./lib64 -> usr/lib64
-lrwxrwxrwx root/root         0 2018-08-12 05:46 ./lib -> usr/lib
-drwxr-xr-x root/root         0 2020-03-31 10:48 ./etc/
-drwxr-xr-x root/root         0 2020-03-31 10:48 ./etc/libssh/
--rw-r--r-- root/root       178 2019-08-05 10:32 ./etc/libssh/libssh_client.config
--rw-r--r-- root/root       179 2019-08-05 10:32 ./etc/libssh/libssh_server.config
--rw-r--r-- root/root        22 2019-09-25 14:17 ./etc/issue.net
--rw-r--r-- root/root      1498 2019-11-28 12:53 ./etc/nsswitch.conf.bak
--rw-r--r-- root/root        55 2020-03-31 10:47 ./etc/resolv.conf
-drwxr-xr-x root/root         0 2018-08-12 05:46 ./etc/bash_completion.d/
-lrwxrwxrwx root/root         0 2018-09-10 10:14 ./etc/rc0.d -> rc.d/rc0.d
--rw-r--r-- root/root      9490 2020-03-31 10:48 ./etc/ld.so.cache
--rw-r--r-- root/root        58 2018-09-10 07:51 ./etc/networks
--rw-r--r-- root/root      1362 2018-09-10 07:51 ./etc/ethertypes
+dr-xr-xr-x root/root         0 2022-08-02 21:53 ./
+drwxr-xr-x root/root         0 2022-08-02 21:53 ./run/
+drwxr-xr-x root/root         0 2022-08-02 21:53 ./run/lock/
+drwxrwxrwt root/root         0 2022-08-02 21:52 ./tmp/
+drwxr-xr-x root/root         0 2022-08-02 21:53 ./etc/
+drwxr-xr-x root/root         0 2021-08-10 16:16 ./etc/motd.d/
+drwxr-xr-x root/root         0 2022-04-06 15:03 ./etc/issue.d/
+drwxr-xr-x root/root         0 2022-08-02 21:53 ./etc/sysctl.d/
+lrwxrwxrwx root/root         0 2022-04-07 14:01 ./etc/sysctl.d/99-sysctl.conf -> ../sysctl.conf
+drwxr-xr-x root/root         0 2022-08-02 21:53 ./etc/gss/
+drwxr-xr-x root/root         0 2022-03-18 08:56 ./etc/gss/mech.d/
+-rw-r--r-- root/root        28 2021-08-02 12:28 ./etc/ld.so.conf
+lrwxrwxrwx root/root         0 2022-04-06 15:03 ./etc/system-release -> redhat-release
+-rw-r--r-- root/root       943 2020-06-23 06:11 ./etc/inputrc
+-rw-r--r-- root/root      3019 2020-06-23 06:11 ./etc/bashrc
+-rw-r--r-- root/root      7778 2021-12-03 08:36 ./etc/login.defs
+-rw-r--r-- root/root        44 2022-04-06 15:03 ./etc/redhat-release
 ... SNIP...
 ----
 
 The output is going to scroll by rather quickly, but just note that this is a complete filesystem for the container image.
 
-NOTE: If you are more curious and would like to inspect the details a little further you could pipe the output to `more` or `less` and page through the archive contents.  `tar tvzf b26afdf22be4e9c30220796780a297b91549a3b3041b6fdcbda71bf48a6912e7 | less`
+NOTE: If you are more curious and would like to inspect the details a little further you could pipe the output to `more` or `less` and page through the archive contents.  `tar tvzf 961425e673a750fb2d17875c2a4bf5a319c8681e4fdf81a5a6e2d819cef95e35 | less`
 
 The other two numeric files provided in the image download are:
 
