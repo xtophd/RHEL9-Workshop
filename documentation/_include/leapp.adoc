@@ -29,27 +29,29 @@ WARNING:  This unit will only function if the workshop environment is provisione
 
 In this unit, we will get familiar with the upgrade tool called LEAPP.
 
+NOTE: For this exercise, _all_ automatic cut and paste commands will be directed to terminal 2 (lower terminal)
+
 == Getting Started
 
 For these exercises, you will be using the host `leapp` as user `root`.  Before you begin, confirm the node was provisioned with RHEL 8.6
 
 From host `bastion`, ssh to `leapp`.
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 $ *ssh leapp*
 ----
 
 Use `sudo` to elevate your privileges.
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 $ *sudo -i*
 ----
 
 Verify that you are on the right host for these exercises.
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 # *workshop-leapp-checkhost.sh*
 ----
@@ -58,7 +60,7 @@ Verify that you are on the right host for these exercises.
 
 Verify through a few commands that this is currently running RHEL8.  These will show the current version of RHEL, the version of the running kernel and the rpm repos available to the system.
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 cat /etc/redhat-release
 ----
@@ -68,7 +70,7 @@ cat /etc/redhat-release
 Red Hat Enterprise Linux release 8.6 (Ootpa)
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 uname -r
 ----
@@ -78,7 +80,7 @@ uname -r
 4.18.0-372.9.1.el8.x86_64
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 yum repolist
 ----
@@ -151,7 +153,7 @@ yum versionlock clear
 === LEAPP Tools
 Install the LEAPP tools and any dependencies
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 yum install -y leapp-upgrade
 
@@ -161,7 +163,7 @@ yum install -y leapp-upgrade
 
 Delete any results from any possible previous attempts to run leapp
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 rm -rf /root/tmp_leapp_py3
 ----
@@ -172,12 +174,12 @@ rm -rf /root/tmp_leapp_py3
 
 There are several files needed to complete the upgrade that are available online, which are not accessible if the system is not able to access the internet (see link at bottom of exercise).  For this workshop, the following command will put them where they need to go:
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 cd /etc/leapp/files
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 tar -xzvf /usr/local/share/leapp-data17.tar.gz
 ----
@@ -186,7 +188,7 @@ tar -xzvf /usr/local/share/leapp-data17.tar.gz
 
 Now run the preupgrade option to generate a preliminary report to see if there are any issues found that could prevent the upgrade from proceeding smoothly.
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 leapp preupgrade
 ----
@@ -223,7 +225,7 @@ Notice that the output refers you to the pre-upgrade report for details and reme
 
 Look at the first several lines of the report mentioned above, /var/log/leapp/leapp-report.txt
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 head /var/log/leapp/leapp-report.txt
 ----
@@ -244,14 +246,14 @@ Remediation: [hint] Set AllowZoneDrifting=no in /etc/firewalld/firewalld.conf
 
 And the following line gives an actual command that can be used to make the change without having to edit the file directly:
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 sed -i "s/^AllowZoneDrifting=.*/AllowZoneDrifting=no/" /etc/firewalld/firewalld.conf
 ----
 
 Now re-run the preupgrade, this time there should be no inhibitors
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 leapp preupgrade
 ----
@@ -279,7 +281,7 @@ Answerfile has been generated at /var/log/leapp/answerfile
 
 Everything should be ready to run the upgrade.  This will install several rpms, make some repo and other configuration changes, and will take several minutes (6 to 10 in our vm testing).  
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 leapp upgrade
 ----
@@ -305,9 +307,9 @@ Answerfile has been generated at /var/log/leapp/answerfile
 
 And that a reboot is now required for the upgrade to proceed.  Without console access you won't be able to see the final steps of the upgrade.
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
-# reboot
+reboot
 ----
 
 [{format_cmd_output}]
@@ -318,23 +320,23 @@ Connection to leapp closed.
 
 after another 6 - 9 minutes, you should be able to ssh back in from the bastion host
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
-$ *ssh leapp*
+*ssh leapp*
 ----
 
 Use `sudo` to elevate your privileges.
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
-$ *sudo -i*
+*sudo -i*
 ----
 
 == Final RHEL Version Verification
 
 Finally, re-run the commands from earlier to verify that the leapp node has actually been upgraded to RHEL9
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 cat /etc/redhat-release
 ----
@@ -344,7 +346,7 @@ cat /etc/redhat-release
 Red Hat Enterprise Linux release 9.0 (Plow)
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 uname -r
 ----
@@ -354,7 +356,7 @@ uname -r
 5.14.0-70.17.1.el9_0.x86_64
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 dnf repolist
 ----
