@@ -10,3 +10,12 @@
       until: result is succeeded
       delay: 5
 
+    - name: "rhel9-unit-leapp : workshop file installs"
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: 0744
+      with_items:
+        - {src: 'workshop-checkhost.j2', dest: '/usr/local/bin/workshop-leapp-checkhost.sh'} 
