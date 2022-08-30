@@ -562,7 +562,7 @@ Let us have a look at the process table from with-in the container's namespace.
 
 [{format_cmd_output}]
 ----
-Error: crun: executable file `ps` not found in $PATH: No such file or directory: OCI runtime attempted to invoke a command that was not found
+Error: crun: executable file 'ps' not found in $PATH: No such file or directory: OCI runtime attempted to invoke a command that was not found
 ----
 
 What just happened?
