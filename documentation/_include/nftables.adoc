@@ -278,14 +278,14 @@ We can now use that *handle* to delete the rule.
 
 [{format_cmd_exec}]
 ----
-*nft delete rule workshop INPUT handle 4*
+*nft delete rule inet workshop INPUT handle 4*
 ----
 
 Verify the rule change.
 
 [{format_cmd_exec}]
 ----
-*nft -n -a list table ip filter*
+*nft -n -a list table inet workshop*
 ----
 
 [{format_cmd_output}]
@@ -309,7 +309,7 @@ Verify the new rules.
 
 [{format_cmd_exec}]
 ----
-*nft -n -a list table ip filter*
+*nft -n -a list table inet workshop*
 ----
 
 [{format_cmd_output}]
@@ -342,6 +342,11 @@ Now delete the table
 
 [{format_cmd_exec}]
 ----
+*systemctl disable nftables --now*
+----
+
+[{format_cmd_exec}]
+----
 *systemctl enable firewalld --now*
 ----
 
@@ -349,7 +354,7 @@ And now check out how firewalld has built the ruleset in the netfilter.
 
 [{format_cmd_exec}]
 ----
-*nft list tabels*
+*nft list tables*
 ----
 
 [{format_cmd_output}]
