@@ -39,21 +39,21 @@ From host `bastion`, ssh to `leapp`.
 
 [{format_cmd_exec2}]
 ----
-$ *ssh leapp*
+*ssh leapp*
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec2}]
 ----
-$ *sudo -i*
+*sudo -i*
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec2}]
 ----
-# *workshop-leapp-checkhost.sh*
+*workshop-leapp-checkhost.sh*
 ----
 
 == Current RHEL Version Verification
