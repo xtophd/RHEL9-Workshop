@@ -31,7 +31,7 @@ WARNING:  This unit will only function if the workshop environment is provisione
 
 In this unit, we will get familiar with the upgrade tool called LEAPP.
 
-NOTE: For this exercise, _all_ automatic cut and paste commands will be directed to terminal 2 (lower terminal).  The intent is to dedicate terminal 2 to the leapp upgrade exercise, while using terminal 1 (upper terminal) for work in other exercises during the latter parts of the upgrade.
+NOTE: For this exercise, _all_ automatic cut and paste commands will be directed to terminal 2 (lower terminal).  The intent is to dedicate terminal 2 to the leapp upgrade exercise, while using terminal 1 (upper terminal) for work in other exercises during the latter parts of the upgrade.  If you haven't already completed the steps in the "Set Up Terminal 2" section of the initial "Workshop Setup" you will need to do so before proceeding.
 
 == Getting Started
 
