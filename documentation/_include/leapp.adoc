@@ -23,15 +23,11 @@ endif::[]
 
 = Upgrading from RHEL 8 to RHEL 9
 
-WARNING: THIS UNIT IS A WORK IN PROGRESS AND NOT COMPLETE
-
 == Overview
 
-WARNING:  This unit will only function if the workshop environment is provisioned with a local Satellite Server OR if the client is registered to redhat.com.  Please consult the instructor for directions before proceeding.
+In this unit, we will get familiar with the upgrade tool called LEAPP.  LEAPP is a tool used to analyze an existing system and report on potential issues that could or would cause issues preventing an in-place upgrade.  
 
-In this unit, we will get familiar with the upgrade tool called LEAPP.
-
-NOTE: For this exercise, _all_ automatic cut and paste commands will be directed to terminal 2 (lower terminal).  The intent is to dedicate terminal 2 to the leapp upgrade exercise, while using terminal 1 (upper terminal) for work in other exercises during the latter parts of the upgrade.  If you haven't already completed the steps in the "Set Up Terminal 2" section of the initial "Workshop Setup" you will need to do so before proceeding.
+NOTE: For this exercise, _all_ automatic cut and paste commands will be directed to terminal 2 (lower terminal).  The intent is to dedicate terminal 2 to the leapp upgrade exercise, while using terminal 1 (upper terminal) for work in other exercises during the latter parts of the upgrade.  *If you haven't already completed the steps in the "Set Up Terminal 2" section of the initial "Workshop Setup" you will need to do so before proceeding.*
 
 == Getting Started
 
