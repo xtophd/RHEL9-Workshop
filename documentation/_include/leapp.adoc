@@ -179,7 +179,7 @@ cd /etc/leapp/files
 
 [{format_cmd_exec2}]
 ----
-tar -xzvf /usr/local/share/leapp-data17.tar.gz
+tar -xzvf /usr/local/src/leapp-data17.tar.gz
 ----
 
 == LEAPP Pre-Upgrade
