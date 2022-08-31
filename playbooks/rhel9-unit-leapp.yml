@@ -11,6 +11,24 @@
       delay: 5
 
     - name: "rhel9-unit-leapp : workshop file installs"
+      vars:
+        t_filename: "leapp-data17.tar.gz"
+        t_destpath: "/usr/local/src"
+        t_src_url:  "https://people.redhat.com/VQRlX6Ggks"
+      get_url:
+        url: "{{ t_src_url }}/{{ t_filename }}"
+        dest: "{{ t_destpath }}/{{ t_filename }}"
+        owner: root
+        group: root
+        mode: "0644"
+        timeout: 60
+        force: no
+      register: leapp_download
+      until: leapp_download is not failed
+      retries: 5
+      ignore_errors: yes
+
+    - name: "rhel9-unit-leapp : workshop file installs"
       template:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
