@@ -72,7 +72,7 @@ Install the required packages - this will pull in several Python related depende
 
 [{format_cmd_exec}]
 ----
-yum install -y osbuild-composer composer-cli
+yum install -y osbuild-composer composer-cli cockpit-composer guestfs-tools
 ----
 
 Ensure everything is stopped while we reconfigure things for this exercise.
