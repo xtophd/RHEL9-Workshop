@@ -4,7 +4,7 @@
   tasks:
 
     - name: "rhel9-unit-imagebuilder : yum install packages"
-      yum: name=osbuild-composer,composer-cli,cockpit-composer state=installed
+      yum: name=osbuild-composer,composer-cli,cockpit-composer,guestfs-tools state=installed
       register: result
       retries: 10
       until: result is succeeded

@@ -140,7 +140,7 @@ version = "*"
 name = "rsync"
 ----
 
-Looking over the bludprint, it should be apparent that this image blueprint builds on a standard RHEL base by:
+Looking over the blueprint, it should be apparent that this image blueprint builds on a standard RHEL base by:
 
     * enabling the httpd service 
     * adding a few packages 
