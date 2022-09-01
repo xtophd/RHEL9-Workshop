@@ -45,6 +45,27 @@ NOTE: You CAN create images of multiple RHEL minor releases that are different f
 
 NOTE: Internet connectivity is not a prerequisite, however Image Builder is configured to connect to Red Hat CDN by default and must be modified to work in an isolated environment or with content views provided by Red Hat Satellite.
 
+== Getting Started
+
+For these exercises, you will be using the host `bastion` as user `root`.
+
+Use `sudo` to elevate your privileges.
+
+[{format_cmd_exec}]
+----
+*sudo -i*
+----
+
+Verify that you are on the right host for these exercises.
+
+[{format_cmd_exec}]
+----
+*workshop-imagebuilder-checkhost.sh*
+----
+
+You are now ready to proceed with these exercises.
+
+
 == Installation and Configuration
 
 Install the required packages - this will pull in several Python related dependencies.
