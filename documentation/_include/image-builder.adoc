@@ -33,7 +33,7 @@ Leveraging additional tools and services (ie: pxe, dhcp, kickstart, ansible auto
 redfish, etc...) the process can be heavily automated and turned into a completely hands-free task.
 We have doing this for decades.
 
-Starting with Red Hat Enterprise Linux 8, now there is a new method for creating RHEL images to add 
+Using Red Hat Enterprise Linux 9, there is a new method for creating RHEL images to add 
 to your toolbox: *Image Builder*.
 
 *Image Builder* is a collection of tools that create custom RHEL images in a variety of formats for 
@@ -41,62 +41,82 @@ compatibility with major cloud providers and virtualization technologies.  Meani
 an OS blueprint and then specify the target platfrom to create an appropriate image (ie: VMWare, 
 AWS, Openstack, KVM, etc...).
 
-IMPORTANT: As of Red Hat Enterprise Linux 8.3, the osbuild-composer backend replaces lorax-composer and provides more reliable backend and more predictable output images.
+NOTE: You CAN create images of multiple RHEL minor releases that are different from the host (ex: RHEL 8.4, RHEL 8.5) but to do so requires additional repo configurations which are not available in this workshop environment.
 
-NOTE: Cross-distribution image building, such as building a CentOS image on RHEL is not supported.
-
-NOTE: You CAN create images of multiple RHEL minor releases that are different from the host (ex: RHEL 8.4, RHEL 8.5) with osbuild-composer but to doing so requires additional repo configurations which are not available in this workshop environment.
-
-NOTE: Internet connectivity is not a prerequisite, however Image Builder is configured to connect to Red Hat CDN by default and must modified to work in an isolated environment or when connected to a Red Hat Satellite server.
+NOTE: Internet connectivity is not a prerequisite, however Image Builder is configured to connect to Red Hat CDN by default and must be modified to work in an isolated environment or with content views provided by Red Hat Satellite.
 
 == Installation and Configuration
 
-NOTE: Please note that all software has been pre-installed and configured.  These steps are provided as reference material only.
-
-As mentioned above, when RHEL 8.3 was released the *Image Builder* backend was replaced with another toolset called 'osbuild'.  
-At the time of the design and validation of this lab, the feature set and configuration options of 'osbuild' are not compatible with 
-this workshop environment.  Thus, we will stick with the lorax backend for now but other than the installation and setup the 
-operational commands remain the same.
-
-To prevent possible installation conflicts (overrides), we specifically exclude 'osbuild' components when installing the lorax-composer.
+Install the required packages - this will pull in several Python related dependencies.
 
 [{format_cmd_exec}]
 ----
-*dnf install --exclude=osbuild* -y lorax-composer composer-cli*
+*yum install -y osbuild-composer composer-cli*
 ----
 
-Ensure everything is stopped.
-
-[{format_cmd_exec}]
-----
-*systemctl stop lorax-composer.socket*
-----
-
-Next we need to enable and start the `lorax-composer.socket` service
+To ensure everything is stopped.
 
 [{format_cmd_exec}]
 ----
-*systemctl enable --now lorax-composer.socket*
+*systemctl stop osbuild-composer.socket*
+----
+
+[{format_cmd_exec}]
+----
+*systemctl stop osbuild-worker@.service.d osbuild-worker@1.service osbuild-composer.service*
+----
+
+Depending on the environment the workshop is running in, we probably need to adjust
+the available repos by adding a few custom options.
+
+We will start by just copying a specific chunk from the default config for the x86_64 architecture of rhel-90.
+
+[{format_cmd_exec}]
+----
+*jq '.x86_64 | { "x86_64" : . }' < /usr/share/osbuild-composer/repositories/rhel-90.json > /etc/osbuild-composer/repositories/rhel-90.json*
+----
+
+Next we need to adjust the URLs to point to the content views configured in /etc/yum.repos.d/redhat.repo.
+
+
+[{format_cmd_exec}]
+----
+----
+
+
+
+Finally, we need to update the CA user by Composer.
+
+cp -f /etc/rhsm/ca/katello-server-ca.pem /etc/rhsm/ca/redhat-uep.pem
+
+
+Finally we need to enable and start the `osbuild-composer.socket` service
+
+[{format_cmd_exec}]
+----
+*systemctl enable --now osbuild-composer.socket*
 ----
 
 Finally check the service status.
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*systemctl status lorax-composer.socket*
+*systemctl status osbuild-composer.socket*
 ----
+
+
 
 == Create a Blueprint
 
 Blueprints are defined by a TOML configuration file.  A sample has been provided to get us started with a very basic definition.
 
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*cat /usr/local/etc/imagebuilder-sample.toml*
+*cat /usr/local/etc/osbuild-sample.toml*
 ----
 
-[{format_cmd_output}]
+[source,options="nowrap"]
 ----
 name = "sample-webserver"
 description = "standard apache httpd webserver"
@@ -104,6 +124,9 @@ version = "0.0.1"
 
 [customizations.services]
 enabled = ["httpd"]
+
+[customizations.firewall.services]
+enabled = ["http","https"]
 
 [[modules]]
 version = "2.4.*"
@@ -129,48 +152,50 @@ Looking over the bludprint, it should be apparent that this image blueprint buil
 
 Now we need to push the blueprint to our image builder catalog.
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-*composer-cli blueprints push /usr/local/etc/imagebuilder-sample.toml*
+*composer-cli blueprints push /usr/local/etc/osbuild-sample.toml*
 ----
 
 
 == List Blueprints
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *composer-cli blueprints list*
 ----
 
-[{format_cmd_output}]
+[bash,options="nowrap",subs="{markup-in-source}"]
 ----
-example-atlas
-example-development
-example-http-server
 sample-webserver
 ----
 
 A nice quick way to determine if the local `Image Builder` can resolve all dependencies for the blueprint is to run  it thorugh a `depsolve`.  Here you can also see a full list of rpms that will be installed on the image.
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *composer-cli blueprints depsolve sample-webserver*
 ----
 
 If everything is in order, you output should look something like this.
 
-[{format_cmd_output}]
+[source,options="nowrap",subs="{markup-in-source}"]
 ----
 blueprint: sample-webserver v0.0.1
-    acl-2.2.53-1.el8.x86_64
-    audit-libs-3.0-0.17.20191104git1c2f876.el8.x86_64
-    basesystem-11-5.el8.noarch
-    bash-4.4.19-14.el8.x86_64
-    brotli-1.0.6-3.el8.x86_64
-    bzip2-libs-1.0.6-26.el8.x86_64
-    ca-certificates-2020.2.41-80.0.el8_2.noarch
-    chkconfig-1.13-2.el8.x86_64
-    coreutils-8.30-8.el8.x86_64
+    mpfr-4.1.0-7.el9.x86_64
+    1:python3-nftables-0.9.8-12.el9.x86_64
+    libseccomp-2.5.2-2.el9.x86_64
+    crypto-policies-20220223-1.git5203b41.el9_0.1.noarch
+    hostname-3.23-6.el9.x86_64
+    libpwquality-1.4.4-8.el9.x86_64
+    publicsuffix-list-dafsa-20210518-3.el9.noarch
+    rsync-3.2.3-9.el9_0.1.x86_64
+    iptables-libs-1.8.7-28.el9.x86_64
+    keyutils-libs-1.6.1-4.el9.x86_64
+    libssh-config-0.9.6-3.el9.noarch
+    tpm2-tss-3.0.3-7.el9.x86_64
+    pcre-8.44-3.el9.3.x86_64
+    iptables-nft-1.8.7-28.el9.x86_64
 ...SNIP...
 ----
 
@@ -180,27 +205,27 @@ If you see errors or packages that can not be resolved, this is likely a problem
 
 We are now ready to compose the blueprint into an image.
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *composer-cli compose start sample-webserver qcow2*
 ----
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}"]
 ----
 Compose 812019dd-20e5-4528-a99b-09fbe47ca2d8 added to the queue
 ----
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *composer-cli compose status*
 ----
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *composer-cli compose list*
 ----
 
-[{format_cmd_output}]
+[source,options="nowrap",subs="{markup-in-source}"]
 ----
 812019dd-20e5-4528-a99b-09fbe47ca2d8 *FINISHED* sample-webserver 0.0.1 qcow2
 ----
@@ -213,56 +238,64 @@ It may take a few minutes, but eventually you should see a "FINISHED" status
 
 We need to grab a copy of the image and put it in the right place for our platform.
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *cd /var/lib/libvirt/images*
 ----
 
 Take a moment to identify the UUID of the created image.
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *composer-cli compose list*
 ----
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}"]
 ----
 812019dd-20e5-4528-a99b-09fbe47ca2d8 *FINISHED* sample-webserver 0.0.1 qcow2
 ----
 
 Here is a helpful way to store the last FINISHED image UUID to an environment variable.
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *export IMAGE_UUID=$(composer-cli compose list | grep -m 1 FINISHED | awk '{print $1}')*
 ----
 
 Now use the UUID from your ouput to extract the QCOW image.
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *composer-cli compose image $IMAGE_UUID*
 ----
 
 Finally you can rename it to something a little more convinient
 
-[{format_cmd_exec}]
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 *mv $IMAGE_UUID-disk.qcow2 vmguest.qcow2*
 ----
 
-== Conclusion
+=== Modify the QCOW Image
 
-Minus a few customizations, your image is now ready for deployment.
+Now you need to set a root password in the image
 
-The next unit covers the native virtualization technology included with RHEL 
-and will utilize this image to deploy the sample-webserver.
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+----
+*virt-customize -a vmguest.qcow2 \
+                --hostname vmguest \
+                --root-password password:redhat \
+                --uninstall cloud-init*
+----
+
+Your image is now ready for deployment.
+
+In the next unit, we will tackle how to utilize the native virtualization technology included with RHEL to launch your custom built image.
 
 == Additional Resources
 
 Image Builder
 
-    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/composing_a_customized_rhel_system_image/index[Image Builder]
     * link:https://github.com/rlucente-se-jboss/RFESummit2021[RHEL for Edge Demo]
     * link:https://access.redhat.com/solutions/5773421[Configuring Image Builder with Satellite]
 

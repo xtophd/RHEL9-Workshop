@@ -10,17 +10,28 @@
       until: result is succeeded
       delay: 5
 
+    - name: "rhel9-unit-imagebuilder : create repo override directory"
+      file:
+        path: "/etc/osbuild-composer/repositories"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
     - name: "rhel9-unit-imagebuilder : workshop script installs"
       template:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
         owner: root
         group: root
-        mode: 0744
+        mode: "{{ item.mode }}"
       with_items:
-        - {src: 'workshop-checkhost.j2',       dest: '/usr/local/bin/workshop-imagebuilder-checkhost.sh'}
-        - {src: 'workshop-osbuild-toml.j2',    dest: '/usr/local/etc/imagebuilder-sample.toml'}
-        - {src: 'workshop-osbuild-html.j2',    dest: '/usr/local/etc/index.html'}
+        - {mode: '0644', src: 'lib-exercise.j2',             dest: '/usr/local/bin/lib-exercise.sh'}
+        - {mode: '0744', src: 'lib-exercise-test.j2',        dest: '/usr/local/bin/lib-exercise-test.sh'}
+        - {mode: '0744', src: 'workshop-checkhost.j2',       dest: '/usr/local/bin/workshop-imagebuilder-checkhost.sh'}
+        - {mode: '0744', src: 'workshop-osbuild-config.j2',  dest: '/usr/local/bin/workshop-imagebuilder-config.sh'}
+        - {mode: '0744', src: 'workshop-osbuild-toml.j2',    dest: '/usr/local/etc/imagebuilder-sample.toml'}
+        - {mode: '0744', src: 'workshop-osbuild-html.j2',    dest: '/usr/local/etc/index.html'}
 
     - name: "rhel9-unit-imagebuilder : service stop"
       service: 
