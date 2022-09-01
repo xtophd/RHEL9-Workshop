@@ -51,58 +51,32 @@ Install the required packages - this will pull in several Python related depende
 
 [{format_cmd_exec}]
 ----
-*yum install -y osbuild-composer composer-cli*
+yum install -y osbuild-composer composer-cli
 ----
 
-To ensure everything is stopped.
-
-[{format_cmd_exec}]
-----
-*systemctl stop osbuild-composer.socket*
-----
+Ensure everything is stopped while we reconfigure things for this exercise.
 
 [{format_cmd_exec}]
 ----
-*systemctl stop osbuild-worker@.service.d osbuild-worker@1.service osbuild-composer.service*
+systemctl stop osbuild-composer.socket
+systemctl stop osbuild-worker@.service.d osbuild-worker@1.service osbuild-composer.service
 ----
 
-Depending on the environment the workshop is running in, we probably need to adjust
-the available repos by adding a few custom options.
+Depending on the environment the workshop is running in, probably need to adjust
+the sources of the available repos used by the image-builder.
 
-We will start by just copying a specific chunk from the default config for the x86_64 architecture of rhel-90.
+WARNING:  At this time, the assumption is that this host registered to a Red Hat Satellite Server.  Please consult your instructor for alternative instructions if this is not the case:
 
-[{format_cmd_exec}]
-----
-*jq '.x86_64 | { "x86_64" : . }' < /usr/share/osbuild-composer/repositories/rhel-90.json > /etc/osbuild-composer/repositories/rhel-90.json*
-----
-
-Next we need to adjust the URLs to point to the content views configured in /etc/yum.repos.d/redhat.repo.
+The steps to configure the image-builder have been condensed into a shell script.  If you are curious to examine exactly what is being done, have 
+a look at /usr/local/bin/workshop-imagebuilder-config.sh.  Either way, go ahead and run it now.
 
 
 [{format_cmd_exec}]
 ----
+workshop-imagebuilder-config.sh
 ----
 
-
-
-Finally, we need to update the CA user by Composer.
-
-cp -f /etc/rhsm/ca/katello-server-ca.pem /etc/rhsm/ca/redhat-uep.pem
-
-
-Finally we need to enable and start the `osbuild-composer.socket` service
-
-[{format_cmd_exec}]
-----
-*systemctl enable --now osbuild-composer.socket*
-----
-
-Finally check the service status.
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*systemctl status osbuild-composer.socket*
-----
+And with that, we are ready to proceed building images.
 
 
 
@@ -111,12 +85,12 @@ Finally check the service status.
 Blueprints are defined by a TOML configuration file.  A sample has been provided to get us started with a very basic definition.
 
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*cat /usr/local/etc/osbuild-sample.toml*
+cat /usr/local/etc/osbuild-sample.toml
 ----
 
-[source,options="nowrap"]
+[{format_cmd_output}]
 ----
 name = "sample-webserver"
 description = "standard apache httpd webserver"
@@ -152,34 +126,34 @@ Looking over the bludprint, it should be apparent that this image blueprint buil
 
 Now we need to push the blueprint to our image builder catalog.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*composer-cli blueprints push /usr/local/etc/osbuild-sample.toml*
+composer-cli blueprints push /usr/local/etc/osbuild-sample.toml
 ----
 
 
 == List Blueprints
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *composer-cli blueprints list*
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 sample-webserver
 ----
 
 A nice quick way to determine if the local `Image Builder` can resolve all dependencies for the blueprint is to run  it thorugh a `depsolve`.  Here you can also see a full list of rpms that will be installed on the image.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*composer-cli blueprints depsolve sample-webserver*
+composer-cli blueprints depsolve sample-webserver
 ----
 
 If everything is in order, you output should look something like this.
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 blueprint: sample-webserver v0.0.1
     mpfr-4.1.0-7.el9.x86_64
@@ -205,27 +179,27 @@ If you see errors or packages that can not be resolved, this is likely a problem
 
 We are now ready to compose the blueprint into an image.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*composer-cli compose start sample-webserver qcow2*
+composer-cli compose start sample-webserver qcow2
 ----
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 Compose 812019dd-20e5-4528-a99b-09fbe47ca2d8 added to the queue
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*composer-cli compose status*
-----
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*composer-cli compose list*
+composer-cli compose status
 ----
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec}]
+----
+composer-cli compose list
+----
+
+[{format_cmd_output}]
 ----
 812019dd-20e5-4528-a99b-09fbe47ca2d8 *FINISHED* sample-webserver 0.0.1 qcow2
 ----
@@ -238,54 +212,54 @@ It may take a few minutes, but eventually you should see a "FINISHED" status
 
 We need to grab a copy of the image and put it in the right place for our platform.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*cd /var/lib/libvirt/images*
+cd /var/lib/libvirt/images
 ----
 
 Take a moment to identify the UUID of the created image.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*composer-cli compose list*
+composer-cli compose list
 ----
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 812019dd-20e5-4528-a99b-09fbe47ca2d8 *FINISHED* sample-webserver 0.0.1 qcow2
 ----
 
 Here is a helpful way to store the last FINISHED image UUID to an environment variable.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*export IMAGE_UUID=$(composer-cli compose list | grep -m 1 FINISHED | awk '{print $1}')*
+export IMAGE_UUID=$(composer-cli compose list | grep -m 1 FINISHED | awk '{print $1}')
 ----
 
 Now use the UUID from your ouput to extract the QCOW image.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*composer-cli compose image $IMAGE_UUID*
+composer-cli compose image $IMAGE_UUID
 ----
 
 Finally you can rename it to something a little more convinient
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*mv $IMAGE_UUID-disk.qcow2 vmguest.qcow2*
+mv $IMAGE_UUID-disk.qcow2 vmguest.qcow2
 ----
 
 === Modify the QCOW Image
 
 Now you need to set a root password in the image
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*virt-customize -a vmguest.qcow2 \
+virt-customize -a vmguest.qcow2 \
                 --hostname vmguest \
                 --root-password password:redhat \
-                --uninstall cloud-init*
+                --uninstall cloud-init
 ----
 
 Your image is now ready for deployment.
