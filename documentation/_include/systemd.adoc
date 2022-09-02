@@ -39,21 +39,21 @@ From host `bastion`, ssh to `node1`.
 
 [{format_cmd_exec}]
 ----
-*ssh node1*
+ssh node1
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-systemd-checkhost.sh*
+workshop-systemd-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
@@ -81,7 +81,7 @@ Let's view the current default target.
 
 [{format_cmd_exec}]
 ----
-*systemctl get-default*
+systemctl get-default
 ----
 
 [{format_cmd_output}]
@@ -94,7 +94,7 @@ As mentioned above, systemd has another concept called a service.  A service is 
 
 [{format_cmd_exec}]
 ----
-*systemctl -t service | head -n 15*
+systemctl -t service | head -n 15
 ----
 
 [{format_cmd_output}]
@@ -120,7 +120,7 @@ Next let's view all of the services available (ie: everything installed, running
 
 [{format_cmd_exec}]
 ----
-*systemctl list-unit-files -t service*
+systemctl list-unit-files -t service
 ----
 
 [{format_cmd_output}]
@@ -153,7 +153,7 @@ Let's collect some initial data about the boot process
 
 [{format_cmd_exec}]
 ----
-*systemd-analyze*
+systemd-analyze
 ----
 
 [{format_cmd_output}]
@@ -166,7 +166,7 @@ Next let's inspect further details about all running units, ordered by the time 
 
 [{format_cmd_exec}]
 ----
-*systemd-analyze blame | head -n 15*
+systemd-analyze blame | head -n 15
 ----
 
 [{format_cmd_output}]
@@ -201,7 +201,7 @@ Let us install some packages.
 
 [{format_cmd_exec}]
 ----
-*dnf install -y httpd mariadb-server mariadb*
+dnf install -y httpd mariadb-server mariadb
 ----
 
 [{format_cmd_output}]
@@ -223,7 +223,7 @@ NOTE: The "enable --now" syntax was introduced in a recent release of RHEL 7 and
 
 [{format_cmd_exec}]
 ----
-*systemctl enable --now httpd mariadb*
+systemctl enable --now httpd mariadb
 ----
 
 [{format_cmd_output}]
@@ -238,7 +238,7 @@ Now let's check the status.  You should see two separate sections in the output,
 
 [{format_cmd_exec}]
 ----
-*systemctl status httpd mariadb*
+systemctl status httpd mariadb
 ----
 
 [{format_cmd_output}]
@@ -264,7 +264,7 @@ Last but not least, you need to enable a firewall port.
 
 [{format_cmd_exec}]
 ----
-*firewall-cmd --add-service=http*
+firewall-cmd --add-service=http
 ----
 
 [{format_cmd_output}]
@@ -276,7 +276,7 @@ So as promised, here is a workshop script that performs all of the above steps.
 
 [{format_cmd_exec}]
 ----
-*workshop-systemd-lamp.sh*
+workshop-systemd-lamp.sh
 ----
 
 === EXAMPLE: Customize Services
@@ -297,7 +297,7 @@ Create a drop-in configuration file to extend the default httpd.service unit
 
 [{format_cmd_exec}]
 ----
-*workshop-systemd-httpdconfig.sh*
+workshop-systemd-httpdconfig.sh
 ----
 
 [{format_cmd_output}]
@@ -314,7 +314,7 @@ Notify systemd of the changes.
 
 [{format_cmd_exec}]
 ----
-*systemctl daemon-reload*
+systemctl daemon-reload
 ----
 
 ==== Modify mariadb
@@ -327,7 +327,7 @@ This time we'll use systemctl to create the drop-in and notify systemd of the ch
 
 [{format_cmd_exec}]
 ----
-*systemctl edit mariadb*
+systemctl edit mariadb
 ----
 
 .Type the following using the editor:
@@ -343,7 +343,7 @@ Save and quit the editor, and view the unit
 
 [{format_cmd_exec}]
 ----
-*systemctl cat mariadb*
+systemctl cat mariadb
 ----
 
 [{format_cmd_output}]
@@ -371,7 +371,7 @@ Restart=always
 
 [{format_cmd_exec}]
 ----
-*systemctl status httpd*
+systemctl status httpd
 ----
 
 [{format_cmd_output}]
@@ -396,7 +396,7 @@ Notice that systemctl status displays that the unit has been extended with a dro
 
 [{format_cmd_exec}]
 ----
-*systemctl status mariadb*
+systemctl status mariadb
 ----
 
 [{format_cmd_output}]
