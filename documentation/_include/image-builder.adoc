@@ -9,10 +9,11 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
-:format_cmd_exec: source,options="nowrap",role="copy"
-:format_cmd_output: bash,options="nowrap"
+:format_cmd_exec: source,options="nowrap",role="copy",subs="{markup-in-source}"
+:format_markup: bash,options="nowrap",subs="{markup-in-source}"
+:format_plain: bash,options="nowrap"
 ifeval::["%cloud_provider%" == "ec2"]
-:format_cmd_exec: source,options="nowrap",role="execute"
+:format_cmd_exec: source,options="nowrap",role="execute",subs="{markup-in-source}"
 endif::[]
 
 
@@ -111,7 +112,7 @@ Blueprints are defined by a TOML configuration file.  A sample has been provided
 cat /usr/local/etc/imagebuilder-sample.toml
 ----
 
-[{format_cmd_output}]
+[{format_plain}]
 ----
 name = "sample-webserver"
 description = "standard apache httpd webserver"
@@ -174,7 +175,7 @@ composer-cli blueprints depsolve sample-webserver
 
 If everything is in order, you output should look something like this.
 
-[{format_cmd_output}]
+[{format_plain}]
 ----
 blueprint: sample-webserver v0.0.1
     mpfr-4.1.0-7.el9.x86_64
@@ -205,7 +206,7 @@ We are now ready to compose the blueprint into an image.
 composer-cli compose start sample-webserver qcow2
 ----
 
-[{format_cmd_output}]
+[{format_plain}]
 ----
 Compose 812019dd-20e5-4528-a99b-09fbe47ca2d8 added to the queue
 ----
@@ -220,7 +221,7 @@ composer-cli compose status
 composer-cli compose list
 ----
 
-[{format_cmd_output}]
+[{format_plain}]
 ----
 812019dd-20e5-4528-a99b-09fbe47ca2d8 *FINISHED* sample-webserver 0.0.1 qcow2
 ----
@@ -245,7 +246,7 @@ Take a moment to identify the UUID of the created image.
 composer-cli compose list
 ----
 
-[{format_cmd_output}]
+[{format_plain}]
 ----
 812019dd-20e5-4528-a99b-09fbe47ca2d8 *FINISHED* sample-webserver 0.0.1 qcow2
 ----
