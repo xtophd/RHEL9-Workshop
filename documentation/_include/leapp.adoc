@@ -1,9 +1,10 @@
 :sectnums:
 :sectnumlevels: 3
 :markup-in-source: verbatim,attributes,quotes
+:imagesdir: ./_images
 ifdef::env-github[]
 :tip-caption: :bulb:
-:imagesdir: ./_images
+
 :note-caption: :information_source:
 :important-caption: :heavy_exclamation_mark:
 :caution-caption: :fire:
