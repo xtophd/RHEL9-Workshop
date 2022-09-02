@@ -286,7 +286,18 @@ virt-customize -a vmguest.qcow2 \
 
 Your image is now ready for deployment.
 
-In the next unit, we will tackle how to utilize the native virtualization technology included with RHEL to launch your custom built image.
+=== Conclusion
+
+
+In the next unit, we will tackle how to utilize the native virtualization 
+technology included with RHEL to launch your custom built image.
+
+Time to end this session and return your shell to the bastion host.
+
+[{format_cmd_exec}]
+----
+workshop-return2bastion.sh
+----
 
 == Additional Resources
 
