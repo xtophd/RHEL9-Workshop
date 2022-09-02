@@ -417,6 +417,18 @@ Notice that systemctl status displays that the unit has been extended with a dro
              └─37717 /usr/libexec/mariadbd --basedir=/usr
 ----
 
+=== Conclusion
+
+Hopefully you should now have a fundamental understanding of how services 
+are installed, managed and customized on Red Hat Enterprise Linux 9.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
+
 == Additional Resources
 
 You can find more information:
