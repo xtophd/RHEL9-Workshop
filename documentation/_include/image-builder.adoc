@@ -53,14 +53,14 @@ Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-imagebuilder-checkhost.sh*
+workshop-imagebuilder-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
