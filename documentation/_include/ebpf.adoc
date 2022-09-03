@@ -290,7 +290,7 @@ ssh node2 "sudo workshop-ebpf-unmountshm.sh"
 [discrete]
 ==== Results
 
-Back to the `mountsnoop` terminal and you should see the following:
+Back to the primary terminal and you should see the following:
 
 [{format_cmd_output}]
 ----
@@ -320,7 +320,7 @@ ssh node2 "pkill mountsnoop"
 [discrete]
 ==== Results
 
-Finally, back to the `mountsnoop` terminal and you should see the following:
+Finally, back to the primary terminal you should see the following:
 
 [{format_cmd_output}]
 ----
@@ -357,20 +357,26 @@ To run this tool, execute the following and give it a couple of seconds to get s
 [discrete]
 ==== Secondary Terminal (bastion)
 
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *node2*
-  * user: *root*
+Let's now run a little exercise that will generate some i/o.  This script 
+flushes the cache and then runs a series of `dd` commands.
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "workshop-ebpf-cachestat.sh"*
+ssh node2 "workshop-ebpf-cachestat.sh"
 ----
 
-This flushes the cache and then runs a series of `dd` commands to create some I/O.
+
+This command should run for a few seconds and then exit.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate cachestat.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill cachestat"
+----
+
 
 [discrete]
-==== Primary Terminal (node2)
+==== Results
 
 In the `cachestat` window, you should output similar to:
 
@@ -383,10 +389,6 @@ In the `cachestat` window, you should output similar to:
 ----
 
 This shows that we had 1216 page cache misses during a five second period while running the above loop but during that same period, there were 16016 hits, indicating great performance from the page cache.
-
-In the `cachestat` terminal, issue a Ctrl-C and this will return you to a prompt.
-
-
 
 
 
