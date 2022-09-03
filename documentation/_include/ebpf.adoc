@@ -44,6 +44,9 @@ For these exercises, you will primarily be using the host `node2` as user `root`
 
 TIP: Now is a great time to use the multi session capability of *tmux*.  Use `Ctrl-b "` to create another session with a split screen.  Cycle the active session back and forth with `CTRL-b n` (next) and `CTRL-b p` (previous).
 
+[discrete]
+==== Primary Terminal (node2)
+
 From host `bastion`, ssh to `node2`.
 
 [{format_cmd_exec}]
@@ -64,6 +67,9 @@ Verify that you are on the right host for these exercises.
 ----
 workshop-ebpf-checkhost.sh
 ----
+
+[discrete]
+==== Secondary Terminal (bastion)
 
 To help you set up your second terminal, here is the ssh command and password which you can use.
 
@@ -124,10 +130,7 @@ PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
 [discrete]
 ==== Secondary Terminal (bastion)
 
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *bastion*
-  * user: *root*
+Run a little script to generate some user activity.
 
 [{format_cmd_exec2}]
 ----
