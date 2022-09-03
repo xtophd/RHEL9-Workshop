@@ -114,12 +114,18 @@ In your second terminal, establish yourself as described below and then run the 
 ssh node2 "sudo workshop-ebpf-rootkit.sh"
 ----
 
-This command should run for about 10 seconds and then exit.  
+This command should run for about 10 seconds and then exit.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate tcplife.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill tcplife"
+----
 
 [discrete]
-==== Primary Terminal (node2)
+==== Results 
 
-In the `tcplife` terminal, you should now see output similar to:
+In the primary terminal, you should now see output similar to:
 
 [{format_cmd_output}]
 ----
@@ -127,7 +133,7 @@ PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
 28478 sshd       10.0.0.12       22    10.0.0.10       33514    14     2 9091.95
 ----
 
-Doing the math with my numbers above, my session was open for about 9 seconds and was initiated by IP 10.0.0.10, the bastion.
+Doing the math with the numbers above, this session was open for about 9 seconds and was initiated by IP 10.0.0.10 (the bastion host).
 
 In the `tcplife` terminal, issue a Ctrl-C and this will return you to a prompt.
 
@@ -164,10 +170,18 @@ In your second terminal having established yourself as root, run the following c
 ssh node2 "sudo workshop-ebpf-rootkit.sh"
 ----
 
-[discrete]
-==== Primary Terminal (node2)
+Again, this command should run for about 10 seconds and then exit.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate execsnoop.
 
-In the `execsnoop` terminal, you should see output similar to:
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill execsnoop"
+----
+
+[discrete]
+==== Results
+
+In the primary terminal, you should see output similar to:
 
 [{format_cmd_output}]
 ----
@@ -202,8 +216,6 @@ firewall-cmd     28542  28516    0 /usr/bin/firewall-cmd --state
 ----
 
 This shows you all the processes that ran exec() during that ssh login, their PID, their parent PID, their return code, and the arguments that were sent to the process. You could keep monitoring this for quite some time to catch potential bad actors on the system.
-
-In the `execsnoop` terminal, issue a Ctrl-C and this will return you to a prompt.
 
 
 
@@ -242,7 +254,7 @@ umount: /: target is busy.
 ----
 
 [discrete]
-==== Primary Terminal (node2)
+==== Results
 
 Taking a look at the terminal running `mountsnoop`, we see:
 
@@ -276,7 +288,7 @@ ssh node2 "sudo workshop-ebpf-unmountshm.sh"
 ----
 
 [discrete]
-==== Primary Terminal (node2)
+==== Results
 
 Back to the `mountsnoop` terminal and you should see the following:
 
@@ -297,8 +309,16 @@ Proceed to restore the /dev/shm mount as follows:
 ssh node2 "sudo workshop-ebpf-mountshm.sh"
 ----
 
+This is the last step related to mountsnoop.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate mountsnoop.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill mountsnoop"
+----
+
 [discrete]
-==== Primary Terminal (node2)
+==== Results
 
 Finally, back to the `mountsnoop` terminal and you should see the following:
 
