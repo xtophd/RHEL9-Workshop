@@ -1,6 +1,9 @@
 :sectnums:
 :sectnumlevels: 3
 :markup-in-source: verbatim,attributes,quotes
+:ssh_command: %ssh_command%
+:ssh_password: %ssh_password%
+:ssh_username: %ssh_username%
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -60,6 +63,23 @@ Verify that you are on the right host for these exercises.
 [{format_cmd_exec}]
 ----
 workshop-ebpf-checkhost.sh
+----
+
+To help you set up your second terminal, here is the ssh command and password which you can use.
+
+[{format_cmd_exec2}]
+----
+[[ $(hostname -s) != "bastion" ]] && {ssh_command} -o "StrictHostKeyChecking no"
+----
+
+[{format_cmd_exec2}]
+----
+{ssh_password}
+----
+
+[{format_cmd_exec2}]
+----
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 You are now ready to proceed with these exercises.
