@@ -127,10 +127,10 @@ To run this tool, execute the following and give it a couple of seconds to get s
 PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
 ----
 
+WARNING: It is important to wait until the tool is setup.  Do not proceed until you see the output headers (displayed above) appear.
+
 [discrete]
 ==== Secondary Terminal (bastion)
-
-WARNING: It is important to wait until tcplife is setup.  Do not proceed until you see the output headers (displayed above) appear.
 
 Run a little script to generate some user activity.
 
@@ -184,6 +184,8 @@ Continuing on host `node2`, to run `execsnoop` as follows:
 ----
 PCOMM            PID    PPID   RET ARGS
 ----
+
+WARNING: It is important to wait until the tool is setup.  Do not proceed until you see the output headers (displayed above) appear.
 
 [discrete]
 ==== Secondary Terminal (bastion)
@@ -262,6 +264,8 @@ To run this tool, execute the following and give it a couple of seconds to get s
 ----
 COMM             PID     TID     MNT_NS      CALL
 ----
+
+WARNING: It is important to wait until the tool is setup.  Do not proceed until you see the output headers (displayed above) appear.
 
 [discrete]
 ==== Secondary Terminal (bastion)
@@ -378,6 +382,8 @@ To run this tool, execute the following and give it a couple of seconds to get s
 ----
    TOTAL   MISSES     HITS  DIRTIES   BUFFERS_MB  CACHED_MB
 ----
+
+WARNING: It is important to wait until the tool is setup.  Do not proceed until you see the output headers (displayed above) appear.
 
 [discrete]
 ==== Secondary Terminal (bastion)
