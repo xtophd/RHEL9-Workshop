@@ -64,21 +64,21 @@ From host `bastion`, ssh to `node2`.
 
 [{format_cmd_exec}]
 ----
-*ssh node2*
+ssh node2
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-nftables-checkhost.sh*
+workshop-nftables-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
@@ -88,12 +88,12 @@ You are now ready to proceed with these exercises.
 
 [{format_cmd_exec}]
 ----
-*systemctl disable firewalld --now*
+systemctl disable firewalld --now
 ----
 
 [{format_cmd_exec}]
 ----
-*systemctl enable nftables --now*
+systemctl enable nftables --now
 ----
 
 
@@ -127,19 +127,19 @@ Using nft, show the current state of the network tables.
 
 [{format_cmd_exec}]
 ----
-*nft list tables*
+nft list tables
 ----
 
 There is nothing there, so let us create a new table called 'workshop'
 
 [{format_cmd_exec}]
 ----
-*nft add table inet workshop*
+nft add table inet workshop
 ----
 
 [{format_cmd_exec}]
 ----
-*nft list tables*
+nft list tables
 ----
 
 
@@ -173,7 +173,7 @@ Using nft, show the current state of the network chains.
 
 [{format_cmd_exec}]
 ----
-*nft list chains*
+nft list chains
 ----
 
 Again there is nothing there, so let use create a new chain in our table called 'INPUT'.
@@ -182,7 +182,7 @@ NOTE: nft re-uses special characters (ie: curly braces and semicolons) so using 
 
 [{format_cmd_exec}]
 ----
-*nft 'add chain inet workshop INPUT { type filter hook input priority 0 ; }'*
+nft 'add chain inet workshop INPUT { type filter hook input priority 0 ; }'
 ----
 
 [{format_cmd_exec}]
@@ -206,14 +206,14 @@ table inet workshop {
 
 [{format_cmd_exec}]
 ----
-*nft insert rule inet workshop INPUT tcp dport http counter*
+nft insert rule inet workshop INPUT tcp dport http counter
 ----
 
 Verify the rule change.
 
 [{format_cmd_exec}]
 ----
-*nft -n -a list table inet workshop*
+nft -n -a list table inet workshop
 ----
 
 [{format_cmd_output}]
@@ -232,14 +232,14 @@ So what does the previos rule do?  It merely counts packaets that arrived at por
 
 [{format_cmd_exec}]
 ----
-*curl localhost*
+curl localhost
 ----
 
 There is no web server running on this system so you will get a failed connection message.  However, now we reexamine the counters.
 
 [{format_cmd_exec}]
 ----
-*nft -n -a list table inet workshop*
+nft -n -a list table inet workshop
 ----
 
 [{format_cmd_output}]
@@ -260,7 +260,7 @@ Deleting rules takes a little care in that you have to identify a *handle*.  Aga
 
 [{format_cmd_exec}]
 ----
-*nft -n -a list table inet workshop*
+nft -n -a list table inet workshop
 ----
 
 
@@ -278,14 +278,14 @@ We can now use that *handle* to delete the rule.
 
 [{format_cmd_exec}]
 ----
-*nft delete rule inet workshop INPUT handle 4*
+nft delete rule inet workshop INPUT handle 4
 ----
 
 Verify the rule change.
 
 [{format_cmd_exec}]
 ----
-*nft -n -a list table inet workshop*
+nft -n -a list table inet workshop
 ----
 
 [{format_cmd_output}]
@@ -302,14 +302,14 @@ table inet workshop { # handle 2
 
 [{format_cmd_exec}]
 ----
-*nft insert rule inet workshop INPUT tcp dport { ssh, http, https, 8181 } counter*
+nft insert rule inet workshop INPUT tcp dport { ssh, http, https, 8181 } counter
 ----
 
 Verify the new rules.
 
 [{format_cmd_exec}]
 ----
-*nft -n -a list table inet workshop*
+nft -n -a list table inet workshop
 ----
 
 [{format_cmd_output}]
@@ -330,31 +330,31 @@ Remove the chain added during this exercise.
 
 [{format_cmd_exec}]
 ----
-*nft flush table inet workshop*
+nft flush table inet workshop
 ----
 
 Now delete the table
 
 [{format_cmd_exec}]
 ----
-*nft delete table inet workshop*
+nft delete table inet workshop
 ----
 
 [{format_cmd_exec}]
 ----
-*systemctl disable nftables --now*
+systemctl disable nftables --now
 ----
 
 [{format_cmd_exec}]
 ----
-*systemctl enable firewalld --now*
+systemctl enable firewalld --now
 ----
 
 And now check out how firewalld has built the ruleset in the netfilter.
 
 [{format_cmd_exec}]
 ----
-*nft list tables*
+nft list tables
 ----
 
 [{format_cmd_output}]
@@ -366,7 +366,7 @@ Word of caution, the output here is long...
 
 [{format_cmd_exec}]
 ----
-*nft -n -a list table inet firewalld*
+nft -n -a list table inet firewalld
 ----
 
 [{format_cmd_output}]
@@ -424,6 +424,18 @@ public (active)
 ----
 
 Which is why we encourage you to use firewalld and firewall-cmd for 99% of your netfilter needs.
+
+=== Conclusion
+
+That concludes this unit on nftables.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
+
 
 == Additional Resources
 
