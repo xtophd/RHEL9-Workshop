@@ -32,21 +32,21 @@ From host `bastion`, ssh to `node3`.
 
 [{format_cmd_exec}]
 ----
-*ssh node3*
+ssh node3
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-podman-checkhost.sh*
+workshop-podman-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
@@ -59,7 +59,7 @@ Now have a look at the general container information.
 
 [{format_cmd_exec}]
 ----
-*podman info*
+podman info
 ----
 
 [{format_cmd_output}]
@@ -186,7 +186,7 @@ Now have a look at the general container information.
 
 [{format_cmd_exec}]
 ----
-*podman images*
+podman images
 ----
 
 Your results should have come back empty and that's because we have not imported, loaded or pulled any containers on to our platform.  
@@ -197,7 +197,7 @@ Time to pull a container from our local repository.
 
 [{format_cmd_exec}]
 ----
-*podman pull ubi9/ubi*
+podman pull ubi9/ubi
 ----
 
 [{format_cmd_output}]
@@ -218,7 +218,7 @@ Have a looks at the image list now.
 
 [{format_cmd_exec}]
 ----
-*podman images*
+podman images
 ----
 
 [{format_cmd_output}]
@@ -233,13 +233,13 @@ Pull a few more container images.
 
 [{format_cmd_exec}]
 ----
-*podman pull ubi9/ubi-minimal*
-*podman pull ubi9/ubi-init*
+podman pull ubi9/ubi-minimal
+podman pull ubi9/ubi-init
 ----
 
 [{format_cmd_exec}]
 ----
-*podman images*
+podman images
 ----
 
 [{format_cmd_output}]
@@ -257,12 +257,12 @@ contain, especially after an image has been customized.
 
 [{format_cmd_exec}]
 ----
-*podman tag registry.access.redhat.com/ubi9/ubi myfavorite*
+podman tag registry.access.redhat.com/ubi9/ubi myfavorite
 ----
 
 [{format_cmd_exec}]
 ----
-*podman images*
+podman images
 ----
 
 [{format_cmd_output}]
@@ -282,16 +282,17 @@ NOTE: The link:https://access.redhat.com/containers[Red Hat Container Catalog] (
 
 [{format_cmd_exec}]
 ----
-*podman images*
-----
-[{format_cmd_exec}]
-----
-*podman rmi ubi9-init*
+podman images
 ----
 
 [{format_cmd_exec}]
 ----
-*podman images*
+podman rmi ubi9-init
+----
+
+[{format_cmd_exec}]
+----
+podman images
 ----
 
 [{format_cmd_output}]
@@ -324,7 +325,7 @@ Here is a list of the fundamental podman commands and their purpose:
 
 [{format_cmd_exec}]
 ----
-# *podman run ubi echo "hello world"*
+podman run ubi echo "hello world"
 ----
 
 [{format_cmd_output}]
@@ -346,7 +347,7 @@ Let us run a few more commands to see what else we can glean.
 
 [{format_cmd_exec}]
 ----
-*podman ps -a*
+podman ps -a
 ----
 
 [{format_cmd_output}]
@@ -359,7 +360,7 @@ Now let us run the exact same command as before to print "hello world".
 
 [{format_cmd_exec}]
 ----
-*podman run ubi echo "hello world"*
+podman run ubi echo "hello world"
 ----
 
 [{format_cmd_output}]
@@ -371,7 +372,7 @@ Check out 'podman info' one more time and you should notice a few changes.
 
 [{format_cmd_exec}]
 ----
-*podman info*
+podman info
 ----
 
 [{format_cmd_output}]
@@ -498,7 +499,7 @@ Run 'podman ps -a' to the IDs of the exited containers.
 
 [{format_cmd_exec}]
 ----
-*podman ps -a*
+podman ps -a
 ----
 
 [{format_cmd_output}]
@@ -513,14 +514,14 @@ but we are lazy and will cleanup up the containers with a single command:
 
 [{format_cmd_exec}]
 ----
-*podman rm --all*
+podman rm --all
 ----
 
 Now you should be able to run 'podman ps -a' again, and the results should come back empty.
 
 [{format_cmd_exec}]
 ----
-*podman ps -a*
+podman ps -a
 ----
 
 == Exploring Container Namespaces
@@ -529,7 +530,7 @@ Now you should be able to run 'podman ps -a' again, and the results should come 
 
 [{format_cmd_exec}]
 ----
-*podman run ubi cat /proc/sys/kernel/hostname*
+podman run ubi cat /proc/sys/kernel/hostname
 ----
 
 [{format_cmd_output}]
@@ -541,7 +542,7 @@ So what we have learned here is that the hostname in the container's namespace i
 
 [{format_cmd_exec}]
 ----
-*podman ps -a*
+podman ps -a
 ----
 
 [{format_cmd_output}]
@@ -557,7 +558,7 @@ Let us have a look at the process table from with-in the container's namespace.
 
 [{format_cmd_exec}]
 ----
-*podman run ubi ps -ef*
+podman run ubi ps -ef
 ----
 
 [{format_cmd_output}]
@@ -575,7 +576,7 @@ NOTE: Using bind mounts is generally suitable for debugging, but not a good prac
 
 [{format_cmd_exec}]
 ----
-*podman run -v /usr/bin:/usr/bin -v /usr/lib64:/usr/lib64 ubi /bin/ps -ef*
+podman run -v /usr/bin:/usr/bin -v /usr/lib64:/usr/lib64 ubi /bin/ps -ef
 ----
 
 [{format_cmd_output}]
@@ -592,7 +593,7 @@ Now let us run a command to report the network configuration from within the a c
 
 [{format_cmd_exec}]
 ----
-*podman run -v /usr/sbin:/usr/sbin -v /usr/lib64:/usr/lib64  ubi /usr/sbin/ip addr show eth0*
+podman run -v /usr/sbin:/usr/sbin -v /usr/lib64:/usr/lib64  ubi /usr/sbin/ip addr show eth0
 ----
 
 [{format_cmd_output}]
@@ -613,7 +614,7 @@ NOTE: Note that we introduce the '--rm' flag to our podman command.  This tells 
 
 [{format_cmd_exec}]
 ----
-*podman run --rm ubi cat /etc/hosts*
+podman run --rm ubi cat /etc/hosts
 ----
 
 [{format_cmd_output}]
@@ -627,7 +628,7 @@ How does the container resolve hostnames (ie: DNS)?
 
 [{format_cmd_exec}]
 ----
-*podman run --rm ubi cat /etc/resolv.conf*
+podman run --rm ubi cat /etc/resolv.conf
 ----
 
 [{format_cmd_output}]
@@ -640,7 +641,7 @@ Pay attention now, the route command is in '/usr/sbin'.  Take a look at the rout
 
 [{format_cmd_exec}]
 ----
-*podman run -v /usr/sbin:/usr/sbin --rm ubi route -n*
+podman run -v /usr/sbin:/usr/sbin --rm ubi route -n
 ----
 
 [{format_cmd_output}]
@@ -658,7 +659,7 @@ Finally, look at the filesystem(S) in the container's namespace.
 
 [{format_cmd_exec}]
 ----
-*podman run ubi df -h*
+podman run ubi df -h
 ----
 
 [{format_cmd_output}]
@@ -675,7 +676,7 @@ You were introduced to Bind-Mounts in the previous section.  Let us examine what
 
 [{format_cmd_exec}]
 ----
-*podman run -v /usr/bin:/usr/bin ubi df -h*
+podman run -v /usr/bin:/usr/bin ubi df -h
 ----
 
 [{format_cmd_output}]
@@ -695,8 +696,8 @@ Let us clean up your environment before proceeding
 
 [{format_cmd_exec}]
 ----
-*podman kill --all*
-*podman rm --all*
+podman kill --all
+podman rm --all
 ----
 
 == Your First Containerized Application
@@ -707,7 +708,7 @@ A configuration file for a podman build has already been supplied for your syste
 
 [{format_cmd_exec}]
 ----
-*cat /root/custom_image.OCIFile*
+cat /root/custom_image.OCIFile
 ----
 
 [{format_cmd_output}]
@@ -738,14 +739,14 @@ Now it's time to build the new container image.
 
 [{format_cmd_exec}]
 ----
-*podman build -t custom_image --file custom_image.OCIFile*
+podman build -t custom_image --file custom_image.OCIFile
 ----
 
 Once this completes, run:
 
 [{format_cmd_exec}]
 ----
-*podman images*
+podman images
 ----
 
 [{format_cmd_output}]
@@ -767,7 +768,7 @@ Time to deploy the image.  A few things to note here:
 
 [{format_cmd_exec}]
 ----
-*podman run -d --name="webserver" -p 8080:80 custom_image*
+podman run -d --name="webserver" -p 8080:80 custom_image
 ----
 
 === Inspect
@@ -776,14 +777,14 @@ To view some facts about the running container, you use 'podman inspect'.
 
 [{format_cmd_exec}]
 ----
-*podman inspect webserver*
+podman inspect webserver
 ----
 
 This reveals quite a bit of information which you can drill in to using additional format arguments.  For example, let us locate the IP address for the container.
 
 [{format_cmd_exec}]
 ----
-*podman inspect --format '{{ .NetworkSettings.IPAddress }}' webserver*
+podman inspect --format '{{ .NetworkSettings.IPAddress }}' webserver
 ----
 
 You can see the IP address that was assigned to the container.
@@ -794,7 +795,7 @@ We can apply the same filter to any value in the json output. Try a few differen
 
 [{format_cmd_exec}]
 ----
-*curl http://localhost:8080/*
+curl http://localhost:8080/
 ----
 
 [{format_cmd_output}]
@@ -806,7 +807,7 @@ Let us look at the processes running on the host.
 
 [{format_cmd_exec}]
 ----
-*pgrep -laf httpd*
+pgrep -laf httpd
 ----
 
 [{format_cmd_output}]
@@ -822,7 +823,7 @@ And finally let's look at some networking info.
 
 [{format_cmd_exec}]
 ----
-*netstat -utlpn | grep 8080*
+netstat -utlpn | grep 8080
 ----
 
 [{format_cmd_output}]
@@ -835,7 +836,7 @@ Now let's introduce a commandline utility 'lsns' to check out the namespaces.
 
 [{format_cmd_exec}]
 ----
-*lsns*
+lsns
 ----
 
 [{format_cmd_output}]
@@ -873,7 +874,7 @@ Since we explored namespaces earlier, we may as well have a look at the control-
 
 [{format_cmd_exec}]
 ----
-*systemd-cgls*
+systemd-cgls
 ----
 
 [{format_cmd_output}]
@@ -902,12 +903,24 @@ What we can tell is that our container is bound by a cgroup called "machine.slic
 
 [{format_cmd_exec}]
 ----
-*podman stop webserver*
-*podman rm webserver*
-*podman kill --all*
-*podman rm --all*
-*podman rmi --all --force*
+podman stop webserver
+podman rm webserver
+podman kill --all
+podman rm --all
+podman rmi --all --force
 ----
+
+== Conclusion
+
+This concludes the exercises related to podman.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
+
 
 [discrete]
 == Additional Reference Materials

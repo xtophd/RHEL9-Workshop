@@ -38,14 +38,14 @@ Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-virt-checkhost.sh*
+workshop-virt-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
@@ -63,7 +63,7 @@ You can start by examining the CPU flags (capabilities) advertised by your syste
 
 [{format_cmd_exec}]
 ----
-*grep -E 'svm|vmx' /proc/cpuinfo*
+grep -E 'svm|vmx' /proc/cpuinfo
 ----
 
 [{format_cmd_output}]
@@ -82,7 +82,7 @@ You are looking for either the Intel flag (vmx) or the AMD flag (svm).  A more s
 
 [{format_cmd_exec}]
 ----
-*if grep -qE 'svm|vmx' /proc/cpuinfo ; then echo "Virt Supported" ; else echo "WARNING!! Virt NOT Supported"; fi*
+if grep -qE 'svm|vmx' /proc/cpuinfo ; then echo "Virt Supported" ; else echo "WARNING!! Virt NOT Supported"; fi
 ----
 
 [{format_cmd_output}]
@@ -105,7 +105,7 @@ Install the required packages.
 
 [{format_cmd_exec}]
 ----
-*dnf install -y qemu-kvm libvirt virt-install libvirt-client libguestfs-tools cockpit-machines*
+dnf install -y qemu-kvm libvirt virt-install libvirt-client libguestfs-tools cockpit-machines
 ----
 
 Next we need to enable the various services.
@@ -118,7 +118,7 @@ To enable the necessary services for this unit:
 
 [{format_cmd_exec}]
 ----
-*systemctl enable --now libvirtd*
+systemctl enable --now libvirtd
 ----
 
 NOTE: The "enable --now" syntax is new in RHEL 8.  It allows for permanently enabling as well as immediately starting services in a single command.
@@ -127,7 +127,7 @@ Finally check the service status.
 
 [{format_cmd_exec}]
 ----
-*systemctl status libvirtd*
+systemctl status libvirtd
 ----
 
 === Verify Virtualization Host Status
@@ -136,7 +136,7 @@ One simple command checks various hardware and software configurations for suppo
 
 [{format_cmd_exec}]
 ----
-*virt-host-validate*
+virt-host-validate
 ----
 
 [{format_cmd_output}]
@@ -155,6 +155,12 @@ One simple command checks various hardware and software configurations for suppo
   QEMU: Checking for device assignment IOMMU support                         : WARN (No ACPI IVRS table found, IOMMU either disabled in BIOS or not supported by this hardware platform)
 ----
 
+WARNING:  It could very well be that your environment does not support 
+native or nested virutualization.  It does not mean that this exercise 
+will not work, but it does mean that it will ne VERY slow
+
+
+
 == Deploy A Virtual-Machine with 'virt-install'
 
 Red Hat provides pre-made generic images of RHEL for use as virtual machines in a QCOW2 format.
@@ -169,7 +175,7 @@ In the previous exercise, you built a custom QCOW2 image using Image Builder.  T
 
 [{format_cmd_exec}]
 ----
-*ls /var/lib/libvirt/images*
+ls /var/lib/libvirt/images
 ----
 
 [{format_cmd_output}]
@@ -189,13 +195,13 @@ Now you need to do a few more things to your image:
 
 [{format_cmd_exec}]
 ----
-*virt-customize \
+virt-customize \
     -a /var/lib/libvirt/images/vmguest.qcow2 \
     --hostname vmguest \
     --root-password password:redhat \
     --copy-in /usr/local/etc/index.html:/var/www/html \
     --selinux-relabel \
-    --uninstall cloud-init*
+    --uninstall cloud-init
 ----
 
 
@@ -205,7 +211,7 @@ It is now time to launch the VM
 
 [{format_cmd_exec}]
 ----
-*virt-install \
+virt-install \
    --import \
    --name vmguest \
    --memory 2048 \
@@ -213,7 +219,7 @@ It is now time to launch the VM
    --disk /var/lib/libvirt/images/vmguest.qcow2 \
    --graphics vnc \
    --noautoconsole\
-   --os-variant rhel8.4*
+   --os-variant rhel9.0
 ----
 
 Give the VM a few moments to boot.
@@ -224,7 +230,7 @@ To determine what IP address was assigned to the new host, we can using some opt
 
 [{format_cmd_exec}]
 ----
-*virsh net-dhcp-leases default*
+virsh net-dhcp-leases default
 ----
 
 The output will show us the clients MAC address and the IP address it was assigned via the libvirt integrated dnsmasq service.
@@ -240,7 +246,7 @@ Another mechanism determine the ip address of the client is to use the 'domifadd
 
 [{format_cmd_exec}]
 ----
-*virsh domifaddr vmguest*
+virsh domifaddr vmguest
 ----
 
 [{format_cmd_output}]
@@ -257,12 +263,12 @@ Once we can see the network information, now it is time to connect to the host s
 
 [{format_cmd_exec}]
 ----
-*export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4,a,/\//) ; print a[1] }')*
+export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4,a,/\//) ; print a[1] }')
 ----
 
 [{format_cmd_exec}]
 ----
-*curl $VM_IP*
+curl $VM_IP
 ----
 
 == Virtual Machine Inspection
@@ -271,12 +277,12 @@ Now it is time to connect to the host and check out some it's characteristics.
 
 [{format_cmd_exec}]
 ----
-*export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4,a,/\//) ; print a[1] }')*
+export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4,a,/\//) ; print a[1] }')
 ----
 
 [{format_cmd_exec}]
 ----
-*ssh $VM_IP*
+ssh $VM_IP
 ----
 
 The password was set in the previous exercise with virt-customize command and is probably just 'redhat'
@@ -288,21 +294,21 @@ Verify that the httpd daemon is running.
 
 [{format_cmd_exec}]
 ----
-*systemctl status httpd*
+systemctl status httpd
 ----
 
 Verifiy that the index.html is installed.
 
 [{format_cmd_exec}]
 ----
-*ls /var/www/html/index.html*
+ls /var/www/html/index.html
 ----
 
 Exit back to the host
 
 [{format_cmd_exec}]
 ----
-*exit*
+exit
 ----
 
 == Additional CLI Commands
@@ -329,13 +335,25 @@ Using either the CLI (or the Web-Console), be sure to shutdown the VM(s) you dep
 
 [{format_cmd_exec}]
 ----
-*virsh list --all*
+virsh list --all
 ----
 
 [{format_cmd_exec}]
 ----
-*virsh shutdown vmguest*
+virsh shutdown vmguest
 ----
+
+== Conclusion
+
+This concludes the exercises related to virtualization.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
+
 
 == Additional Resources
 

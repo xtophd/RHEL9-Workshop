@@ -34,21 +34,21 @@ From host `bastion`, ssh to `node3`.
 
 [{format_cmd_exec}]
 ----
-*ssh node3*
+ssh node3
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-buildah-checkhost.sh*
+workshop-buildah-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
@@ -63,7 +63,7 @@ Let's get started by creating a new working container based off of the ubi image
 
 [{format_cmd_exec}]
 ----
-*buildah from ubi9/ubi*
+buildah from ubi9/ubi
 ----
 
 [{format_cmd_output}]
@@ -88,7 +88,7 @@ Let's run:
 
 [{format_cmd_exec}]
 ----
-*buildah copy ubi-working-container /var/tmp/buildah-dan-cries.txt /var/www/html/dan-cries.txt*
+buildah copy ubi-working-container /var/tmp/buildah-dan-cries.txt /var/www/html/dan-cries.txt
 ----
 
 [{format_cmd_output}]
@@ -116,7 +116,7 @@ We need to install an httpd server in our image, and what better way to do that 
 
 [{format_cmd_exec}]
 ----
-*buildah run ubi-working-container dnf install -y httpd*
+buildah run ubi-working-container dnf install -y httpd
 ----
 
 [{format_cmd_output}]
@@ -135,7 +135,7 @@ Next we set the entry point (command) so when the image deploys it knows what pr
 
 [{format_cmd_exec}]
 ----
-*buildah config --cmd "/usr/sbin/httpd -D FOREGROUND" ubi-working-container*
+buildah config --cmd "/usr/sbin/httpd -D FOREGROUND" ubi-working-container
 ----
 
 === Validate the Container Image
@@ -146,7 +146,7 @@ Proceed to mount the root filesystem of your container with:
 
 [{format_cmd_exec}]
 ----
-*buildah mount ubi-working-container*
+buildah mount ubi-working-container
 ----
 
 [{format_cmd_output}]
@@ -158,12 +158,12 @@ Using the long path provided by your mount command, change directories.
 
 [{format_cmd_exec}]
 ----
-*cd $( buildah mount ubi-working-container )*
+cd $( buildah mount ubi-working-container )
 ----
 
 [{format_cmd_exec}]
 ----
-*ls -lah ./var/www/html*
+ls -lah ./var/www/html
 ----
 
 [{format_cmd_output}]
@@ -178,12 +178,12 @@ There is our `dan-cries.txt`! Let's add an additional file:
 
 [{format_cmd_exec}]
 ----
-*cp /var/tmp/buildah-index.html ./var/www/html/index.html*
+cp /var/tmp/buildah-index.html ./var/www/html/index.html
 ----
 
 [{format_cmd_exec}]
 ----
-*cat ./var/www/html/index.html*
+cat ./var/www/html/index.html
 ----
 
 [{format_cmd_output}]
@@ -202,7 +202,7 @@ Let us just double check contents of the httpd docroot one last time:
 
 [{format_cmd_exec}]
 ----
-*ls -lahZ ./var/www/html/*
+ls -lahZ ./var/www/html/
 ----
 
 [{format_cmd_output}]
@@ -218,8 +218,8 @@ When you are done making direct changes to the root filesystem of your container
 
 [{format_cmd_exec}]
 ----
-*cd /root*
-*buildah unmount ubi-working-container*
+cd /root
+buildah unmount ubi-working-container
 ----
 
 [{format_cmd_output}]
@@ -233,7 +233,7 @@ At this point, we've used buildah to run commands and create a container image s
 
 [{format_cmd_exec}]
 ----
-*buildah commit ubi-working-container webserver2*
+buildah commit ubi-working-container webserver2
 ----
 
 [{format_cmd_output}]
@@ -252,7 +252,7 @@ Let's look at our images:
 
 [{format_cmd_exec}]
 ----
-*podman images*
+podman images
 ----
 
 [{format_cmd_output}]
@@ -268,7 +268,7 @@ Now let's run that webserver:
 
 [{format_cmd_exec}]
 ----
-*podman run -d -p 8080:80 webserver2*
+podman run -d -p 8080:80 webserver2
 ----
 
 ==== Validate
@@ -277,7 +277,7 @@ Finally let's test our new webserver:
 
 [{format_cmd_exec}]
 ----
-*curl http://localhost:8080/*
+curl http://localhost:8080/
 ----
 
 [{format_cmd_output}]
@@ -296,7 +296,7 @@ and:
 
 [{format_cmd_exec}]
 ----
-*curl http://localhost:8080/dan-cries.txt*
+curl http://localhost:8080/dan-cries.txt
 ----
 
 [{format_cmd_output}]
@@ -312,7 +312,7 @@ Let's take a look at the webserver2:latest container that we just built:
 
 [{format_cmd_exec}]
 ----
-*skopeo inspect containers-storage:localhost/webserver2:latest*
+skopeo inspect containers-storage:localhost/webserver2:latest
 ----
 
 [{format_cmd_output}]
@@ -374,7 +374,7 @@ Let's look at the ubi9/ubi container that we built this off of and compare the l
 
 [{format_cmd_exec}]
 ----
-*skopeo inspect containers-storage:registry.access.redhat.com/ubi9/ubi:latest*
+skopeo inspect containers-storage:registry.access.redhat.com/ubi9/ubi:latest
 ----
 
 [{format_cmd_output}]
@@ -434,7 +434,7 @@ Pretty neat that we can look inside local containers, but what about containers 
 
 [{format_cmd_exec}]
 ----
-# *skopeo inspect docker://registry.access.redhat.com/ubi9/ubi-minimal:latest*
+skopeo inspect docker://registry.access.redhat.com/ubi9/ubi-minimal:latest
 ----
 
 [{format_cmd_output}]
@@ -504,7 +504,7 @@ Next let's run:
 
 [{format_cmd_exec}]
 ----
-*podman images*
+podman images
 ----
 
 [{format_cmd_output}]
@@ -522,12 +522,12 @@ Let's run:
 
 [{format_cmd_exec}]
 ----
-*mkdir /root/ubi-tarball*
+mkdir /root/ubi-tarball
 ----
 
 [{format_cmd_exec}]
 ----
-*skopeo copy docker://registry.access.redhat.com/ubi9/ubi-minimal:latest dir:/root/ubi-tarball*
+skopeo copy docker://registry.access.redhat.com/ubi9/ubi-minimal:latest dir:/root/ubi-tarball
 ----
 
 [{format_cmd_output}]
@@ -545,8 +545,8 @@ and now we can do:
 
 [{format_cmd_exec}]
 ----
-*cd /root/ubi-tarball*
-*ls -l*
+cd /root/ubi-tarball
+ls -l
 ----
 
 [{format_cmd_output}]
@@ -569,7 +569,7 @@ Inspecting the images with the `file` command, we discover that these a couple o
 
 [{format_cmd_exec}]
 ----
-*file **
+file *
 ----
 
 [{format_cmd_output}]
@@ -591,7 +591,7 @@ Let's take a test view of the contents of the largest gzip file (examine "origin
 
 [{format_cmd_exec}]
 ----
-# *tar tvzf 961425e673a750fb2d17875c2a4bf5a319c8681e4fdf81a5a6e2d819cef95e35*
+tar tvzf 961425e673a750fb2d17875c2a4bf5a319c8681e4fdf81a5a6e2d819cef95e35
 ----
 
 [{format_cmd_output}]
@@ -645,14 +645,26 @@ Examples of how to do these things are available in 'man skopeo'
 
 [{format_cmd_exec}]
 ----
-*podman stop --all*
-*podman rm --all*
+podman stop --all
+podman rm --all
 
-*buildah rm --all*
+buildah rm --all
 
-*podman rmi --all*
-*buildah rmi --all*
+podman rmi --all
+buildah rmi --all
 ----
+
+== Conclusion
+
+This concludes the exercises related to buildah and skopeo.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
+
 
 [discrete]
 == Additional Reference Materials
