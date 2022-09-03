@@ -591,9 +591,17 @@ ssh node2 "cat /tmp/workshop.tmp"
 ssh node2 "echo < /tmp/workshop.tmp"
 ----
 
+This is the last step related to bpftrace.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate bpftrace.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill bpftrace"
+----
+
 
 [discrete]
-==== Primary Terminal (node2)
+==== Results
 
 Finally back to the primary terminal you should have seen some output like this:
 
