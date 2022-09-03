@@ -259,7 +259,7 @@ podman images
 ----
 REPOSITORY                            TAG      IMAGE ID       CREATED          SIZE
 localhost/webserver2                  latest   a831badcea41   25 seconds ago   240 MB
-registry.access.redhat.com/ubi8/ubi   latest   8121a9f5303b   12 days ago      240 MB
+registry.access.redhat.com/ubi9/ubi   latest   8121a9f5303b   12 days ago      240 MB
 ----
 
 ==== Deploy
@@ -498,7 +498,7 @@ rough subscriptions for Red Hat products. This image is maintained by Red Hat an
 }
 ----
 
-The above allows us to look at the registry's copy of ubi8/ubi.
+The above allows us to look at the registry's copy of ubi9/ubi.
 
 Next let's run:
 
