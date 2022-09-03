@@ -130,6 +130,8 @@ PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
 [discrete]
 ==== Secondary Terminal (bastion)
 
+WARNING: It is important to wait until tcplife is setup.  Do not proceed until you see the output headers (displayed above) appear.
+
 Run a little script to generate some user activity.
 
 [{format_cmd_exec2}]
