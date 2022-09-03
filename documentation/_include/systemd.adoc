@@ -417,7 +417,7 @@ systemctl status mariadb
              └─37717 /usr/libexec/mariadbd --basedir=/usr
 ----
 
-=== Conclusion
+== Conclusion
 
 Hopefully you should now have a fundamental understanding of how services 
 are installed, managed and customized on Red Hat Enterprise Linux 9.

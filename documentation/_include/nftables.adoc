@@ -425,7 +425,7 @@ public (active)
 
 Which is why we encourage you to use firewalld and firewall-cmd for 99% of your netfilter needs.
 
-=== Conclusion
+== Conclusion
 
 That concludes this unit on nftables.
 

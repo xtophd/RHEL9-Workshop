@@ -286,7 +286,7 @@ virt-customize -a vmguest.qcow2 \
 
 Your image is now ready for deployment.
 
-=== Conclusion
+== Conclusion
 
 
 In the next unit, we will tackle how to utilize the native virtualization 

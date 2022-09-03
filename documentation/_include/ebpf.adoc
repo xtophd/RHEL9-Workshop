@@ -45,21 +45,21 @@ From host `bastion`, ssh to `node2`.
 
 [{format_cmd_exec}]
 ----
-*ssh node2*
+ssh node2
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-ebpf-checkhost.sh*
+workshop-ebpf-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
@@ -73,7 +73,7 @@ Start by installing the *BPF Compiler Collection* (bcc-tools) and kernel-devel p
 
 [{format_cmd_exec}]
 ----
-*dnf install bcc-tools bpftrace strace kernel-devel-$(uname -r) -y*
+dnf install bcc-tools bpftrace strace kernel-devel-$(uname -r) -y
 ----
 
 Now, we have a lot of interesting tools installed in /usr/share/bcc/tools along with accompanying man pages.
@@ -93,7 +93,7 @@ To run this tool, execute the following and give it a couple of seconds to get s
 
 [{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/tcplife*
+/usr/share/bcc/tools/tcplife
 ----
 
 [{format_cmd_output}]
@@ -111,7 +111,7 @@ In your second terminal, establish yourself as described below and then run the 
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "sudo workshop-ebpf-rootkit.sh"*
+ssh node2 "sudo workshop-ebpf-rootkit.sh"
 ----
 
 This command should run for about 10 seconds and then exit.  
@@ -146,7 +146,7 @@ Continuing on host `node2`, to run `execsnoop` as follows:
 
 [{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/execsnoop*
+/usr/share/bcc/tools/execsnoop
 ----
 
 [{format_cmd_output}]
@@ -161,7 +161,7 @@ In your second terminal having established yourself as root, run the following c
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "sudo workshop-ebpf-rootkit.sh"*
+ssh node2 "sudo workshop-ebpf-rootkit.sh"
 ----
 
 [discrete]
@@ -218,7 +218,7 @@ To run this tool, execute the following and give it a couple of seconds to get s
 
 [{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/mountsnoop*
+/usr/share/bcc/tools/mountsnoop
 ----
 
 [{format_cmd_output}]
@@ -233,7 +233,7 @@ In your second terminal having established yourself as root, let's try to unmoun
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "sudo workshop-ebpf-unmountroot.sh"*
+ssh node2 "sudo workshop-ebpf-unmountroot.sh"
 ----
 
 [{format_cmd_output}]
@@ -260,7 +260,7 @@ Now let's try to unmount a filesystem that we should be able to unmount.  But be
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "grep /dev/shm /proc/mounts"*
+ssh node2 "grep /dev/shm /proc/mounts"
 ----
 
 [{format_cmd_output}]
@@ -272,7 +272,7 @@ Now proceed to umount `/dev/shm` on `node2`
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "sudo workshop-ebpf-unmountshm.sh"*
+ssh node2 "sudo workshop-ebpf-unmountshm.sh"
 ----
 
 [discrete]
@@ -294,7 +294,7 @@ Proceed to restore the /dev/shm mount as follows:
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "sudo workshop-ebpf-mountshm.sh"*
+ssh node2 "sudo workshop-ebpf-mountshm.sh"
 ----
 
 [discrete]
@@ -326,7 +326,7 @@ To run this tool, execute the following and give it a couple of seconds to get s
 
 [{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/cachestat 5*
+/usr/share/bcc/tools/cachestat 5
 ----
 
 [{format_cmd_output}]
@@ -389,7 +389,7 @@ To begin, we need a test file to use as our target.
 
 [{format_cmd_exec}]
 ----
-*touch /tmp/workshop.tmp*
+touch /tmp/workshop.tmp
 ----
 
 The command we will evaluate is `cat /tmp/workshop.tmp` and we will use strace to list the system calls
@@ -397,7 +397,7 @@ made and with what frequency (count).
 
 [{format_cmd_exec}]
 ----
-*strace -c cat /tmp/workshop.tmp*
+strace -c cat /tmp/workshop.tmp
 ----
 
 [{format_cmd_output}]
@@ -525,7 +525,7 @@ To generate some output, you will need to utilize the second terminal and open t
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "cat /tmp/workshop.tmp"*
+ssh node2 "cat /tmp/workshop.tmp"
 ----
 
 [{format_cmd_exec2}]
@@ -535,7 +535,7 @@ To generate some output, you will need to utilize the second terminal and open t
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "echo < /tmp/workshop.tmp"*
+ssh node2 "echo < /tmp/workshop.tmp"
 ----
 
 
@@ -556,7 +556,16 @@ This displays the process-id along with the user and group ids of programs that 
 
 Go ahead and hit CTL-C in the primary terminal to exit bpftrace.
 
+== Conclusion
+
 This concludes the exercises related to EBPF.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
 
 == Additional Resources
 
