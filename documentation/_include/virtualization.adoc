@@ -92,6 +92,11 @@ Virt Supported
 
 After you install all the required software, there are some additional tools to provide more detailed reporting on system capabilities.
 
+WARNING:  It could very well be that your environment does not support 
+native or nested virutualization.  This does not mean that this exercise 
+will not work, but it does mean that it will ne VERY slow (even if it does work).
+
+
 == Installation and Configuration
 
 NOTE: Please note that all software has been pre-installed and configured.  These steps are provided as reference material only.
@@ -154,10 +159,6 @@ virt-host-validate
   QEMU: Checking for cgroup 'blkio' controller support                       : PASS
   QEMU: Checking for device assignment IOMMU support                         : WARN (No ACPI IVRS table found, IOMMU either disabled in BIOS or not supported by this hardware platform)
 ----
-
-WARNING:  It could very well be that your environment does not support 
-native or nested virutualization.  It does not mean that this exercise 
-will not work, but it does mean that it will ne VERY slow
 
 
 
@@ -256,7 +257,8 @@ virsh domifaddr vmguest
  vnet0      52:54:00:63:85:76    ipv4         192.168.122.62/24
 ----
 
-If the above command results in empty data, it is just an indication that the virtual machine has 
+
+WARNING: Before you proceed, empty data in the above commands is an indication that the virtual machine has 
 not completed it's bootstrap.  Just give it a few more moments and try again.
 
 Once we can see the network information, now it is time to connect to the host so 

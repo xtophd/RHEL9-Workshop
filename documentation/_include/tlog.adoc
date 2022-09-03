@@ -26,6 +26,8 @@ Tlog is a terminal I/O recording and playback package for Linux.  The session lo
 
 If you have successfully run the RHEL 8 lab preparation playbook, then node1.example.com has already been properly configured for session logging.  What follows are some basic exercises to demonstrate how this facility functions.
 
+Starting with RHEL 9, TLOG is configured by a relatively simple system-role.  We will com back to that later.
+
 == Getting Started
 
 For these exercises, you will be using the host `node1` as user `root`.
@@ -34,21 +36,21 @@ From host `bastion`, ssh to `node1`.
 
 [{format_cmd_exec}]
 ----
-*ssh node1*
+ssh node1
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-tlog-checkhost.sh*
+workshop-tlog-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
@@ -61,7 +63,7 @@ NOTE: The command is 'su' + 'dash' + 'other-user'.  Don't forget the dash!
 
 [{format_cmd_exec}]
 ----
-*su - other-user*
+su - other-user
 ----
 
 [{format_cmd_output}]
@@ -75,7 +77,7 @@ Now to do a few activities worth logging.  You can check out a directory listing
 
 [{format_cmd_exec}]
 ----
-*ls -l /etc*
+ls -l /etc
 ----
 
 [{format_cmd_output}]
@@ -97,7 +99,7 @@ drwx------.  4 sssd sssd     4096 Apr 17 21:55 sssd
 
 [{format_cmd_exec}]
 ----
-*cat /etc/passwd*
+cat /etc/passwd
 ----
 
 [{format_cmd_output}]
@@ -119,7 +121,7 @@ ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
 
 [{format_cmd_exec}]
 ----
-*cat /etc/shadow*
+cat /etc/shadow
 ----
 
 [{format_cmd_output}]
@@ -131,7 +133,7 @@ Oh wait, you need root privileges to see the contents of _/etc/shadow_.  You can
 
 [{format_cmd_exec}]
 ----
-*sudo cat /etc/shadow*
+sudo cat /etc/shadow
 ----
 
 [{format_cmd_output}]
@@ -155,7 +157,7 @@ We are done with our limited nafarious activities, so proceed to `exit`
 
 [{format_cmd_exec}]
 ----
-*exit*
+exit
 ----
 
 == Session Play Back
@@ -164,7 +166,7 @@ Session logs are configured to record in the system journal by default.  A disti
 
 [{format_cmd_exec}]
 ----
-*journalctl -o verbose  --output-fields=TLOG_USER,TLOG_REC TLOG_USER=other-user*
+journalctl -o verbose  --output-fields=TLOG_USER,TLOG_REC TLOG_USER=other-user
 ----
 
 [{format_cmd_output}]
@@ -192,7 +194,7 @@ We have taken the liberty of scripting this "search" to playback the last sessio
 
 [{format_cmd_exec}]
 ----
-*workshop-tlog-playback.sh*
+workshop-tlog-playback.sh
 ----
 
 Once you hit enter on the above command, you will see a note that "Playback Started..." and again when "Playback Finished...".  Be patient until it completes and your root prompt returns.
@@ -207,40 +209,20 @@ tlog-play -r journal -M ${myTLOG}
 ----
 ====
 
-== Initial Setup of TLOG
 
-Clearly we have taken the liberty to pre-configure TLOG for this lab.  But, it was not very difficult.  TLOG requires a couple of packages, a configuration file and simple restart of the sssd service.
 
-[{format_cmd_exec}]
-----
-dnf install tlog cockpit-session-recording
-----
+== Conclusion
 
-Here is what the config file looks like _/etc/sssd/conf.d/sssd-session-recording.conf_
+This concludes the exercises related to tlog.
+
+Time to finish this unit and return the shell to it's home position.
 
 [{format_cmd_exec}]
 ----
-*cat /etc/sssd/conf.d/sssd-session-recording.conf*
+workshop-finish-exercise.sh
 ----
 
-[{format_cmd_output}]
-----
-# This file deployed by Ansible playbook
-# /etc/sssd/conf.d/sssd-session-recording.conf
 
-[session_recording]
-scope = some
-users = other-user
-groups = other-user
-----
-
-And lastly, reload systemd and restart the sssd service.
-
-[{format_cmd_exec}]
-----
-*systemctl daemon-reload*
-*systemctl restart sssd*
-----
 
 == Additional Resources
 
