@@ -226,7 +226,15 @@ composer-cli compose list
 812019dd-20e5-4528-a99b-09fbe47ca2d8 *FINISHED* sample-webserver 0.0.1 qcow2
 ----
 
-It may take a few minutes, but eventually you should see a "FINISHED" status
+It may take a few minutes, but eventually you should see a "FINISHED" status.  Here is a
+simple command to wait for the compose to finish.
+
+[{format_cmd_exec}]
+----
+time until $(composer-cli compose list | head -1 | grep -qi finished); do echo -n "." ; sleep 3; done
+----
+
+WARNING:  It is critical to wait for the compose to finish before proceeding.
 
 
 
