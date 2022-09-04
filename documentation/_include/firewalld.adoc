@@ -687,7 +687,7 @@ Panic mode allows you to immediately turn off all network traffic on a host.
 
 This is handy to know, but unless you are on the physical system console or remote managed console (ie: ILO, DRAC, etc...) this can be very disruptive.  So we'll provide the commands under the strict guidance that you *DON'T RUN THESE COMMANDS* during this workshop.
 
-[NOTE]
+[WARNING]
 ====
 _DO NOT RUN THESE COMMANDS_
 ----
