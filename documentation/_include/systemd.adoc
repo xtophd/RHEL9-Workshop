@@ -147,7 +147,9 @@ container-getty@.service                   static          -
 
 The state will  be enabled, disabled, static, or masked.  Static indicates that the unit file does not contain an "install" section used to enable the unit.  In this case, the unit typically performs a one-off action or is used as a dependency of another unit and should not be run by itself.
 
-== EXAMPLE: Analyzing System Startup
+
+
+== Analyzing System Startup
 
 Let's collect some initial data about the boot process
 
@@ -191,11 +193,11 @@ systemd-analyze blame | head -n 15
 This helps to learn the “cost” of some of the default services.  To speed up boot-time, unnecessary services could potentially be removed or disabled.
 
 
-== Example : Install a LAMP Stack
+== Exercise : Install a LAMP Stack
 
 === Install Packages
 
-Now that we have a good idea of what’s installed on our system, let’s get a basic lamp stack up and running.  If you prefer not to type all of these commands, there is a workshop script below to save you some time.
+Now that we have a good idea of what’s installed on our system, let’s get a basic lamp stack up and running.
 
 Let us install some packages.
 
@@ -272,14 +274,9 @@ firewall-cmd --add-service=http
 success
 ----
 
-So as promised, here is a workshop script that performs all of the above steps.
 
-[{format_cmd_exec}]
-----
-workshop-systemd-lamp.sh
-----
 
-=== EXAMPLE: Customize Services
+== Exercise: Customize Default Services
 
 systemd controls more than daemons or services. For this lab, we will primarily be working with service units but it's important to know that systemd is handling the dependencies between other types: sockets, timers, mounts, swap, slices, etc.
 
@@ -293,7 +290,7 @@ While the defaults for unit files won’t need to be altered most of the time, t
 
 Create a drop-in configuration file to extend the default httpd.service unit
 
-==== Modify httpd
+=== Modify httpd
 
 [{format_cmd_exec}]
 ----
@@ -317,7 +314,7 @@ Notify systemd of the changes.
 systemctl daemon-reload
 ----
 
-==== Modify mariadb
+=== Modify mariadb
 
 Similar to what you did in the last step, extend the mariadb.service unit with Restart=always. 
 
@@ -417,6 +414,8 @@ systemctl --no-pager status mariadb
      CGroup: /system.slice/mariadb.service
              └─37717 /usr/libexec/mariadbd --basedir=/usr
 ----
+
+
 
 == Conclusion
 
