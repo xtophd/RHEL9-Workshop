@@ -205,8 +205,10 @@ time virt-customize \
     -a /var/lib/libvirt/images/vmguest.qcow2 \
     --hostname vmguest \
     --root-password password:redhat \
+    --ssh-inject root:file:/root/.ssh/id_rsa.pub \
     --copy-in /usr/local/etc/index.html:/var/www/html \
     --selinux-relabel \
+    --run-command 'echo "PermitRootLogin yes" >> /etc/ssh/sshd_config.d/rootlogin.conf' \
     --uninstall cloud-init
 ----
 
