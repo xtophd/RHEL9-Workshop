@@ -82,7 +82,7 @@ You are looking for either the Intel flag (vmx) or the AMD flag (svm).  A more s
 
 [{format_cmd_exec}]
 ----
-if grep -qE 'svm|vmx' /proc/cpuinfo ; then echo "Virt Supported" ; else echo "WARNING!! Virt NOT Supported"; fi
+if grep -qE 'svm|vmx' /proc/cpuinfo ; then echo 'Virt Supported' ; else echo 'WARNING: no hardware virtualization support detected'; fi
 ----
 
 [{format_cmd_output}]
@@ -94,7 +94,7 @@ After you install all the required software, there are some additional tools to 
 
 WARNING:  It could very well be that your environment does not support 
 native or nested virutualization.  This does not mean that this exercise 
-will not work, but it does mean that it will ne VERY slow (even if it does work).
+will not work, but it does mean that (if it does work) it will be VERY slow.
 
 
 == Installation and Configuration
@@ -206,7 +206,10 @@ virt-customize \
 ----
 
 
-=== VM Deployment
+== VM Deployment
+
+WARNING:  Please note that if your workshop environment did NOT show support for native or nested
+virtualization, every step beyond this point will likely take a very long time.
 
 It is now time to launch the VM
 
