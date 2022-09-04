@@ -21,7 +21,8 @@ endif::[]
 
 = Virtualization Management
 
-NOTE: If you are using the web-console and do not see "Virtual Machines" in the menu, chances are that you need to sign-out and sign-in again.
+CRITICAL: This exercise depends on the work created by the ImageBuilder unit.  
+If you have not completed that work, please do so before proceeding.
 
 Provided your hardware is reasonably modern, chances are that it supports virtualization.  This unit introduces simple virtualization management using kvm and libvirt.  You will learn how to:
 
