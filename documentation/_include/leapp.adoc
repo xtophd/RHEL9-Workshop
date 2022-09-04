@@ -332,7 +332,8 @@ user    4m30.154s
 sys     1m10.384s
 ----
 
-And that a reboot is now required for the upgrade to proceed.  Without console access you won't be able to see the final steps of the upgrade.
+To continue the upgrade process, a reboot is now required.  Without console access you won't be able to see the final 
+and unfortunately this is the step that takes the longest. 
 
 [{format_cmd_exec2}]
 ----
@@ -345,14 +346,14 @@ Connection to leapp closed by remote host.
 Connection to leapp closed.
 ----
 
-after another 6 - 9 minutes, you should be able to ssh back in from the bastion host
+After another 6 - 9 minutes, you should be able to ssh back in from the bastion host
 
 Here is a command you can run on the bastion to loop until the leapp host is
 back online
 
 [{format_cmd_exec2}]
 ----
-time until $( ping -c 1 leapp >/dev/null ) ; do echo -n "." ; done
+time until $( nc -z leapp 22 ) ; do echo -n "." ; sleep 3 ; done
 ----
 
 WARNING: Do not proceed until the leapp upgrade process is complete
@@ -424,7 +425,7 @@ Whether upgrading in place is right is a decision that needs to be made from one
 
 Time to finish this unit and return the shell to it's home position.
 
-[{format_cmd_exec}]
+[{format_cmd_exec2}]
 ----
 workshop-finish-exercise.sh
 ----
