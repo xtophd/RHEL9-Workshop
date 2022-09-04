@@ -28,10 +28,12 @@ endif::[]
 
 == Overview
 
-In this unit, we will get familiar with the upgrade tool called LEAPP.  LEAPP is a tool used to analyze an existing system and report on potential issues that could or would cause issues preventing an in-place upgrade, and once issues are addressed then perform the upgrade itself.  
-
 WARNING:  This exercise requires the SECONDARY terminal and conflicts with any other exercise that 
 uses the secondary terminal.  Do not proceed if the secondary terminal is already in use with another exercise.
+
+In this unit, we will get familiar with the upgrade tool called LEAPP.  LEAPP is a tool used to analyze an 
+existing system and report on potential issues that could or would cause issues preventing an in-place 
+upgrade, and once issues are addressed then perform the upgrade itself.  
 
 Because the upgrade process is VERY time consuming lengthy process, this exercise uses the seconday terminal.  
 The intent is to dedicate secondary terminal to the leapp upgrade, there-by leaving the primary terminal available 
