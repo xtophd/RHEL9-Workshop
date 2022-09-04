@@ -14,6 +14,7 @@ endif::[]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
 :format_cmd_exec2: source,options="nowrap",subs="{markup-in-source}",role="copy"
 :format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+:format_plain: bash,options="nowrap"
 ifeval::["%cloud_provider%" == "ec2"]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
 :format_cmd_exec2: source,options="nowrap",subs="{markup-in-source}",role="execute-2"
@@ -213,7 +214,7 @@ ssh node2 "pkill execsnoop"
 
 In the primary terminal, you should see output similar to:
 
-[{format_cmd_output}]
+[{format_plane}]
 ----
 PCOMM            PID    PPID   RET ARGS
 sshd             28512  749      0 /usr/sbin/sshd -D -oCiphers=aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cb -oMACs=hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2- -oGSSAPIKexAlgorithms=gss-gex-sha1-,gss-group14-sha1- -oKexAlgorithms=curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-excha -oHostKeyAlgorithms=rsa-sha2-256,ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nis -oPubkeyAcceptedKeyTypes=rsa-sha2-256,ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha -R
