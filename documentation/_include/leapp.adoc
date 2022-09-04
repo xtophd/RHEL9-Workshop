@@ -166,12 +166,7 @@ Ensure that Red Hat Subscription Manager is set to consume the latest RHEL 8 con
 subscription-manager release --unset
 ----
 
-If you use the yum-plugin-versionlock plug-in to lock packages to a specific version, clear the lock as follows.
 
-[{format_cmd_exec2}]
-----
-yum versionlock clear
-----
 
 == LEAPP Installation
 
@@ -333,7 +328,7 @@ And that a reboot is now required for the upgrade to proceed.  Without console a
 
 [{format_cmd_exec2}]
 ----
-reboot
+[[ $(hostname -s) == "leapp" ]] && reboot
 ----
 
 [{format_cmd_output}]
@@ -343,6 +338,18 @@ Connection to leapp closed.
 ----
 
 after another 6 - 9 minutes, you should be able to ssh back in from the bastion host
+
+Here is a command you can run on the bastion to loop until the leapp host is
+back online
+
+[{format_cmd_exec2}]
+----
+time until $( ping -c 1 leapp >/dev/null ) ; do echo -n "." ; done
+----
+
+WARNING: Do not proceed until the leapp upgrade process is complete
+
+
 
 [{format_cmd_exec2}]
 ----
