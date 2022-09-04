@@ -2,9 +2,11 @@
 :sectnumlevels: 3
 :markup-in-source: verbatim,attributes,quotes
 :imagesdir: ./_images
+:ssh_command: %ssh_command%
+:ssh_password: %ssh_password%
+:ssh_username: %ssh_username%
 ifdef::env-github[]
 :tip-caption: :bulb:
-
 :note-caption: :information_source:
 :important-caption: :heavy_exclamation_mark:
 :caution-caption: :fire:
