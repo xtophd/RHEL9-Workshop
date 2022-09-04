@@ -874,7 +874,7 @@ Since we explored namespaces earlier, we may as well have a look at the control-
 
 [{format_cmd_exec}]
 ----
-systemd-cgls
+systemd-cgls --no-pager
 ----
 
 [{format_cmd_output}]
