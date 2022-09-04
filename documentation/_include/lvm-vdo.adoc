@@ -355,7 +355,7 @@ It is not always optimal to allocate 100% of volume group to the logical volumes
 
 == Create a RAID-10 Volume with Virtual Data Optimizer (VDO)
 
-We will be leveraging devices /dev/vd{b..e}.  As before, we will cleanup up prior work and start fresh.
+We will be leveraging devices {disk_glob}.  As before, we will cleanup up prior work and start fresh.
 
 === Clean Up Devices
 
@@ -364,16 +364,6 @@ Since we will be reusing the same resources for many exercises, we will begin by
 [{format_cmd_exec}]
 ----
 umount /mnt/lab*
-----
-
-[{format_cmd_exec}]
-----
-*vdo stop --all*
-----
-
-[{format_cmd_exec}]
-----
-vdo remove --all --force
 ----
 
 [{format_cmd_exec}]
@@ -403,6 +393,16 @@ partprobe
 pvcreate {disk_glob}
 ----
 
+[{format_cmd_output}]
+----
+  Physical volume "{disk1}" successfully created.
+  Physical volume "{disk2}" successfully created.
+  Physical volume "{disk3}" successfully created.
+  Physical volume "{disk4}" successfully created.
+----
+
+
+
 === Volume Group Creation
 
 [{format_cmd_exec}]
@@ -415,6 +415,8 @@ vgcreate vg_lab {disk_glob}
 Volume group "vg_lab" successfully created
 ----
 
+
+
 === Logical Volume Creation
 
 This time, we are going to use all four disks to create a mirrored set of striped disks.  Otherwise known as RAID10
@@ -424,16 +426,35 @@ This time, we are going to use all four disks to create a mirrored set of stripe
 lvcreate -y --type raid10 -m1 -i 2 -n lv_raid10 -l 95%FREE vg_lab
 ----
 
+
+
 === Add VDO Deduplication
 
 [{format_cmd_exec}]
 ----
-vdo create --name=lab2 --device=/dev/vg_lab/lv_raid10 --vdoLogicalSize=30G
+lvconvert --type vdo-pool --name=lab2 -V 30G vg_lab/lv_raid10
+----
+
+Once executed, you will be prompted to confirm the task.
+
+[{format_cmd_output}]
+----
+ WARNING: Converting logical volume vg_lab/lv_raid10 to VDO pool volume with formating.
+  THIS WILL DESTROY CONTENT OF LOGICAL VOLUME (filesystem etc.)
+Do you really want to convert vg_lab/lv_raid10? [y/n]: y
+    The VDO volume can address 6 GB in 3 data slabs, each 2 GB.
+    It can grow to address at most 16 TB of physical storage in 8192 slabs.
+    If a larger maximum size might be needed, use bigger slabs.
+  device-mapper: remove ioctl on  (253:8) failed: Device or resource busy
+  device-mapper: remove ioctl on  (253:8) failed: Device or resource busy
+  device-mapper: remove ioctl on  (253:8) failed: Device or resource busy
+  Logical volume "lab2" created.
+  Converted vg_lab/lv_raid10 to VDO pool volume and created virtual vg_lab/lab2 VDO volume.
 ----
 
 [{format_cmd_exec}]
 ----
-mkfs.xfs -K /dev/mapper/lab2
+mkfs.xfs -K /dev/mapper/vg_lab-lab2
 ----
 
 [{format_cmd_exec}]
@@ -443,7 +464,7 @@ mkdir /mnt/lab2
 
 [{format_cmd_exec}]
 ----
-mount /dev/mapper/lab2 /mnt/lab2
+mount /dev/mapper/vg_lab-lab2 /mnt/lab2
 ----
 
 NOTE: To make the mount persistent across reboots, you would still need to either add a systemd unit to mount the filesystem, or add an entry to /etc/fstab.
@@ -463,7 +484,7 @@ NOTE: This could take a few minutes.
 
 [{format_cmd_exec}]
 ----
-for i in /mnt/lab2/** *; do echo "${i}" ; cp -rf /usr/share/locale $i ; done
+for i in /mnt/lab2/* ; do echo "${i}" ; cp -rf /usr/share/locale $i ; done
 ----
 
 The prevoius command should have copied approximately 100MB in 100 folders yielding about 10G of traditional fielsystem consumption.
