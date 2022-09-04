@@ -135,42 +135,40 @@ If necessary, begin by disabling any local static repos and switching to the lat
 
 WARNING: You can probably skip this step if you can connect to a Satellite or directly to redhat.com.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
 yum-config-manager --disable my-rhel-8-server-rpm-repo
-
 ----
 
 Next, register the host and attach an entitlement.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
 subscription-manager register --auto-attach
-
 ----
 
 Finally, enable all of the correct software repositories.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
 subscription-manager repos --disable=*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
 subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms --enable=rhel-8-for-x86_64-appstream-rpms
 ----
 
 Ensure that Red Hat Subscription Manager is set to consume the latest RHEL 8 content.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
 subscription-manager release --unset
 ----
 
 If you use the yum-plugin-versionlock plug-in to lock packages to a specific version, clear the lock as follows.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
 yum versionlock clear
 ----
@@ -183,7 +181,6 @@ Install the LEAPP tools and any dependencies
 [{format_cmd_exec2}]
 ----
 yum install -y leapp-upgrade
-
 ----
 
 === LEAPP Data
