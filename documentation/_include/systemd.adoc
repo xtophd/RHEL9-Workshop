@@ -120,7 +120,7 @@ Next let's view all of the services available (ie: everything installed, running
 
 [{format_cmd_exec}]
 ----
-systemctl list-unit-files -t service
+systemctl --no-pager list-unit-files -t service
 ----
 
 [{format_cmd_output}]
@@ -301,8 +301,8 @@ workshop-systemd-httpdconfig.sh
 ----
 
 [{format_cmd_output}]
-----
 Contents of /etc/systemd/system/httpd.service.d/50-httpd.conf
+----
 [Service]
 Restart=always
 OOMScoreAdjust=-1000
@@ -330,8 +330,9 @@ This time we'll use systemctl to create the drop-in and notify systemd of the ch
 systemctl edit mariadb
 ----
 
-.Type the following using the editor:
-[{format_cmd_output}]
+Type the following using the automatically launched editor (vi):
+
+[source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
 [Service]
 Restart=always
