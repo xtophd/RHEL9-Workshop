@@ -35,21 +35,21 @@ From host `bastion`, ssh to `node2`.
 
 [{format_cmd_exec}]
 ----
-*ssh node2*
+ssh node2
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-kpatch-checkhost.sh*
+workshop-kpatch-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
@@ -60,7 +60,7 @@ Let's start by looking at the current kernel version:
 
 [{format_cmd_exec}]
 ----
-*rpm -q kernel*
+rpm -q kernel
 ----
 
 [{format_cmd_exec}]
@@ -70,7 +70,7 @@ kernel-4.18.0-305.el8.x86_64
 
 [{format_cmd_exec}]
 ----
-*uname -r*
+uname -r
 ----
 
 [{format_cmd_exec}]
@@ -82,7 +82,7 @@ Here we can see that we are running the 4.18.0-305 kernel. Now we install all kp
 
 [{format_cmd_exec}]
 ----
-# *dnf install "kpatch-patch = $(uname -r)" -y*
+dnf install "kpatch-patch = $(uname -r)" -y
 ----
 
 [{format_cmd_exec}]
@@ -97,7 +97,7 @@ Further, if you'd like to look at which CVEs are included by the kpatch installe
 
 [{format_cmd_exec}]
 ----
-# *rpm -qi --changelog kpatch-patch-4_18_0-305*
+rpm -qi --changelog kpatch-patch-4_18_0-305
 ----
 
 [{format_cmd_exec}]
@@ -120,7 +120,7 @@ This tells us that we are now protected against CVE-2021-3501. Let's check `kpat
 
 [{format_cmd_exec}]
 ----
-*kpatch list*
+kpatch list
 ----
 
 [{format_cmd_exec}]
@@ -146,7 +146,7 @@ At that point, kpatch list would look something like this:
 
 [{format_cmd_exec}]
 ----
-*kpatch list*
+kpatch list
 ----
 
 [{format_cmd_exec}]
@@ -159,9 +159,24 @@ kpatch_4_18_0_305_1_1 (4.18.0-305.el8.x86_64)
 
 Note that while we have installed patch modules, none of them are actually loaded.
 
+
+
+== Conclusion
+
+This concludes the exercises related to kpatch.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
+
+
+
 == Additional Resources
 
-  * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/kernel_administration_guide/applying_patches_with_kernel_live_patching[Applying Patches with Kernel Live Patching]
+  * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/999999999/html/kernel_administration_guide/applying_patches_with_kernel_live_patching[Applying Patches with Kernel Live Patching]
   
 [discrete]
 == End of Unit
