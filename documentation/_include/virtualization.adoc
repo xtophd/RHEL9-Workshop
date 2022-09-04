@@ -104,8 +104,8 @@ NOTE: Please note that all software has been pre-installed and configured.  Thes
 
 System needs to be configure with access to the following repos:
 
-  * rhel-8-baseos-rpms
-  * rhel-8-appstream-rpms
+  * rhel-9-baseos-rpms
+  * rhel-9-appstream-rpms
 
 Install the required packages.
 
