@@ -194,15 +194,36 @@ Now you need to do a few more things to your image:
     * selinux relabel files in the guest
     * remove the cloud-init package
 
+We will include a timer on this command so you can estimate how long this
+will take.  On our AWS reference platform without virt support, this took
+about 5 minutes.
+
 [{format_cmd_exec}]
 ----
-virt-customize \
+time virt-customize \
     -a /var/lib/libvirt/images/vmguest.qcow2 \
     --hostname vmguest \
     --root-password password:redhat \
     --copy-in /usr/local/etc/index.html:/var/www/html \
     --selinux-relabel \
     --uninstall cloud-init
+----
+
+[{format_cmd_output}]
+----
+[   0.0] Examining the guest ...
+[  59.2] Setting a random seed
+[  59.6] Setting the machine ID in /etc/machine-id
+[  59.6] Setting the hostname: vmguest
+[  60.4] Copying: /usr/local/etc/index.html to /var/www/html
+[  60.7] Uninstalling packages: cloud-init
+[  85.1] Setting passwords
+[ 105.1] SELinux relabelling
+[ 322.4] Finishing off
+
+real    5m22.948s
+user    0m0.037s
+sys     0m0.057s
 ----
 
 
@@ -219,6 +240,7 @@ virt-install \
    --import \
    --name vmguest \
    --memory 2048 \
+   --cpu host \
    --vcpus 1 \
    --disk /var/lib/libvirt/images/vmguest.qcow2 \
    --graphics vnc \
@@ -227,6 +249,10 @@ virt-install \
 ----
 
 Give the VM a few moments to boot.
+
+NOTE: If you explored the web-console exercise, you can use cockpit to 
+access the VM's console and see what's going on.  Just be sure you 
+selected administrative access.
 
 == Virtual Machine Connectivity
 
