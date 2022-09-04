@@ -344,7 +344,7 @@ Save and quit the editor, and view the unit
 
 [{format_cmd_exec}]
 ----
-systemctl cat mariadb
+systemctl --no-pager cat mariadb
 ----
 
 [{format_cmd_output}]
@@ -372,7 +372,7 @@ Restart=always
 
 [{format_cmd_exec}]
 ----
-systemctl status httpd
+systemctl --no-pager status httpd
 ----
 
 [{format_cmd_output}]
@@ -397,7 +397,7 @@ Notice that systemctl status displays that the unit has been extended with a dro
 
 [{format_cmd_exec}]
 ----
-systemctl status mariadb
+systemctl --no-pager status mariadb
 ----
 
 [{format_cmd_output}]
