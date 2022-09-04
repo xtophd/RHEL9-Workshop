@@ -329,7 +329,7 @@ Let us take a look at the logical volume.  Notice a few things:
 lvs -o vg_name,vg_free,lv_name,lv_size,seg_size,segtype,devices vg_lab/lab1
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
   VG     VFree   LV   LSize  SSize  Type   Devices
   vg_lab 508.00m lab1 <9.50g <5.00g linear {disk1}(0)
@@ -341,7 +341,7 @@ lvs -o vg_name,vg_free,lv_name,lv_size,seg_size,segtype,devices vg_lab/lab1
 df /mnt/lab1
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 Filesystem              1K-blocks  Used Available Use% Mounted on
 /dev/mapper/vg_lab-lab1   9735476 21840   9249360   1% /mnt/lab1
@@ -410,7 +410,7 @@ pvcreate {disk_glob}
 vgcreate vg_lab {disk_glob}
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 Volume group "vg_lab" successfully created
 ----
