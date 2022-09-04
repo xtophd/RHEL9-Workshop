@@ -242,15 +242,10 @@ NOTE: If this were going to be a persistent filesystem, you would also need to a
 lvs
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
-  LV     VG      Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-  lab1   vg_lab  -wi-ao---- <4.75g
-  home   vg_rhel -wi-ao----  1.95g
-  root   vg_rhel -wi-ao---- 19.73g
-  swap01 vg_rhel -wi-ao----  1.95g
-  tmp    vg_rhel -wi-ao----  1.95g
-  var    vg_rhel -wi-ao---- <3.91g
+  LV   VG     Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  lab1 vg_lab -wi-ao---- <4.75g
 ----
 
 [{format_cmd_exec}]
@@ -258,7 +253,7 @@ lvs
 lvs vg_lab/lab1
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
   LV   VG     Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
   lab1 vg_lab -wi-ao---- <4.75g
@@ -269,7 +264,7 @@ lvs vg_lab/lab1
 lvs -o lv_name,lv_size,lv_attr,segtype,devices vg_lab/lab1
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
   LV   LSize  Attr       Type   Devices
   lab1 <4.75g -wi-ao---- linear {disk1}(0)
@@ -280,7 +275,7 @@ lvs -o lv_name,lv_size,lv_attr,segtype,devices vg_lab/lab1
 lvs --units g -o +devices vg_lab/lab1
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
   LV   VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert Devices
   lab1 vg_lab -wi-ao---- 4.75g                                                     {disk1}(0)
@@ -291,7 +286,7 @@ lvs --units g -o +devices vg_lab/lab1
 df /mnt/lab1
 ----
 
-[{format_cmd_exec}]
+[{format_cmd_output}]
 ----
 Filesystem              1K-blocks  Used Available Use% Mounted on
 /dev/mapper/vg_lab-lab1   4832912 19448   4548248   1% /mnt/lab1
