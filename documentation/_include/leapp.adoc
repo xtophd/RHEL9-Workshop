@@ -38,21 +38,21 @@ From host `bastion`, ssh to `leapp`.
 
 [{format_cmd_exec2}]
 ----
-*ssh leapp*
+ssh leapp
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec2}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec2}]
 ----
-*workshop-leapp-checkhost.sh*
+workshop-leapp-checkhost.sh
 ----
 
 == Current RHEL Version Verification
@@ -321,14 +321,14 @@ after another 6 - 9 minutes, you should be able to ssh back in from the bastion 
 
 [{format_cmd_exec2}]
 ----
-*ssh leapp*
+ssh leapp
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec2}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 == Final RHEL Version Verification
@@ -378,9 +378,18 @@ This exercise has illustrated a very simple example of upgrading a RHEL8 system 
 image::leapp-weboconsole-sample.png[Sample Leapp PreUpgrade Web Console Report]
 ====
 
-== Final Summary
+== Conclusion
 
 Whether upgrading in place is right is a decision that needs to be made from one environment to the next, one group to the next, even from one system to the next.  What makes sense for one application might not make sense for another.  As with any OS upgrade, test in the lab and do backups!
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
+
+
 
 [discrete]
 == Additional Reference Materials
