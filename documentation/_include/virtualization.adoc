@@ -324,7 +324,7 @@ export VM_IP=$(virsh domifaddr vmguest | sed -e '1,2d' -e '$d' | awk '{ split($4
 
 [{format_cmd_exec}]
 ----
-ssh $VM_IP
+ssh $VM_IP -o "StrictHostKeyChecking no"
 ----
 
 The password was set in the previous exercise with virt-customize command and is probably just 'redhat'.
