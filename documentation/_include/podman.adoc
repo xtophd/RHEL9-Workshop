@@ -214,7 +214,7 @@ Storing signatures
 46720ac964ac0e5fb23c8594797c3f7bb19c5a82c4734957f8991e94c30bd9f8
 ----
 
-Have a looks at the image list now.
+Have a look at the image list now.
 
 [{format_cmd_exec}]
 ----
