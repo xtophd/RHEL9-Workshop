@@ -238,7 +238,7 @@ Now let's check the status.  You should see two separate sections in the output,
 
 [{format_cmd_exec}]
 ----
-systemctl status httpd mariadb
+systemctl --no-pager status httpd mariadb
 ----
 
 [{format_cmd_output}]
