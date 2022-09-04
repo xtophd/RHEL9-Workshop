@@ -508,15 +508,23 @@ df /mnt/lab2
 vdostats --human-readable
 ----
 
-So in summary, we built a 30GB filesystem that only has 10GB of actual physical disk capacity.  We then copied 10GB of data into the filesystem, but after deduplication `vdostats --human-readable` should reflect something near 4GB of available plysical space.
+
+[{format_cmd_output}]
+----
+Device                      Size      Used Available Use% Space saving%
+vg_lab-lv_raid10-vpool      9.5G      3.7G      5.8G  39%           98%
+----
+
+
+
+
+So in summary, we built a 30GB filesystem that only has 10GB of actual physical disk capacity.  We then copied 10GB of data into the filesystem, but after deduplication `vdostats --human-readable` should reflect something near 5.5GB of available plysical space and a savings around 98%.
 
 A few additional high-level things to know about VDO.  
 
-First, the VDO systemd unit is installed and enabled by default when the vdo package is installed. This unit automatically runs the vdo start --all command at system startup to bring up all activated VDO volumes
+VDO uses a high-performance deduplication index called UDS to detect duplicate blocks of data as they are being stored. The deduplication window is the number of previously written blocks which the index remembers. The size of the deduplication window is configurable.  The index will require a specific amount of RAM and a specific amount of disk space.
 
-Second, VDO uses a high-performance deduplication index called UDS to detect duplicate blocks of data as they are being stored. The deduplication window is the number of previously written blocks which the index remembers. The size of the deduplication window is configurable.  The index will require a specific amount of RAM and a specific amount of disk space.
-
-Last, Red Hat generally recommends using a "sparse" UDS index for all production use cases. This indexing data structure requires approximately one-tenth of a byte of DRAM (memory) per block in its deduplication window. On disk, it requires approximately 72 bytes of disk space per block.
+Red Hat generally recommends using a "sparse" UDS index for all production use cases. This indexing data structure requires approximately one-tenth of a byte of DRAM (memory) per block in its deduplication window. On disk, it requires approximately 72 bytes of disk space per block.
 
 The default configuration of the index is to use a "dense" index. This index is considerably less efficient (by a factor of 10) in DRAM, but it has much lower (also by a factor of 10) minimum required disk space, making it more convenient for evaluation in constrained environments.
 
@@ -545,9 +553,9 @@ workshop-finish-exercise.sh
 
 Red Hat Documentation
 
-    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/managing_storage_devices/index[Managing Storage Devices]
-    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_logical_volumes/index[Managing Logical Volumes]
-    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/system_design_guide/deploying-vdo_system-design-guide[Deploying VDO]
+    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/managing_storage_devices/index[Managing Storage Devices]
+    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_and_managing_logical_volumes/index[Managing Logical Volumes]
+    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/deduplicating_and_compressing_logical_volumes_on_rhel/index[Deduplication and Compressing LVs]
 
 [discrete]
 == End of Unit
