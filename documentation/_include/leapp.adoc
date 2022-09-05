@@ -170,9 +170,9 @@ subscription-manager release --unset
 
 
 
-== LEAPP Installation
+== Installation
 
-=== LEAPP Tools
+=== Tools
 Install the LEAPP tools and any dependencies
 
 [{format_cmd_exec2}]
@@ -180,7 +180,7 @@ Install the LEAPP tools and any dependencies
 yum install -y leapp-upgrade
 ----
 
-=== LEAPP Data
+=== Cleanup
 
 Delete any results from any possible previous attempts to run leapp
 
@@ -189,11 +189,9 @@ Delete any results from any possible previous attempts to run leapp
 rm -rf /root/tmp_leapp_py3
 ----
 
-== LEAPP Local Files for Disconnected Upgrade
+=== Data File (disconnected upgrades)
 
-=== Package Repositories
-
-There are several files needed to complete the upgrade that are available online, which are not accessible if the system is not able to access the internet (see link at bottom of exercise).  For this workshop, the following command will put them where they need to go:
+There are several files needed to complete the upgrade that are available online, which are not accessible if the system is not able to access the internet or is not registerd (see link at bottom of exercise).  For this workshop, the following command will put them where they need to go:
 
 [{format_cmd_exec2}]
 ----
