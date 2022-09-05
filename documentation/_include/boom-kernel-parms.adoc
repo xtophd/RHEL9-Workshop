@@ -28,7 +28,7 @@ BOOM does not modify the existing boot loader configuration, and *only inserts* 
 
 BOOM also has a simple command-line interface (CLI) and API.
 
-The object of this exercise is quite simple.  We care going to create an alternative boot entry which 
+The object of this exercise is quite simple.  We are going to create an alternative boot entry which 
 will load the same kernel with a few additional detectable parameters.
 
 == Getting Started
