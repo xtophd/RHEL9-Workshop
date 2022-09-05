@@ -27,10 +27,10 @@ if /usr/sbin/lvs -q ${rootdev} 2>/dev/null ; then
   rootlv=`lvs -o lv_name --noheadings ${rootdev} 2>/dev/null | awk '{print $1}'`
 
   echo ""
-  echo "DEBUG: boom create --title 'RHEL 8 Workshop' --root-lv ${rootvg}/${rootlv}"
+  echo "DEBUG: boom create --title 'RHEL 9 Workshop' --root-lv ${rootvg}/${rootlv}"
   echo ""
 
-  boom create --title 'RHEL 8 Workshop' --root-lv ${rootvg}/${rootlv}
+  boom create --title 'RHEL 9 Workshop' --root-lv ${rootvg}/${rootlv}
 
 else
 
@@ -38,5 +38,5 @@ else
   echo "DEBUG: boom create --title 'RHEL 8 Workshop' --root-device ${rootdev}"
   echo ""
 
-  boom create --title 'RHEL 8 Workshop' --root-device ${rootdev}
+  boom create --title 'RHEL 9 Workshop' --root-device ${rootdev}
 fi

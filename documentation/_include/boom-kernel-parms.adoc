@@ -39,21 +39,21 @@ From host `bastion`, ssh to `node3`.
 
 [{format_cmd_exec}]
 ----
-*ssh node3*
+ssh node3
 ----
 
 Use `sudo` to elevate your privileges.
 
 [{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
 [{format_cmd_exec}]
 ----
-*workshop-boom-checkhost.sh*
+workshop-boom-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
@@ -64,7 +64,7 @@ The following set of instructions will install Boom.
 
 [{format_cmd_exec}]
 ----
-*dnf install -y boom-boot*
+dnf install -y boom-boot
 ----
 
 That was easy!
@@ -76,24 +76,24 @@ Creating a new boot entry begins with a boom `profile`.
 
 [{format_cmd_exec}]
 ----
-*workshop-boom-mkprofile.sh*
+workshop-boom-mkprofile.sh
 ----
 
-[{format_cmd_output}]
+[{format_plane}]
 ----
 Determining root device...
-Creating BOOM profile with tweaks (UUID disk)...
+Creating default BOOM profile
 
-Created profile with os_id f44fb52:
-  OS ID: "f44fb528ff8360ad67e2fe0274750b838da0bd6a",
+Created profile with os_id e0ef3eb:
+  OS ID: "e0ef3ebf3862de64e4082062f0063422796dcca6",
   Name: "Red Hat Enterprise Linux", Short name: "rhel",
-  Version: "8.1 (Ootpa)", Version ID: "8.1",
-  UTS release pattern: "el8",
-  Kernel pattern: "/boot/vmlinuz-%{version}", Initramfs pattern: "/boot/initramfs-%{version}.img",
+  Version: "9.0 (Plow)", Version ID: "9.0",
+  Kernel pattern: "/vmlinuz-%{version}", Initramfs pattern: "/initramfs-%{version}.img",
   Root options (LVM2): "rd.lvm.lv=%{lvm_root_lv}",
   Root options (BTRFS): "rootflags=%{btrfs_subvolume}",
   Options: "root=%{root_device} ro %{root_opts}",
-  Title: "%{os_name} %{os_version_id} (%{version})"
+  Title: "%{os_name} %{os_version_id} (%{version})",
+  Optional keys: "", UTS release pattern: "el9"
 ----
 
 NOTE: In this example, the root disk is identified by a UUID.  As a result, `boom` will incorrectly identify the paths to the kernel and initiramfs when creating the grub entry.  To avoid this current problem (bug?), we tweak the boom profile to add `/boot` to the paths.
@@ -103,7 +103,7 @@ NOTE: In this example, the root disk is identified by a UUID.  As a result, `boo
 _Native command(s) to make boom profile_
 [{format_cmd_output}]
 ----
-boom profile create --from-host --uname-pattern el8 --kernel-pattern="/boot/vmlinuz-%{version}" --initramfs-pattern="/boot/initramfs-%{version}.img"
+boom profile create --from-host --uname-pattern el9 --kernel-pattern="/boot/vmlinuz-%{version}" --initramfs-pattern="/boot/initramfs-%{version}.img"
 ----
 ====
 
@@ -111,7 +111,7 @@ Verify that the boom profile was created by the previous command.
 
 [{format_cmd_exec}]
 ----
-*boom profile list*
+boom profile list
 ----
 
 [{format_cmd_output}]
@@ -131,7 +131,7 @@ First we need to determine the root device.  We can do this by inspecting the cu
 
 [{format_cmd_exec}]
 ----
-*cat /proc/cmdline*
+cat /proc/cmdline
 ----
 
 [{format_cmd_output}]
@@ -158,7 +158,7 @@ Now we need to get to the actual device (or lvm) path.  Although this logic is n
 
 [{format_cmd_exec}]
 ----
-*workshop-boom-mkentry.sh*
+workshop-boom-mkentry.sh
 ----
 
 [{format_cmd_output}]
@@ -196,7 +196,7 @@ Take a look at currently configured boom-boot entries.
 
 [{format_cmd_exec}]
 ----
-*boom entry list*
+boom entry list
 ----
 
 [{format_cmd_output}]
@@ -209,7 +209,7 @@ Show details about our boom-boot entry.
 
 [{format_cmd_exec}]
 ----
-*boom entry show 40d2351*
+boom entry show 40d2351
 ----
 
 [{format_cmd_output}]
@@ -227,14 +227,14 @@ Boot Entry (boot_id=40d2351)
 
 [{format_cmd_exec}]
 ----
-*boom entry delete 40d2351*
+boom entry delete 40d2351
 ----
 
 == Create Grub Entry with Custom Options
 
 [{format_cmd_exec}]
 ----
-*workshop-boom-mkentry-custom.sh*
+workshop-boom-mkentry-custom.sh
 ----
 
 [{format_cmd_output}]
@@ -268,7 +268,7 @@ the currently configured GRUB menu options.
 
 [{format_cmd_exec}]
 ----
-*workshop-boom-grublist.sh*
+workshop-boom-grublist.sh
 ----
 
 [{format_cmd_output}]
@@ -281,7 +281,7 @@ Let us now inspect the GRUB configuration for `RHEL 9 Workshop`, which in this e
 
 [{format_cmd_exec}]
 ----
-*grubby --info=1*
+grubby --info=1
 ----
 
 [{format_cmd_output}]
@@ -301,14 +301,14 @@ We want to reboot to our "RHEL 9 Workshop", so again in this example the entry i
 
 [{format_cmd_exec}]
 ----
-*grub2-set-default 1*
+grub2-set-default 1
 ----
 
 Verify that the parameters stuck.  Notice that "saved_entry=1", that's what we want.
 
 [{format_cmd_exec}]
 ----
-*grub2-editenv list*
+grub2-editenv list
 ----
 
 [{format_cmd_output}]
@@ -322,7 +322,7 @@ We will now reset our host and boot with the alternate kernel arguments.
 
 [{format_cmd_exec}]
 ----
-*reboot*
+reboot
 ----
 
 === Confirm Previous State of Host
@@ -331,7 +331,7 @@ Once the host is back online, ssh to back to `node3` and verify that the alterna
 
 [{format_cmd_exec}]
 ----
-*cat /proc/cmdline*
+cat /proc/cmdline
 ----
 
 [{format_cmd_output}]
