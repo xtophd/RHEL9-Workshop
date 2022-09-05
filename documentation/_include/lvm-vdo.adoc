@@ -432,7 +432,7 @@ lvcreate -y --type raid10 -m1 -i 2 -n lv_raid10 -l 95%FREE vg_lab
 
 [{format_cmd_exec}]
 ----
-lvconvert --type vdo-pool --name=lab2 -V 30G vg_lab/lv_raid10
+lvconvert --type vdo-pool --name=lab2 -V 30G vg_lab/lv_raid10 -y
 ----
 
 Once executed, you will be prompted to confirm the task.
