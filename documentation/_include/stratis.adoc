@@ -90,7 +90,7 @@ Finally check the service status.
 
 [{format_cmd_exec}]
 ----
-systemctl status stratisd
+systemctl --no-pager status stratisd
 ----
 
 [{format_cmd_output}]
