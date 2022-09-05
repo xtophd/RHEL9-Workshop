@@ -10,6 +10,7 @@ ifdef::env-github[]
 endif::[]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
 :format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+:format_plain: bash,options="nowrap"
 ifeval::["%cloud_provider%" == "ec2"]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
 endif::[]
@@ -166,7 +167,7 @@ Session logs are configured to record in the system journal by default.  A disti
 
 [{format_cmd_exec}]
 ----
-journalctl -o verbose  --output-fields=TLOG_USER,TLOG_REC TLOG_USER=other-user
+journalctl --no-pager -o verbose  --output-fields=TLOG_USER,TLOG_REC TLOG_USER=other-user 
 ----
 
 [{format_cmd_output}]
@@ -191,13 +192,38 @@ Sat 2019-04-27 21:21:58.770887 EDT [s=bcde42e4c96048c3908657177414e202;i=70c;b=b
 Each one of those entries makes up a chunk of a session recording.  It is by way of searching the system journal and identifying the correct TLOG_REC for a specific session, that you can then play back the session using `tlog-play`.
 
 We have taken the liberty of scripting this "search" to playback the last session log from the user cloud-user.
+Once you hit enter on the command below, you will see a note that "Playback Started..." and again when "Playback Finished...".  
+Be patient until it completes and your root prompt returns.
 
 [{format_cmd_exec}]
 ----
 workshop-tlog-playback.sh
 ----
 
-Once you hit enter on the above command, you will see a note that "Playback Started..." and again when "Playback Finished...".  Be patient until it completes and your root prompt returns.
+[{format_plain}]
+----
+Playback Starting...
+[other-user@node1 ~]$ ls -l /etc
+total 1136
+-rw-r--r--.  1 root root       12 Feb 24  2022 adjtime
+-rw-r--r--.  1 root root     1529 Jun 23  2020 aliases
+drwxr-xr-x.  2 root root     4096 Sep  4 21:04 alternatives
+-rw-r--r--.  1 root root      541 Aug  9  2021 anacrontab
+drwxr-xr-x.  3 root root       51 Sep  4 21:04 ansible
+
+...<SNIP>...
+
+setroubleshoot:!!:19239::::::
+mysql:!!:19239::::::
+apache:!!:19239::::::
+other-user:$6$qbfI9WAi97Bpq2Cb$xGAZ90QHX3oPDF8whjame8UOTJKMFLgC2IjR5o2hm75k5PyL3cn9Hna8IpA8gt5yNP1ro0eiqAE3qsJHMVAok0:19239:0:99999:7:::
+tlog:!!:19239::::::
+[other-user@node1 ~]$ exit
+logout
+
+Playback Finished...
+----
+
 
 [NOTE]
 ====
@@ -208,6 +234,8 @@ myTLOG=`journalctl -o verbose -n 1 --output-fields=TLOG_USER,TLOG_REC TLOG_USER=
 tlog-play -r journal -M ${myTLOG}
 ----
 ====
+
+WARNING: It is important to wait until the playback is complete.  Do not proceed until you see the output `Playback Finished`.
 
 
 
