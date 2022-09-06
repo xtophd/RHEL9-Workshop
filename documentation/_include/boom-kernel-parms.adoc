@@ -22,14 +22,21 @@ endif::[]
 
 == Overview
 
-BOOM is a boot manager for Linux systems that support the 'BootLoader Specification' for boot entry configuration. It simplifies the creation of new or modified boot entries: for example, to boot snapshot images of the system created using LVM.
+Boom is a boot manager for Linux systems that support the 'BootLoader Specification' (BLS) for boot entry configuration. It simplifies the creation of new or modified boot entries: for example, to boot snapshot images of the system created using LVM.
 
-BOOM does not modify the existing boot loader configuration, and *only inserts* additional entries. The existing configuration is maintained, and any distribution integration, such as kernel installation and update scripts, continue to function as before.
+Boom:
 
-BOOM also has a simple command-line interface (CLI) and API.
+  * includes a set of Python libraries and a command line tool
+  * boom is easily able to create, delete and display boot loader entries 
+  * does not modify the existing boot loader configuration
+  * boom *only inserts* additional entries
 
-The object of this exercise is quite simple.  We are going to create an alternative boot entry which 
-will load the same kernel with a few additional detectable parameters.
+The existing configuration is maintained, and any distribution integration (ie: kernel installation and update scripts) continue to function as before.
+
+The objectives of this exercise are quite simple:
+
+  * familiarize yourself with the basics of creating and mangaging boot entries
+  * create an customized alternative boot entry to load a detectable kernel parameter
 
 == Getting Started
 
@@ -58,23 +65,34 @@ workshop-boom-checkhost.sh
 
 You are now ready to proceed with these exercises.
 
-== Installation
 
-The following set of instructions will install Boom.
+
+== Core Concepts
+
+The Boom system uses a concept of "profiles" and "entries" to allow templated entries to be cloned and modified.  This minimises the need for the user to input boot parameters manually for each iteration of the configuration.
+
+So we begin with the creation of a boom profile.
+
+=== Profile: Create
+
+Just for reference, let's take a look at this systems existing profiles.  There could be many, or in some cases none.
 
 [{format_cmd_exec}]
 ----
-dnf install -y boom-boot
+boom profile list
 ----
 
-That was easy!
+[{format_plane}]
+----
+sID    Name                            OsVersion
+8896596 Fedora                          30 (Workstation Edition)
+4abe4f7 Red Hat Enterprise Linux        8 (Ootpa)
+72e3679 Red Hat Enterprise Linux Server 7.7 (Maipo)
+4aff687 Red Hat Enterprise Linux Server 7.8 (Maipo)
+----
 
-
-== Overview
-
-=== Create a Profile
-
-Creating a new boot entry begins with a boom `profile`.
+Creating a profile is handled by a simple command, however determining all of th various parameters
+can be challeging and are outside the scope of this lab.  Thus we have prepared a simple script to do the hard work.
 
 [{format_cmd_exec}]
 ----
@@ -100,17 +118,9 @@ Created profile with os_id e0ef3eb:
 
 NOTE: In this example, the root disk is identified by a UUID.  As a result, `boom` will incorrectly identify the paths to the kernel and initiramfs when creating the grub entry.  To avoid this current problem (bug?), we tweak the boom profile to add `/boot` to the paths.
 
-[NOTE]
-====
-_Native command(s) to make boom profile_
-[{format_cmd_output}]
-----
-boom profile create --from-host --uname-pattern el9 --kernel-pattern="/boot/vmlinuz-%{version}" --initramfs-pattern="/boot/initramfs-%{version}.img"
-----
-====
 
 
-=== Inpect a Profile
+=== Profile: Inspect
 
 Verify that the boom profile was created by the previous command.
 
@@ -125,7 +135,9 @@ OsID    Name                     OsVersion
 e0ef3eb Red Hat Enterprise Linux 9.0 (Plow)
 ----
 
-=== Create GRUB Entry
+
+
+=== Boot Entry: Create
 
 Now to create a boot entry for grub which utilizes the same boot environment as the current system, but with a few
 added kernel parameters.
@@ -186,21 +198,9 @@ Created entry with boot_id ed93f0f:
   options root=/dev/nvme0n1p4 ro
 ----
 
-[NOTE]
-====
-_Native command(s) to make grub entry_
-[{format_cmd_output}]
-----
-# For LVM base root
-boom create --title "RHEL 9 Workshop" --rootlv <VG>/<LV>
-
-# For block device base root
-boom create --title "RHEL 9 Workshop" --root-device <ROOT-DEVICE>
-----
-====
 
 
-==== Inspect Entries
+=== Boot Entry: Inspect
 
 Take a look at currently configured boom-boot entries.
 
@@ -236,7 +236,9 @@ Boot Entry (boot_id=ed93f0f)
   options root=/dev/nvme0n1p4 ro
 ----
 
-==== Delete Grub Entry
+
+
+==== Boot Entry: Delete 
 
 [{format_cmd_exec}]
 ----
@@ -247,9 +249,28 @@ boom entry delete $BOOM_BOOTID
 
 
 
-== Custom Boot Options
+== Exercise: Custom Kernel Options
 
-=== Create Grub Entry
+=== Profile: Create
+
+For this exercise, we will reuse the profile created during the Core Concepts exercises.  
+But we can take another look at profile.
+
+[{format_cmd_exec}]
+----
+boom profile list --osversion "9.0 (Plow)"
+----
+
+[{format_cmd_output}]
+----
+OsID    Name                     OsVersion
+e0ef3eb Red Hat Enterprise Linux 9.0 (Plow)
+----
+
+=== Boot Entry: Create
+
+Again, to avoid some of the complexities considered outside the scope this lab we will
+run a prepared script to configure the boot entry.
 
 [{format_cmd_exec}]
 ----
@@ -276,12 +297,12 @@ Created entry with boot_id a07736e:
 
 Notice in the options that we slipped in the `custom_value=true`.
 
-=== Set Next Boot to Custom Entry
+=== GRUB: Set Default Entry
 
 WARNING: If possible, bring up the virtual machine console for node3 before proceeding.  
 
 Before reboot, there are 2 options to invoke the right loader at restart:
-  . enter the GRUB menu and select at boot time
+  . enter the GRUB menu at startup and select at boot time
   . use grub-set-default to pre-select which one to load by default
   
 We are going to opt for pre-select since it's easier to script.  Use the following workshop to inspect 
@@ -328,7 +349,7 @@ grub2-set-default $index
 ----
 
 
-=== Inspect
+=== GRUB: Inspect
 
 Verify that the parameters stuck.  Notice that "saved_entry=1", that's what we want.
 
