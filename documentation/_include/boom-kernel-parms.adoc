@@ -221,7 +221,7 @@ Show details about our boom-boot entry.
 
 [{format_cmd_exec}]
 ----
-export BOOM_BOOTID=$(boom entry list --title "RHEL 9 Workshop" -o bootid,title | grep Workshop | awk '{print $1}')
+export BOOM_BOOTID=$(boom entry list --title "RHEL 9 Workshop" -o bootid,title | grep -m 1 Workshop | awk '{print $1}')
 boom entry show $BOOM_BOOTID
 ----
 
@@ -240,7 +240,7 @@ Boot Entry (boot_id=ed93f0f)
 
 [{format_cmd_exec}]
 ----
-export BOOM_BOOTID=$(boom entry list --title "RHEL 9 Workshop" -o bootid,title | grep Workshop | awk '{print $1}')
+export BOOM_BOOTID=$(boom entry list --title "RHEL 9 Workshop" -o bootid,title | grep -m 1 Workshop | awk '{print $1}')
 boom entry delete $BOOM_BOOTID
 ----
 
@@ -298,31 +298,33 @@ workshop-boom-grublist.sh
      1  title="RHEL 9 Workshop"
 ----
 
-Let us now inspect the GRUB configuration for `RHEL 9 Workshop`, which in this example is entry #1. 
+Let us now inspect the GRUB configuration for `RHEL 9 Workshop`.  The following 
+complicated command figures out the index on your system.
 
 [{format_cmd_exec}]
 ----
-grubby --info=1
+grubby --info=$(workshop-boom-grublist.sh | grep -m1 "Workshop" | awk '{print $1}')
 ----
 
 [{format_cmd_output}]
 ----
 index=2
-kernel="/boot/vmlinuz-4.18.0-147.el8.x86_64"
+kernel="/boot/vmlinuz-5.14.0-70.13.1.el9_0.x86_64"
 args="ro custom_value=true"
-root="/dev/vda1"
-initrd="/boot/initramfs-4.18.0-147.el8.x86_64.img"
+root="/dev/nvme0n1p4"
+initrd="/boot/initramfs-5.14.0-70.13.1.el9_0.x86_64.img"
 title="RHEL 9 Workshop"
-id="44d81e936d7e445797933e8cbc199cea-b8f0549-4.18.0-147.el8.x86_64"
+id="ec2e0c92349d906c08af3ffadd95217f-ba5706a-5.14.0-70.13.1.el9_0.x86_64"
 ----
 
 WARNING: *DO NOT PROCEED TO REBOOT* unless both `kernel=` and `initrd=` include the path `/boot/<filename>`.
 
-We want to reboot to our "RHEL 9 Workshop", so again in this example the entry is #1.
+We want to reboot to our "RHEL 9 Workshop", so we need to isolate and use the "index" from above.
 
 [{format_cmd_exec}]
 ----
-grub2-set-default 1
+eval $(grubby --info=$(workshop-boom-grublist.sh | grep -m1 "Workshop" | awk '{print $1}')| grep index)
+grub2-set-default $index
 ----
 
 
@@ -338,7 +340,6 @@ grub2-editenv list
 [{format_cmd_output}]
 ----
 saved_entry=1
-kernelopts=root=/dev/mapper/rhel-root_snapshot ro crashkernel=auto resume=/dev/mapper/rhel-swap rd.lvm.lv=rhel/root rd.lvm.lv=rhel/swap rhgb quiet
 boot_success=0
 ----
 
@@ -370,7 +371,7 @@ cat /proc/cmdline
 
 [{format_cmd_output}]
 ----
-
+BOOT_IMAGE=(hd0,gpt3)/vmlinuz-5.14.0-70.13.1.el9_0.x86_64 root=/dev/nvme0n1p4 ro custom_value=true
 ----
 
 Confirm that the custom key-value is now part of the kernel boot options.
