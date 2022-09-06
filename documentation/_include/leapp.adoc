@@ -39,7 +39,7 @@ Because the upgrade process is VERY time consuming lengthy process, this exercis
 The intent is to dedicate secondary terminal to the leapp upgrade, there-by leaving the primary terminal available 
 for other exercises while the upgrade executes.
 
-Sections 1 - 7 are interactive and should take around 7 - 8 minutes to complete.  The which perform the actual upgrade and finalize it are almost completely non-interactive and each are expected to take 6 - 9 minutes to complete.  Once you start them, you will have time to look at other exercises in the PRIMARY terminal while waiting for them to complete.
+Sections first several sections leading up to the actual upgrade are interactive and should take around 7 - 8 minutes to complete.  The sections which perform the actual upgrade and finalize it are almost completely non-interactive and each are expected to take 6 - 9 minutes to complete.  Once you start them, you will have time to look at other exercises in the PRIMARY terminal while waiting for them to complete.
 
 To help you set up your second terminal (if you haven't connected to the bastion host already), here 
 is the ssh command and password which you can use.
