@@ -456,7 +456,7 @@ public
 
 
 
-== Customizing a Default Servicee
+== Customizing a Default Service
 
 === Install Override Configuration 
 
