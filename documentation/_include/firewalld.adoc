@@ -321,7 +321,10 @@ A quick way to make them permanent is to save the current runtime state to perma
 firewall-cmd --runtime-to-permanent
 ----
 
-NOTE: you could have also passed the *--permanent* flag to the original command as follows `firewall-cmd --permanent --add-service={http,https}`
+NOTE: you could have also run the same configuration command a second time and 
+passed the *--permanent* flag as follows `firewall-cmd --permanent --add-service={http,https}`.  
+It's annoying but necessary to run configuration commands twice to manage both states and
+maintain consistency.
 
 [{format_cmd_exec}]
 ----
@@ -374,27 +377,13 @@ runtime and permanent configs were updated.
 
 [{format_cmd_exec}]
 ----
-firewall-cmd --zone=public --list-all --permanent
+firewall-cmd --list-services --permanent
 ----
 
 [{format_cmd_output}]
 ----
-public
-  target: default
-  icmp-block-inversion: no
-  interfaces:
-  sources:
-  services: cockpit http https ssh
-  ports: 
-  protocols:
-  masquerade: no
-  forward-ports:
-  source-ports:
-  icmp-blocks:
-  rich rules:
+cockpit http https ssh
 ----
-
-
 
 
 
