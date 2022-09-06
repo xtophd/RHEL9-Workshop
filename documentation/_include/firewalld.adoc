@@ -82,7 +82,7 @@ The configuration files for firewalld are stored in two places:
   * /usr/lib/firewalld - distributed system default configs
   * /etc/firewalld - user customizations / override configs
  
-Configurations stored in /usr/lib/firewalld are NOT meant for customization.  They 
+Configurations stored in */usr/lib/firewalld* are NOT meant for customization.  They 
 WILL be overwritten and replaced from time to time as Red Hat releases new packages 
 or updates for the operating system.
 
