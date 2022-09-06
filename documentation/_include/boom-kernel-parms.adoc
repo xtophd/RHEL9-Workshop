@@ -240,7 +240,7 @@ Boot Entry (boot_id=ed93f0f)
 
 [{format_cmd_exec}]
 ----
-export BOOM_BOOTID=`boom entry list --title "RHEL 9 Workshop" -o bootid,title | grep Workshop | awk '{print $1}'`
+export BOOM_BOOTID=$(boom entry list --title "RHEL 9 Workshop" -o bootid,title | grep Workshop | awk '{print $1}')
 boom entry delete $BOOM_BOOTID
 ----
 
