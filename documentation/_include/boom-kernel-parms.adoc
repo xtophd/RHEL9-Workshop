@@ -71,9 +71,12 @@ You are now ready to proceed with these exercises.
 
 The Boom system uses a concept of "profiles" and "entries" to allow templated entries to be cloned and modified.  This minimises the need for the user to input boot parameters manually for each iteration of the configuration.
 
-So we begin with the creation of a boom profile.
+So we begin with the management of boom profiles.
 
-=== Profile: Create
+=== Profile
+
+
+==== List / Show
 
 Just for reference, let's take a look at this systems existing profiles.  There could be many, or in some cases none.
 
@@ -91,7 +94,18 @@ sID    Name                            OsVersion
 4aff687 Red Hat Enterprise Linux Server 7.8 (Maipo)
 ----
 
-Creating a profile is handled by a simple command, however determining all of th various parameters
+For a more detailed view, you can use the `profile show` sub-command.
+
+[{format_cmd_exec}]
+----
+boom profile show
+----
+
+
+
+==== Create
+
+Creating a profile is handled by a simple command.  However determining all of th various parameters
 can be challeging and are outside the scope of this lab.  Thus we have prepared a simple script to do the hard work.
 
 [{format_cmd_exec}]
@@ -120,9 +134,9 @@ NOTE: In this example, the root disk is identified by a UUID.  As a result, `boo
 
 
 
-=== Profile: Inspect
+==== Inspect
 
-Verify that the boom profile was created by the previous command.
+Verify that the boom profile was created by the previous command:
 
 [{format_cmd_exec}]
 ----
@@ -135,14 +149,67 @@ OsID    Name                     OsVersion
 e0ef3eb Red Hat Enterprise Linux 9.0 (Plow)
 ----
 
+And for a more detailed view:
+
+[{format_cmd_exec}]
+----
+boom profile show --osversion "9.0 (Plow)"
+----
+
+[{format_cmd_output}]
+----
+OS Profile (os_id=e0ef3eb)
+  OS ID: "e0ef3ebf3862de64e4082062f0063422796dcca6",
+  Name: "Red Hat Enterprise Linux", Short name: "rhel",
+  Version: "9.0 (Plow)", Version ID: "9.0",
+  Kernel pattern: "/vmlinuz-%{version}", Initramfs pattern: "/initramfs-%{version}.img",
+  Root options (LVM2): "rd.lvm.lv=%{lvm_root_lv}",
+  Root options (BTRFS): "rootflags=%{btrfs_subvolume}",
+  Options: "root=%{root_device} ro %{root_opts}",
+  Title: "%{os_name} %{os_version_id} (%{version})",
+  Optional keys: "", UTS release pattern: "el9"
+----
 
 
-=== Boot Entry: Create
+=== Boot Entry
 
 Now to create a boot entry for grub which utilizes the same boot environment as the current system, but with a few
 added kernel parameters.
 
-==== Determine Root Device
+==== List / Show
+
+Before we do any work, let's take a quick look at what exists already.
+
+[{format_cmd_exec}]
+----
+boom entry list
+----
+
+[{format_cmd_output}]
+----
+BootID  Version                     Name                     RootDevice
+0d96d09 5.14.0-70.13.1.el9_0.x86_64 Red Hat Enterprise Linux UUID=2af18441-b487-4dac-9729-2c12f5adc6ed
+----
+
+And for a more detailed view
+
+[{format_cmd_exec}]
+----
+boom entry show
+----
+
+[{format_cmd_output}]
+----
+Boot Entry (boot_id=0d96d09)
+  title Red Hat Enterprise Linux (5.14.0-70.13.1.el9_0.x86_64) 9.0 (Plow)
+  version 5.14.0-70.13.1.el9_0.x86_64
+  linux /vmlinuz-5.14.0-70.13.1.el9_0.x86_64
+  initrd /initramfs-5.14.0-70.13.1.el9_0.x86_64.img $tuned_initrd
+  options root=UUID=2af18441-b487-4dac-9729-2c12f5adc6ed console=ttyS0,115200n8 console=tty0 net.ifnames=0 rd.blacklist=nouveau nvme_core.io_timeout=4294967295 crashkernel=1G-4G:192M,4G-64G:256M,64G-:512M $tuned_params
+----
+
+
+==== Create
 
 First we need to determine the root device.  We can do this by inspecting the current kernel's boot commandline.
 
@@ -171,7 +238,6 @@ root=UUID=f7614c41-2835-4125-bb13-50772dc2f30c
 NOTE: In this scenario, the boot device is listed by a UUID.  Depending on the lab environment, you could see a logical volume name or a physcial device path.
 
 
-==== Create Entry
 
 Now we need to get to the actual device (or lvm) path.  Although this logic is not complicated, it's not really the focus of this exercise, so you've been provided another workshop-script.
 
@@ -200,7 +266,7 @@ Created entry with boot_id ed93f0f:
 
 
 
-=== Boot Entry: Inspect
+==== Inspect
 
 Take a look at currently configured boom-boot entries.
 
@@ -238,7 +304,7 @@ Boot Entry (boot_id=ed93f0f)
 
 
 
-==== Boot Entry: Delete 
+==== Delete 
 
 [{format_cmd_exec}]
 ----
