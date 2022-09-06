@@ -102,9 +102,9 @@ Similar to systemd, firewalld implements the concept of a service:
   * a protocol
   * a netfilter helper module
   * a destination address (or range) for IPv4 and/or IPv6.
-  * there are nearly 50 built-in services shipped with firewalld
 
-You can also create your own service configs from scratch or customize the default files.  More on that coovered in the exercises below.
+
+There are nearly 50 built-in services shipped with firewalld.  You can also create your own service configs from scratch or customize the default files.  More on that coovered in the exercises below.
 
 Let's take a quick look at the default configuration for ssh & http to start.
 
@@ -355,7 +355,8 @@ Now let us disable a service port not needed for our workshop environment, namel
 
 [{format_cmd_exec}]
 ----
-firewall-cmd --permanent --remove-service=dhcpv6-client
+firewall-cmd --remove-service=dhcpv6-client
+firewall-cmd --runtime-to-permanent
 ----
 
 Take a look at the active services now and you should find dhcp6-client absent.
@@ -370,7 +371,7 @@ firewall-cmd --list-services
 cockpit http https ssh
 ----
 
-This time we passed --permament with the configuration change, and therefore both the
+And since we also ran a --runtime-to-permanent, both the
 runtime and permanent configs were updated.
 
 [{format_cmd_exec}]
@@ -407,7 +408,8 @@ Since we have been toying with http, it's common for httpd to also be configured
 
 [{format_cmd_exec}]
 ----
-firewall-cmd --permanent --add-port=8080/tcp --add-port=8443/tcp
+firewall-cmd --add-port=8080/tcp --add-port=8443/tcp
+firewall-cmd --runtime-to-permanent
 ----
 
 [{format_cmd_exec}]
@@ -435,11 +437,12 @@ public
 
 === Remove a Port
 
-As much fun as that was, ad-hoc was quick and easy, but not ideal.  We really desire a formal configuration, so let us undo the ad-hoc rules.
+As much fun as that was, ad-hoc was quick and easy but not ideal.  We really desire a formal configuration, so let us undo the ad-hoc rules.
 
 [{format_cmd_exec}]
 ----
-firewall-cmd --permanent --remove-port=8080/tcp --remove-port=8443/tcp
+firewall-cmd --remove-port=8080/tcp --remove-port=8443/tcp
+firewall-cmd --runtime-to-permanent
 ----
 
 [{format_cmd_exec}]
@@ -469,7 +472,7 @@ public
 
 == Managing a Customized Service
 
-=== Install Configuration File
+=== Install Override Configuration 
 
 [{format_cmd_exec}]
 ----
