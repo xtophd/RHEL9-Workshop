@@ -24,7 +24,8 @@ endif::[]
 
 == Overview
 
-The *firewalld* daemon provides a dynamically managed firewall for enhanced network security.  The firewalld daemon is controlled by way of a command-line tool `firewall-cmd` or a gui tool provided by the `firewall-config` rpm package. For today's workshop, you will focus strictly on the command line interface.
+The *firewalld* daemon provides a dynamically managed network security layer that tightly controls what 
+connections (ports and services) are able to communicate via the system's network interfaces.
 
 Features of firewalld include:
 
@@ -32,7 +33,7 @@ Features of firewalld include:
   * support for ethernet bridges
   * support for network “zones” which assigns level of trust to a network / connections / interfaces
   * separation of runtime and permanent configuration options
-  * interface for external services to manage firewall rules directly
+  * an interface for external services to manage firewall rules directly
 
 == Getting Started
 
@@ -70,14 +71,14 @@ You are now ready to proceed with these exercises.
 The RHEL 9 firewall consists of:
 
   * firewalld : daemon/service
-  * firewall-cli : command line management utility
+  * firewall-cmd : command line management utility
   * firewall-config : a GUI based management utility 
   * web-console : a WebUI based management utility
 
-The firewalld service should already be configured and running:
+For this workshop, we are only going to be using firewall-cmd.
 
 === Configuration
-time
+
 The configuration files for firewalld are stored in two places:
 
   * /usr/lib/firewalld - distributed system default configs
@@ -89,9 +90,6 @@ or updates for the operating system.
 
 User customizations for firewalld belong in */etc/firewalld*.  These configuration 
 files take precedence over the system default configs.
-
-The use of firewalld zones is considered out of scope for this workshop and will 
-be discussed another time.  We will stick primarily to the defaults.
 
 
 
