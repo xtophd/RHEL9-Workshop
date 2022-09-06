@@ -359,16 +359,16 @@ Determining root device...
 UUID reduction if necessary...
 Creating GRUB2 entry...
 
-DEBUG: boom create --title 'RHEL 9 Workshop' --root-device /dev/vda1 -a custom_value=true
+DEBUG: boom create --title 'RHEL 9 Workshop' --root-device /dev/nvme0n1p4 -a custom_value=true
 
-WARNING - Boom grub2 integration is disabled in '/boot/../etc/default/boom'
-Created entry with boot_id a07736e:
+WARNING - Options for BootEntry(boot_id=0d96d09) do not match OsProfile: marking read-only
+Created entry with boot_id d3958f5:
   title RHEL 9 Workshop
-  machine-id 4739d97a827c41e2a71d911afb7941af
-  version 4.18.0-147.el8.x86_64
-  linux /vmlinuz-4.18.0-147.el8.x86_64
-  initrd /initramfs-4.18.0-147.el8.x86_64.img
-  options root=/dev/vda1 ro custom_value=true
+  machine-id ec2456f2c1811fbaaee80613c453f272
+  version 5.14.0-70.13.1.el9_0.x86_64
+  linux /vmlinuz-5.14.0-70.13.1.el9_0.x86_64
+  initrd /initramfs-5.14.0-70.13.1.el9_0.x86_64.img
+  options root=/dev/nvme0n1p4 ro custom_value=true
 ----
 
 Notice in the options that we slipped in the `custom_value=true`.
@@ -485,7 +485,7 @@ Wahoo! You are done.  If you have any questions, please ask.
 
 Time to finish this unit and return the shell to it's home position.
 
-[{format_cmd_exec2}]
+[{format_cmd_exec}]
 ----
 workshop-finish-exercise.sh
 ----
