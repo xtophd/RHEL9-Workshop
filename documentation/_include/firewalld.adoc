@@ -71,7 +71,6 @@ The RHEL 9 firewall consists of:
   * firewalld : daemon/service
   * firewall-cmd : command line management utility
   * firewall-config : a GUI based management utility 
-  * web-console : a WebUI based management utility
 
 For this workshop, we are only going to be using firewall-cmd.
 
