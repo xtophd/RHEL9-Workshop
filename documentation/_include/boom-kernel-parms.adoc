@@ -122,7 +122,7 @@ boom profile list --osversion "9.0 (Plow)"
 [{format_cmd_output}]
 ----
 OsID    Name                     OsVersion
-f44fb52 Red Hat Enterprise Linux 8.1 (Ootpa)
+e0ef3eb Red Hat Enterprise Linux 9.0 (Plow)
 ----
 
 === Create GRUB Entry
@@ -221,7 +221,7 @@ Show details about our boom-boot entry.
 
 [{format_cmd_exec}]
 ----
-export BOOM_BOOTID=`boom entry list --title "RHEL 9 Workshop" -o bootid,title | grep Workshop | awk '{print $1}'`
+export BOOM_BOOTID=$(boom entry list --title "RHEL 9 Workshop" -o bootid,title | grep Workshop | awk '{print $1}')
 boom entry show $BOOM_BOOTID
 ----
 
