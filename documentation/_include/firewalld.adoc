@@ -66,8 +66,6 @@ You are now ready to proceed with these exercises.
 
 == Core Concepts
 
-=== Services and Configurations
-
 The RHEL 9 firewall consists of:
 
   * firewalld : daemon/service
