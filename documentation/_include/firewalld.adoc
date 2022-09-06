@@ -456,7 +456,7 @@ public
 
 
 
-== Managing a Customized Service
+== Customizing a Default Servicee
 
 === Install Override Configuration 
 
@@ -570,7 +570,7 @@ public
 
 
 
-== Create a Custom Named Service
+== Custom Service From Scratch
 
 In this exercise you will create a custom service with a unique name.
 
