@@ -29,16 +29,16 @@ if /usr/sbin/lvs -q ${rootdev} 2>/dev/null ; then
   rootlv=`lvs -o lv_name --noheadings ${rootdev} 2>/dev/null | awk '{print $1}'`
 
   echo ""
-  echo "DEBUG: boom create --title 'RHEL 9 Workshop' --root-lv ${rootvg}/${rootlv} -a ${CUSTOM_OPTS} --osprofile '9.0 (Plow)'"
+  echo "DEBUG: boom create --title 'RHEL 9 Workshop' --root-lv ${rootvg}/${rootlv} -a ${CUSTOM_OPTS}"
   echo ""
 
-  boom create --title 'RHEL 9 Workshop' --root-lv ${rootvg}/${rootlv} -a "${CUSTOM_OPTS} --osprofile '9.0 (Plow)'"
+  boom create --title 'RHEL 9 Workshop' --root-lv ${rootvg}/${rootlv} -a "${CUSTOM_OPTS}"
 
 else
 
   echo ""
-  echo "DEBUG: boom create --title 'RHEL 9 Workshop' --root-device ${rootdev} -a ${CUSTOM_OPTS} --osprofile '9.0 (Plow)'"
+  echo "DEBUG: boom create --title 'RHEL 9 Workshop' --root-device ${rootdev} -a ${CUSTOM_OPTS}"
   echo ""
 
-  boom create --title 'RHEL 9 Workshop' --root-device ${rootdev} -a "${CUSTOM_OPTS} --osprofile '9.0 (Plow)'"
+  boom create --title 'RHEL 9 Workshop' --root-device ${rootdev} -a "${CUSTOM_OPTS}"
 fi

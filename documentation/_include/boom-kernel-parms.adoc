@@ -22,16 +22,14 @@ endif::[]
 
 == Overview
 
-Boom is a boot manager for Linux systems that support the 'BootLoader Specification' (BLS) for boot entry configuration. It simplifies the creation of new or modified boot entries: for example, to boot snapshot images of the system created using LVM.
+Boom is a boot manager for Linux systems that support the 'BootLoader Specification' (BLS).  
 
-Boom:
+In short, boom:
 
+  * simplifies creation of new or modified boot entries
   * includes a set of Python libraries and a command line tool
-  * boom is easily able to create, delete and display boot loader entries 
   * does not modify the existing boot loader configuration
-  * boom *only inserts* additional entries
-
-The existing configuration is maintained, and any distribution integration (ie: kernel installation and update scripts) continue to function as before.
+  * *only inserts* additional entries
 
 The objectives of this exercise are quite simple:
 
@@ -69,12 +67,13 @@ You are now ready to proceed with these exercises.
 
 == Core Concepts
 
-The Boom system uses a concept of "profiles" and "entries" to allow templated entries to be cloned and modified.  This minimises the need for the user to input boot parameters manually for each iteration of the configuration.
+The Boom system uses a concept of "profiles" and "entries" to allow templated configurations to be cloned and modified.  This minimizes the need for the user to input complex boot parameters manually for each iteration of the configuration.
 
 So we begin with the management of boom profiles.
 
-=== Profile
 
+
+=== Profile
 
 ==== List / Show
 
@@ -173,8 +172,10 @@ OS Profile (os_id=e0ef3eb)
 
 === Boot Entry
 
-Now to create a boot entry for grub which utilizes the same boot environment as the current system, but with a few
-added kernel parameters.
+Now it is time to create a boot entry for grub which utilizes the same 
+boot environment as the current system, but with a few added kernel parameters.
+
+
 
 ==== List / Show
 
@@ -209,6 +210,7 @@ Boot Entry (boot_id=0d96d09)
 ----
 
 
+
 ==== Create
 
 First we need to determine the root device.  We can do this by inspecting the current kernel's boot commandline.
@@ -236,8 +238,6 @@ root=UUID=f7614c41-2835-4125-bb13-50772dc2f30c
 ----
 
 NOTE: In this scenario, the boot device is listed by a UUID.  Depending on the lab environment, you could see a logical volume name or a physcial device path.
-
-
 
 Now we need to get to the actual device (or lvm) path.  Although this logic is not complicated, it's not really the focus of this exercise, so you've been provided another workshop-script.
 
@@ -416,7 +416,7 @@ title="RHEL 9 Workshop"
 id="ec2e0c92349d906c08af3ffadd95217f-ba5706a-5.14.0-70.13.1.el9_0.x86_64"
 ----
 
-WARNING: *DO NOT PROCEED TO REBOOT* unless both `kernel=` and `initrd=` include the path `/boot/<filename>`.
+WARNING: *DO NOT PROCEED* unless both `kernel=` and `initrd=` include the path `/boot/<filename>`.
 
 We want to reboot to our "RHEL 9 Workshop", so we need to isolate and use the "index" from above.
 
