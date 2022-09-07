@@ -62,7 +62,7 @@ workshop-nftables-checkhost.sh
 [discrete]
 === Disable Firewalld
 
-For this unit, we need to ensure firewalld is disabled.
+For this unit, we also need to ensure firewalld is disabled.
 
 [{format_cmd_exec}]
 ----
@@ -206,13 +206,11 @@ table inet workshop {
 
 === Rules
 
-Base on specified criteria, *rules* take action on network packets (ie: accept, drop, forward).
+*Rules* take actions (ie: accept, drop, forward) on network packets based on specified criteria.
 
-A rule consists of zero or more *expressions* followed by one or more *statements*.
-
-Each *expression* tests whether a packet matches a specific payload field or packet/flow metadata.
-
-If the packet matches all of the expressions in the rule, then rule's *statements* are executed
+  * a rule consists of zero or more *expressions* followed by one or more *statements*
+  * each *expression* tests whether a packet matches a specific payload field or packet/flow metadata
+  * if a packet matches all of the expressions in the rule, then rule's *statements* are executed
 
 Using the Table and Chain created above, let's proceed to implement and manage some basic rules.
 
