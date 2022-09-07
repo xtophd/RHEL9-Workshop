@@ -59,10 +59,10 @@ Verify that you are on the right host for these exercises.
 workshop-nftables-checkhost.sh
 ----
 
-You are now ready to proceed with these exercises.
+[discrete]
+=== Disable Firewalld
 
-== Disable Firewalld
-
+For this unit, we need to ensure firewalld is disabled.
 
 [{format_cmd_exec}]
 ----
@@ -74,6 +74,7 @@ systemctl disable firewalld --now
 systemctl enable nftables --now
 ----
 
+You are now ready to proceed with these exercises.
 
 == Core Concepts
 
