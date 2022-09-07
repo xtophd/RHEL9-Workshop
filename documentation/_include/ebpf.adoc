@@ -36,12 +36,6 @@ eBPF (The Extended Berkeley Packet Filter) is an in-kernel virtual machine that 
 In this unit, we will be focusing on the kernel tracing offering shipped as bcc-tools (BPF Compiler Collection Tools).   We will also touch on bpftrace which is a tool  to compile scripts to BPF-bytecode.  
 
 
-There are just over 100 tools shipped in this package. A few things of note:
-
-     * All of these tools live in `/usr/share/bcc/tools`.
-     * These tools must run as the root user as any eBPF program can read kernel data. As such, injecting eBPF bytecode as a regular user is not allowed in RHEL 9.
-     * Each tool has a man page to view the man page, run `man <tool name>`. These man pages include descriptions of the tools, provide the options that can be called and have information on the expected overhead of the specific tool.
-
 == Getting Started
 
 For these exercises, you will primarily be using the host `node2` as user `root`.  However, these exercises do REQUIRE a second terminal session to run commands on other hosts.  Please pay careful attention to what commands to run on different hosts.
@@ -94,7 +88,16 @@ To help you set up your second terminal, here is the ssh command and password wh
 
 You are now ready to proceed with these exercises.
 
-== Installation
+== Core Concepts
+
+There are just over 100 tools shipped in this package. A few things of note:
+
+     * All of these tools live in `/usr/share/bcc/tools`.
+     * These tools must run as the root user as any eBPF program can read kernel data. As such, injecting eBPF bytecode as a regular user is not allowed in RHEL 9.
+     * Each tool has a man page to view the man page, run `man <tool name>`. These man pages include descriptions of the tools, provide the options that can be called and have information on the expected overhead of the specific tool.
+
+
+=== Installation
 
 [discrete]
 ==== Primary Terminal (node2)
@@ -112,7 +115,7 @@ Now, we have a lot of interesting tools installed in /usr/share/bcc/tools along 
 
 
 
-== bcc-tools: tcplife
+== Exercise: tcplife
 
 The `tcplife` tool monitors tcp connections on the system and measures the amount of time that they've been open, the local and remote ports involved in the connection and the amount of data transferred and received in kilobytes.
 
@@ -170,7 +173,7 @@ In the `tcplife` terminal, issue a Ctrl-C and this will return you to a prompt.
 
 
 
-== bcc-tools: execsnoop
+== Exercise: execsnoop
 
 The `execsnoop` script monitors all calls to execve() and catches all processes that follow the fork->exec sequence, as well as processes that re-exec() themselves. Processes that fork() but do not exec() won't be caught by this script.
 
@@ -250,7 +253,7 @@ This shows you all the processes that ran exec() during that ssh login, their PI
 
 
 
-== bcc-tools: mountsnoop
+== Exercise: mountsnoop
 
 Similar in nature to `execsnoop`, `mountsnoop` traces the mount() and umount() syscalls which show processes that are attempting to mount (or unmount) filesystems.
 
@@ -368,7 +371,7 @@ In the `mountsnoop` terminal, issue a Ctrl-C and this will return you to a promp
 
 
 
-== bcc-tools: cachestat
+== Exercise: cachestat
 
 The `cachestat` tool traces kernel page cache functions and prints every five second summaries to aid you in workload characterization.
 
@@ -427,7 +430,7 @@ This shows that we had 1216 page cache misses during a five second period while 
 
 
 
-== bpftrace
+== Exercise: bpftrace
 
 This tool is a swiss army knife allowing you to specify functions to trace and messages to be printed when certain conditions are met.
 
