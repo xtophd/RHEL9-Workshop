@@ -22,7 +22,9 @@ endif::[]
 
 == Overview
 
-In this unit, we will get familiar with Containers and the podman CLI.  
+Podman (the POD manager) is a tool for developing, managing, and running containers on your Linux systems.
+
+In this unit, we will get familiar with application containers and the podman CLI.  
 
 == Getting Started
 
@@ -51,9 +53,41 @@ workshop-podman-checkhost.sh
 
 You are now ready to proceed with these exercises.
 
-== Container Basics
+== Core Concepts
 
-=== Container Info
+
+Linux containers are technologies (plural) that allow you to package and isolate applications as lightweight, portable entities. When compared to a traditional virtual machine (as containers often are), Linux containers:
+
+
+  * improve resource utlitization over virtual machines
+  * improve performance over virtual machines
+  * improve flexibilty over virtual machines
+
+Because container images include only the content needed to run an application, a container is more efficient 
+requires less to run.  Likewise, since the container is not running the entirty of a complete operating system,
+it will typically run faster than an application that carries with it the overhead of a whole new virtual 
+machine.  Lastly with an application’s run time requirements included in the image itself, a container is 
+far more capable of being run in multiple environments (without modification).
+
+That said, let's begin to explore the capabilities of podman.
+
+=== Essential Container Commands
+
+Here is a list of the fundamental podman commands and their purpose:
+
+  * *podman images* - list images
+  * *podman ps* - lists running containers
+  * *podman pull* - pulls (copies) container image from repository (ie: redhat and/or docker hub)
+  * *podman run* - run a container
+  * *podman inspect* - view facts about a container
+  * *podman logs* - display logs of a container (can be used with --follow)
+  * *podman rm* - remove one or more containers
+  * *podman rmi* - remove one or more images
+  * *podman stop* - stops one or more containers
+  * *podman kill $(podman ps -q)* - kill all running containers
+  * *podman rm $(podman ps -a -q)* - deletes all stopped containers
+
+== Exercise: Basic Information
 
 Now have a look at the general container information.
 
@@ -178,9 +212,11 @@ version:
   Version: 4.0.2
 ----
 
-=== Container Image Management
 
-==== Current List of Images
+
+== Exercise: Container Image Management
+
+=== List Current Images
 
 Now have a look at the general container information.
 
@@ -191,7 +227,9 @@ podman images
 
 Your results should have come back empty and that's because we have not imported, loaded or pulled any containers on to our platform.  
 
-==== How to Pull Images
+
+
+=== Pull New Images
 
 Time to pull a container from our local repository.
 
@@ -250,7 +288,9 @@ registry.access.redhat.com/ubi9/ubi      latest      46720ac964ac  5 weeks ago  
 registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago  129 MB
 ----
 
-==== Container Tags
+
+
+=== Tag Images
 
 Container images can also be tagged with convenient (ie:custom names).  This could make it more intuitive to understand what they 
 contain, especially after an image has been customized.
@@ -278,7 +318,9 @@ Notice how the image-id for "ubi" and "myfavorite" are identical.
 
 NOTE: The link:https://access.redhat.com/containers[Red Hat Container Catalog] (RHCC) provides a convenient service to locate certified container images built and supported by Red Hat.  You can also view the "security evaluation" for each image.
 
-==== How to Remove Images
+
+
+=== Delete Images
 
 [{format_cmd_exec}]
 ----
@@ -303,23 +345,9 @@ localhost/myfavorite                     latest      46720ac964ac  5 weeks ago  
 registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago  129 MB
 ----
 
-=== Essential Container Commands
 
-Here is a list of the fundamental podman commands and their purpose:
 
-  * *podman images* - list images
-  * *podman ps* - lists running containers
-  * *podman pull* - pulls (copies) container image from repository (ie: redhat and/or docker hub)
-  * *podman run* - run a container
-  * *podman inspect* - view facts about a container
-  * *podman logs* - display logs of a container (can be used with --follow)
-  * *podman rm* - remove one or more containers
-  * *podman rmi* - remove one or more images
-  * *podman stop* - stops one or more containers
-  * *podman kill $(podman ps -q)* - kill all running containers
-  * *podman rm $(podman ps -a -q)* - deletes all stopped containers
-
-== Your First Container
+== Exercise: Run a Container
 
 === Hello World
 
@@ -524,7 +552,9 @@ Now you should be able to run 'podman ps -a' again, and the results should come 
 podman ps -a
 ----
 
-== Exploring Container Namespaces
+
+
+== Exercise: Exploring Container Namespaces
 
 === UTS / Hostname
 
@@ -700,7 +730,9 @@ podman kill --all
 podman rm --all
 ----
 
-== Your First Containerized Application
+
+
+== Exercise: Containerized Application from Scratch
 
 === Setup 
 
