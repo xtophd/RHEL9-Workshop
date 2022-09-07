@@ -1,5 +1,5 @@
 :sectnums:
-:sectnumlevels: 3
+:sectnumlevels: 2
 :markup-in-source: verbatim,attributes,quotes
 ifdef::env-github[]
 :tip-caption: :bulb:
@@ -32,28 +32,6 @@ Primary benefits over the older system (iptables):
   * Better performance
   * Better usability
 
-=== History
-
-It is not unusual for this subsystem of the linux kernel to get replaced from time to time.  You may be familiar with some of the prior filter systems:
-
-  * ip-firewall (linux kernel v2.0, managed with ipfwadm)
-  * ip-chains (linux kernel v2.2, managed with ipchains)
-  * ip-tables (linux kernel v2.4, managed with iptables)
-  * nf-tables (linux kernel v3.13, managed with nft)
-
-There are others, but these are the most famliar ones that appeared in the major distributions.
-
-=== Recommended Usage
-
-In which scenario should you use one of the following?
-
-  * *firewalld*: for simple firewall use cases. It is easy to use and covers the typical use cases.
-  * *nftables*: for complex and performance critical firewalls.
-  * *iptables*: Red Hat Enterprise Linux uses the nf_tables kernel API instead of the legacy back end, thus the nf_tables API provides backward compatibility so that scripts that use iptables commands still work. For new firewall scripts, Red Hat recommends to use nftables.
-
-The default firewall management tool in RHEL 9 continues to be firewalld _(firewall-cmd)_, which gained support for nftables with version 0.6.0.
-
-NOTE: For 99% of all use cases the firewalld tools are the best choice.  For this lab however we are trying to introduce `nft` and demonstrate some differences to the former `iptables`.
 
 
 == Getting Started
@@ -97,8 +75,30 @@ systemctl enable nftables --now
 ----
 
 
+== Core Concepts
 
-== Tables
+It is not unusual for this subsystem of the linux kernel to get replaced from time to time.  You may be familiar with some of the prior filter systems:
+
+  * ip-firewall (linux kernel v2.0, managed with ipfwadm)
+  * ip-chains (linux kernel v2.2, managed with ipchains)
+  * ip-tables (linux kernel v2.4, managed with iptables)
+  * nf-tables (linux kernel v3.13, managed with nft)
+
+There are others, but these are the most famliar ones that appeared in the major distributions.
+
+In RHEL 9, you have a choice on how to implement and manage the firewall.  In which scenario should you use one of the following?
+
+  * *firewalld*: easy to use and covers traditional firewall use cases
+  * *nftables*: for complex and performance critical firewalls
+  * *iptables*: the nf_tables API provides backward compatibility so that scripts that use iptables commands still work
+
+For 99% of all use cases the firewalld tools are the best choice.  For this lab however we are trying to introduce `nft` and demonstrate some differences to the former `iptables`.
+
+Let us now being to understand the constructs that build the firewall rules: Tables, Chains & Rules.
+
+
+
+=== Tables
 
 Fundamentally speaking, filter rules are organized into chains and the chains are then further organized into tables.
 
@@ -148,7 +148,9 @@ nft list tables
 table inet workshop
 ----
 
-== Chains
+
+
+=== Chains
 
 NOTE: Unlike in iptables, there are no predefined chains like INPUT, OUTPUT, etc. 
 
@@ -200,7 +202,22 @@ table inet workshop {
 ----
 
 
-== Rules
+
+=== Rules
+
+Base on specified criteria, *rules* take action on network packets (ie: accept, drop, forward).
+
+A rule consists of zero or more *expressions* followed by one or more *statements*.
+
+Each *expression* tests whether a packet matches a specific payload field or packet/flow metadata.
+
+If the packet matches all of the expressions in the rule, then rule's *statements* are executed
+
+Using the Table and Chain created above, let's proceed to implement and manage some basic rules.
+
+
+
+== Exercise: Managing Rules
 
 === Add Single Rule
 
@@ -298,6 +315,7 @@ table inet workshop { # handle 2
 ----
 
 
+
 === Add Multiple Rules at Once
 
 [{format_cmd_exec}]
@@ -324,7 +342,9 @@ table inet workshop { # handle 2
 
 Again, our chosen hook (counter) is meant primarily to be a nondestructive rule.  By using the *input* hook and applying the *accept* and *drop* policies, you get into the business of recreating a firewall.  Let's go ahead and cleanup and restore firewalld and take one last look at the state of the system.
 
-== Cleanup
+
+
+=== Cleanup
 
 Remove the chain added during this exercise.
 
