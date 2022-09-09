@@ -117,12 +117,6 @@ dnf install -y qemu-kvm libvirt virt-install libvirt-client libguestfs-tools coc
 
 Next we need to enable the various services.
 
-NOTE: Please note that all software has been pre-installed and configured.  These steps are provided as reference material.
-
-If for some reason the webconsole is not enabled, please visit that unit for instructions on installing and configuring webconsole.
-
-To enable the necessary services for this unit:
-
 [{format_cmd_exec}]
 ----
 systemctl enable --now libvirtd
