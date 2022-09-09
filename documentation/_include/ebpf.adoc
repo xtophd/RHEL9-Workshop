@@ -445,6 +445,9 @@ bpftrace makes use of:
 
 Let us start this educational journey by examining what system calls a simple command executes.  
 
+[discrete]
+==== Primary Terminal (node2)
+
 To begin, we need a test file to use as our target.
 
 [{format_cmd_exec}]
@@ -496,6 +499,9 @@ are likely harmless attempts to open files that do not exist.
 Next, let's use *bpftrace* to create a similar output of counted system calls.  We will use a wildcarded tracepoint 'sys_enter_*'
 to get all the relevant syscalls.
 
+[discrete]
+==== Primary Terminal (node2)
+
 [{format_cmd_exec}]
 ----
 bpftrace -e 'tracepoint:syscalls:sys_enter_* { if (comm == "cat") { @[probe] = count(); } }' -c "cat /tmp/workshop.tmp"
@@ -534,6 +540,9 @@ This should line up almost 1-to-1 with the previous output from strace, note tha
 === bpftrace: count specific syscall 
 
 Now we are going to limit the probe to only show 'sys_enter_openat' thereby only setting 1 probe and collecting a count.
+
+[discrete]
+==== Primary Terminal (node2)
 
 [{format_cmd_exec}]
 ----
