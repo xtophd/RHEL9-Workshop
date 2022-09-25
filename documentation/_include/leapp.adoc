@@ -113,7 +113,7 @@ uname -r
 
 [{format_cmd_exec2}]
 ----
-yum repolist
+dnf repolist
 ----
 
 [{format_cmd_output}]
@@ -141,7 +141,7 @@ WARNING: You can probably skip this step if you are not connected to a Satellite
 
 [{format_cmd_exec2}]
 ----
-yum-config-manager --disable my-rhel-8-server-rpm-repo
+dnf config-manager --set-disabled my-rhel-8-server-rpm-repo
 ----
 
 Next, register the host and attach an entitlement.
@@ -179,7 +179,7 @@ Install the LEAPP tools and any dependencies
 
 [{format_cmd_exec2}]
 ----
-yum install -y leapp-upgrade
+dnf install -y leapp-upgrade
 ----
 
 === Cleanup
