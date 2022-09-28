@@ -130,7 +130,7 @@ image::Slide3.PNG[Cockpit Overview]
 
 It's nice that certain statistics about your system are available for inspection, but by default the webconsole does NOT store statistics long term.  For this, you need to install “Performance Co-pilot (pcp)”, the cockpit-pcp plugin and lastly enable "persistent metrics collection" in the webconsole.
 
-Start by clicking on the link "View deatils and history" on the "Usage" tile.
+Start by clicking on the link "View details and history" on the "Usage" tile.
 
 ====
 image::Slide4.PNG[View details and history]

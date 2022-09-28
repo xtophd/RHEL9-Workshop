@@ -137,7 +137,7 @@ First item of business is to ensure the proper software repositories are enabled
 
 If necessary, begin by disabling any local static repos and switching to the latest managed ones from Red Hat.
 
-WARNING: You can probably skip this step if you are not connected to a Satellite or directly to redhat.com.
+WARNING: You can probably skip this step if you are connected to a Satellite or directly to redhat.com.
 
 [{format_cmd_exec2}]
 ----
