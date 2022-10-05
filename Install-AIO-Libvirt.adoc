@@ -1,0 +1,220 @@
+:gitrepo: https://github.com/xtophd/RHEL9-Workshop
+:includedir: _includes
+:doctype: book
+:sectnums:
+:sectnumlevels: 3
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+= All In One: AIO Libvirt
+
+WARNING: As of October 2022, this is a new set of instructions being developed to help deploy the workshop on a single host using RHEL 9 with libvirt virtualization.  Please be patient, everything should be resolved shortly.
+
+
+[discrete]
+== Overview
+
+If you plan to deploy the RHEL9-Workshop in a libvirt/kvm based environment, you are in luck.  These playbooks can automate everything including the setup of the libvirt/kvm host itself.
+
+Using this configuration, RHEL9 Workshop nodes will be deployed as virtual machines in a NAT'd internal network.  You can easily change this to a bridged network by using alternate configuration templates.
+
+NAT is easy because:
+
+  * dhcp, pxe don't conflict with public network
+  * the outside world cannot reach your cluster nodes directly
+
+After setup of the libvirt host is complete, the bastion host and supporting nodes are built from a DVD and post-configured with ansible plays to set up the various exercises.
+
+Lastly, these are default configurations on the virt host but can be changed in the config files:
+
+  * vm images will go into /home/virt-images
+  * iso images will got into /home/iso
+  * network is NAT by default with 192.168.127.xxx and r9workshop.example.com as internal domain.
+
+Virt host should be loaded with either RHEL 8.6+, RHEL 9.0+
+
+
+
+== Prerequisites
+
+  * RHEL 9.0+ or 8.6+ base installation
+  * Installed packages: git, ansible 2.9
+  * RHEL 9.0+ or 8.6+ DVD ISO saved in /home/iso
+  * RHEL 9.0+ or 8.6+ BOOT ISO saved in /home/iso
+
+=== Register system
+
+However you get it done, the primary virthost system will need access to additional RHEL repos.  At this time, I'm testing on RHEL 9.0 and RHEL 8.6.
+
+For RHEL 9.0:
+
+    - TBD: THIS SETUP IS BEING WORKED OUT
+    - "rhel-9-for-x86_64-baseos-rpms"
+    - "ansible-2.9-for-rhel-9-x86_64-rpms"
+
+
+For RHEL 8.6:
+
+    - "rhel-8-for-x86_64-baseos-rpms"
+    - "rhel-8-for-x86_64-appstream-rpms"
+    - "ansible-2.9-for-rhel-8-x86_64-rpms"
+    
+And yes, I test with CentOS from time to time and it should work as both the virthost platform and for the workshop nodes.
+ 
+=== Install additional packages
+
+WARNING: this process requires and is tested with ansible 2.9.  Anything older that Ansible 2.9 *WILL NOT WORK!!!*
+
+Besides an @Base installation, you will need git and ansible installed before you begin.  Once installed, the playbooks will take care of the rest.
+
+----
+yum -y install git,ansible
+----
+
+=== Git Clone Repo
+
+Still on your virt host:
+
+----
+cd ~
+
+git clone http://github.com/xtophd/RHEL9-Workshop --recurse-submodules
+----
+
+=== Create the Config Files
+
+==== Determine Network Configuration
+
+In both cases (NAT or Bridge), the libvirt 'default' network is left alone and unused.  This allows for the continued use of whatever you may already have configured on the virt host without conflict with what is about to be deployed.
+
+In this example, we will use the NAT'd configuration.
+
+==== Copy NAT configurations to './config' directory
+
+Using the NAT'd network config will require the least amount of changes to the config.  You really only need to provide the provide proper info for IP address space.
+
+----
+cd ~/RHEL9-Workshop/config
+
+cp ../sample-configs/libvirt-nat/* .
+----
+
+=== Edit the Config Files
+
+NOTE: Any changes you make to the files in './config/' will be left untouched in the event you update the project repo with `git pull`.  Git is configured to ignore files in ../config
+
+WARNING: Adjusting the default dns and timeserver for your home/lab is critical and is almost certainly mandatory.  You will find those parameters in master-config.yml (network_nameserver and network_timeserver)
+
+It is paramount that you update the configs for your environment accurately.  Please pay close attention to the general network information, and of course the IP and MAC addresses for your systems (vms).  In a libvirt (or ovirt) environment, the default behaviour is to allow the playbooks to generate MAC addresses.  The randomly generated MACs are stored and will persist in the configs until the config directory is deleted (../config/host_vars/*).
+
+==== master-config.yml
+
+NOTE: Again, MAC addresses for a libvirt deployment are automatically generated.  You only need to create/edit MAC addresses if you want to assign them yourself.
+
+Just like the name implies 'master-config.yml' is the main configuration file.  Most parameters should be straight forward, but
+in particular you need to:
+
+  * adjust the dns and time servers (MANDATORY!!!)
+  * fix hostnames, mac addresses & ip addresses
+  
+==== credentials.yml
+
+WARNING: ENCRYPT THIS FILE WHEN DONE EDITING!
+
+There are 2 variables that need to be defined in this file:
+
+  * workshop_username
+  * workshop_password
+  
+The default workshop_username is `cloud-user` with an empty password.  Create a password for the user and then save save the file.
+ 
+Now you can use ansible-vault to encrypt the file for improved security:
+ 
+----
+ansible-vault encrypt config/credentials.yml
+----
+
+If you need to make changes to the content of the file you can do the following:
+
+----
+ansible-vault edit config/credentials.yml
+----
+
+==== xtoph-deploy-config.yml
+
+For the purposes of this deployment with sample-configs/libvirt-nat, the options in xtoph-deploy-config.yml are left to defaults.  But you may be interested to review the parameters to understand what is available.
+
+=== Retrieve RHEL 9.0 DVD and BOOT ISOs
+
+You can copy the URL from the access.redhat.com download page, and be sure to use single quotes to prevent bash from parsing the string.
+
+----
+mkdir -p /home/iso/
+
+wget -O /home/iso/rhel-9.0-x86_64-dvd.iso '<URL>'
+wget -O /home/iso/rhel-9.0-x86_64-boot.iso '<URL>'
+
+----
+
+=== Final Check List
+
+    - Is there enough memory?
+    - Is there enough cpu?
+    - Is there enough disk space and is it in the right location?
+    - Is the RHEL ISO downloaded and stored in the right place
+    - Is the Openshift UPI Pull Secret downloaded and stored in the right place
+    - Did you install (upgrade) Ansible 2.9
+
+
+== Platform Setup
+
+----
+./xtoph-deploy.sh setup
+----
+
+== RHEL9-Workshop Deployment
+
+----
+./xtoph-deploy.sh deploy
+----
+
+=== VNC Connection to the bastion host
+
+If enabled in master-config.yml (now the default for the libvirt-nat.yml), a VNC server is configured on the bastion host.
+
+You could then use an ssh tunnel to setup up a port on the virt host which will connect to the bastion vm.  If you left all of the default parameters and substituting your-host-ipaddr, run the following on the libvirt host.
+
+----
+firewall-cmd --add-port=5903/tcp
+firewall-cmd --permanent --add-port=5903/tcp
+ssh -L <your-host-ipaddr>:5903:192.168.123.160:5903 root@192.168.123.160 -N
+----
+
+Now you should be able to use VNC client to connect to <your-host-ipaddr>:3
+
+Don't forget to set the display quality to "High" in the VNC connection properties, and increase the display resolution on the bastion's desktop GUI settings.
+
+[discrete]
+== Continue to the Workshop
+
+ifdef::env-github[]
+The workshop document and exercises can be found here:
+
+* link:../RHEL9-Workshop.adoc[RHEL9-Workshop Hands-on Lab]
+endif::[]
+
+[discrete]
+= The End
+
+.Built-in
+asciidoctor-version:: {asciidoctor-version}
+safe-mode-name:: {safe-mode-name}
+
+////
+Always end files with a blank line to avoid include problems.
+////
