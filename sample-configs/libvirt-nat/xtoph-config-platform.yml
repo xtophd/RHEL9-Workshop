@@ -2,11 +2,11 @@
 ## CUSTOM PLATFORM PROFILES
 ##
 
-libvirt_nat:
+libvirt_aio_nat:
 
     type:        "libvirt"
-    host_fqdn:   "amanda1.lab.linuxsoup.com"
-    host_ip:     "192.168.1.23"
+    host_fqdn:   "localhost"
+    host_ip:     "127.0.0.1"
     description: "Customized platform libvirt_nat: nat network, nested_virt, sparse storage"
 
     platform: "libvirt"
@@ -44,7 +44,7 @@ libvirt_nat:
             gateway:         "{{ workshop_vars.network_gateway    }}"
             nameserver:      "{{ workshop_vars.network_nameserver }}"
             timeserver:      "{{ workshop_vars.network_timeserver }}"
-            fqdn:            "{{ workshop_vars.network_fqdn       }}"
+            fqdn:            "{{ workshop_extras.network_fqdn     }}"
 
     storage:
         default:

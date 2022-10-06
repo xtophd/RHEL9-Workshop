@@ -13,6 +13,15 @@
       when: xtoph_deploy_cmd == "setup" or
             xtoph_deploy_cmd == "setup+"
 
+- hosts: myLibvirtHosts
+  roles:
+    - role: xtoph_deploy
+      vars: 
+        xtoph_deploy_action: "setup-libvirt"
+      when: xtoph_deploy_cmd == "setup" or
+            xtoph_deploy_cmd == "setup+"
+
+
 
 ##
 ##    Next, execute undeploy activities
