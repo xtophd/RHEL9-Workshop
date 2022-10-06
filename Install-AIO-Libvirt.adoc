@@ -66,14 +66,14 @@ For RHEL 8.6:
     
 And yes, I test with CentOS from time to time and it should work as both the virthost platform and for the workshop nodes.
  
-=== Install additional packages
+=== Install Git
 
 WARNING: this process requires and is tested with ansible 2.9.  Anything older that Ansible 2.9 *WILL NOT WORK!!!*
 
 Besides an @Base installation, you will need git and ansible installed before you begin.  Once installed, the playbooks will take care of the rest.
 
 ----
-yum -y install git,ansible
+yum -y install git
 ----
 
 === Git Clone Repo
@@ -84,6 +84,27 @@ Still on your virt host:
 cd ~
 
 git clone http://github.com/xtophd/RHEL9-Workshop --recurse-submodules
+
+----
+
+=== Install Ansible
+
+There are a pair of handy scripts to install ansible.  The first is useful IF you have an entitlement for your system and can utilize the Red Hat Subscription Manager (rhsm).  The second script will configure the use of the EPEL repo install an unsupported (community) version of ansible.
+
+To install ansible using rhsm:
+
+----
+cd ~/RHEL9-Workshop
+
+./sample-scripts/rhel9-install-ansible-rhsm.sh
+----
+
+To install ansible using epel:
+
+----
+cd ~/RHEL9-Workshop
+
+./sample-scripts/rhel9-install-ansible-epel.sh
 ----
 
 === Create the Config Files
@@ -128,10 +149,10 @@ WARNING: ENCRYPT THIS FILE WHEN DONE EDITING!
 
 There are 2 variables that need to be defined in this file:
 
-  * workshop_username
-  * workshop_password
+  * rhel9workshop_student_password
+  * rhel9workshop_admin_password
   
-The default workshop_username is `cloud-user` with an empty password.  Create a password for the user and then save save the file.
+The default rhel9workshop_student_name is `cloud-user` with an empty password.  Create a password for the user and then save save the file.
  
 Now you can use ansible-vault to encrypt the file for improved security:
  
@@ -156,9 +177,8 @@ You can copy the URL from the access.redhat.com download page, and be sure to us
 ----
 mkdir -p /home/iso/
 
-wget -O /home/iso/rhel-9.0-x86_64-dvd.iso '<URL>'
-wget -O /home/iso/rhel-9.0-x86_64-boot.iso '<URL>'
-
+wget -O /home/iso/rhel-baseos-9.0-x86_64-dvd.iso '<URL>'
+wget -O /home/iso/rhel-baseos-9.0-x86_64-boot.iso '<URL>'
 ----
 
 === Final Check List
@@ -167,8 +187,7 @@ wget -O /home/iso/rhel-9.0-x86_64-boot.iso '<URL>'
     - Is there enough cpu?
     - Is there enough disk space and is it in the right location?
     - Is the RHEL ISO downloaded and stored in the right place
-    - Is the Openshift UPI Pull Secret downloaded and stored in the right place
-    - Did you install (upgrade) Ansible 2.9
+    - Did you install (upgrade) Ansible 2.9+
 
 
 == Platform Setup
