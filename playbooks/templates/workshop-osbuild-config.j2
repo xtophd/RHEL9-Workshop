@@ -1,13 +1,75 @@
-{
-    "x86_64": [
-        {
-            "name": "baseos",
-            "baseurl": "http://192.168.1.170:8008/repos/rhel-8.4/BaseOS"
-        },
-        {
-            "name": "appstream",
-            "baseurl": "http://192.168.1.170:8008/repos/rhel-8.4/AppStream"
-        }
-    ]
-}
+#!/bin/bash
+
+##
+## Include the lib-exercise functions
+##
+
+. $(dirname "$0")/lib-exercise.sh
+
+##
+##    
+## 
+
+exercise_cmd "Stop all osbuilder related services" \
+             "systemctl stop osbuild-worker@.service.d osbuild-worker@1.service osbuild-composer.service"
+
+
+##
+##    
+## 
+
+exercise_cmd "Create the osbuilder config override directory" \
+             "mkdir -p /etc/osbuild-composer/repositories"
+
+
+##
+## 
+##
+
+exercise_cmd "Locate baseos repo baseurl" \
+             "dnf repoinfo rhel-9-for-x86_64-baseos-rpms 2>/dev/null | grep Repo-baseurl | awk '{print \$3}'"
+
+exercise_cmd "Locate baseos repo appstream" \
+             "dnf repoinfo rhel-9-for-x86_64-appstream-rpms 2>/dev/null | grep Repo-baseurl | awk '{print \$3}'"
+
+export BASEOS_URL=`dnf repoinfo rhel-9-for-x86_64-baseos-rpms 2>/dev/null | grep Repo-baseurl | awk '{print \$3}'`
+export APPSTREAM_URL=`dnf repoinfo rhel-9-for-x86_64-appstream-rpms 2>/dev/null | grep Repo-baseurl | awk '{print \$3}'`
+
+##
+##    
+## 
+
+exercise_cmd "Start a new osbuilder override config" \
+             "jq '.x86_64 | { \"x86_64\" : . }' /usr/share/osbuild-composer/repositories/rhel-90.json > /var/tmp/osbuild-new.json"
+
+##
+##  
+##
+
+exercise_cmd "Patch osbuilder override config with baseos url" \
+             "jq '(.x86_64[] | select(.name == \"baseos\").baseurl) |= env.BASEOS_URL' /var/tmp/osbuild-new.json > /var/tmp/osbuild-fixed-baseos.json"
+
+exercise_cmd "Patch osbuilder override config with appstream url" \
+             "jq '(.x86_64[] | select(.name == \"appstream\").baseurl) |= env.APPSTREAM_URL' /var/tmp/osbuild-fixed-baseos.json > /var/tmp/osbuild-fixed-appstream.json"
+
+##
+## 
+##
+
+exercise_cmd "Copy the override to it's destination" \
+             "cp -f /var/tmp/osbuild-fixed-appstream.json /etc/osbuild-composer/repositories/rhel-90.json"
+
+##
+## 
+##
+
+exercise_cmd "Copy the CA used by RHSM to osbuild" \
+             "cp -f /etc/rhsm/ca/katello-server-ca.pem /etc/rhsm/ca/redhat-uep.pem"
+
+##
+## 
+##
+
+exercise_cmd "Restart services" \
+             "systemctl enable --now osbuild-composer.socket"
 

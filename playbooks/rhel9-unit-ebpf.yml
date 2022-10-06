@@ -4,7 +4,7 @@
   tasks:
   
     - name: "rhel9-unit-ebpf : yum install bcc-tools"
-      yum: name=bcc-tools,net-tools,kernel-devel state=installed
+      yum: name="bcc-tools,net-tools,strace,bpftrace,kernel-devel-{{ansible_kernel}}"  state=installed
       register: result
       retries: 10
       until: result is succeeded
@@ -18,5 +18,13 @@
         group: root
         mode: 0744
       with_items:
-        - {src: 'workshop-checkhost.j2',    dest: '/usr/local/bin/workshop-ebpf-checkhost.sh'}
-        - {src: 'workshop-ebpf-rootkit.j2', dest: '/usr/local/bin/workshop-ebpf-rootkit.sh'}
+        - {src: 'workshop-checkhost.j2',       dest: '/usr/local/bin/workshop-ebpf-checkhost.sh'}
+        - {src: 'workshop-ebpf-rootkit.j2',    dest: '/usr/local/bin/workshop-ebpf-rootkit.sh'}
+        - {src: 'workshop-ebpf-unmountroot.j2',dest: '/usr/local/bin/workshop-ebpf-unmountroot.sh'}
+        - {src: 'workshop-ebpf-unmountshm.j2', dest: '/usr/local/bin/workshop-ebpf-unmountshm.sh'}
+        - {src: 'workshop-ebpf-mountshm.j2',   dest: '/usr/local/bin/workshop-ebpf-mountshm.sh'}
+        - {src: 'workshop-ebpf-iotest.j2',     dest: '/usr/local/bin/workshop-ebpf-iotest.sh'}
+        - {src: 'workshop-ebpf-iotest-x10.j2', dest: '/usr/local/bin/workshop-ebpf-iotest-x10.sh'}
+        - {src: 'workshop-ebpf-cachestat.j2',  dest: '/usr/local/bin/workshop-ebpf-cachestat.sh'}
+
+

@@ -6,7 +6,7 @@ version = "0.0.1"
 enabled = ["httpd"]
 
 [customizations.firewall.services]
-enabled = ["http,https"]
+enabled = ["http","https"]
 
 [[modules]]
 version = "2.4.*"
@@ -15,6 +15,14 @@ name = "httpd"
 [[modules]]
 version = "2.4.*"
 name = "mod_ssl"
+
+[[modules]]
+version = "*"
+name = "firewalld"
+
+[[packages]]
+version = "*"
+name = "httpd"
 
 [[packages]]
 version = "*"

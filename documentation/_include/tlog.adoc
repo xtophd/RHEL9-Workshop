@@ -8,6 +8,13 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+:format_plain: bash,options="nowrap"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+endif::[]
+
 
 :toc:
 :toclevels: 1
@@ -20,45 +27,47 @@ Tlog is a terminal I/O recording and playback package for Linux.  The session lo
 
 If you have successfully run the RHEL 8 lab preparation playbook, then node1.example.com has already been properly configured for session logging.  What follows are some basic exercises to demonstrate how this facility functions.
 
+Starting with RHEL 9, TLOG is configured by a relatively simple system-role.  We will com back to that later.
+
 == Getting Started
 
 For these exercises, you will be using the host `node1` as user `root`.
 
 From host `bastion`, ssh to `node1`.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*ssh node1*
+ssh node1
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*workshop-tlog-checkhost.sh*
+workshop-tlog-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
 
 == Creating a Session Log
 
-The system has been configured with an additional non-priviledged user called `other-user`.  Run the following command to change to the `other-user`.
+The system has been configured with an additional non-privileged user called `other-user`.  Run the following command to change to the `other-user`.
 
 NOTE: The command is 'su' + 'dash' + 'other-user'.  Don't forget the dash!
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*su - other-user*
+su - other-user
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 ATTENTION! Your session is being recorded!
 ----
@@ -67,12 +76,12 @@ You should have gotten a message when switching to `other-user` that the session
 
 Now to do a few activities worth logging.  You can check out a directory listing, look at the host's _passwd_ and _shadow_ files.  
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*ls -l /etc*
+ls -l /etc
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 -rw-r--r--.  1 root root       68 Apr 17 22:19 shells
 drwxr-xr-x.  2 root root     4096 Apr 17 21:54 skel
@@ -89,12 +98,12 @@ drwx------.  4 sssd sssd     4096 Apr 17 21:55 sssd
 ...SNIP...
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*cat /etc/passwd*
+cat /etc/passwd
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/bin:/sbin/nologin
@@ -111,24 +120,24 @@ ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
 ...SNIP...
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*cat /etc/shadow*
+cat /etc/shadow
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 cat: /etc/shadow: Permission denied
 ----
 
-Oh wait, you need root priviledges to see the contents of _/etc/shadow_.  You can use sudo for that!
+Oh wait, you need root privileges to see the contents of _/etc/shadow_.  You can use sudo for that!
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*sudo cat /etc/shadow*
+sudo cat /etc/shadow
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 root:$6$9Jk5EGiB2aBl95kj$RIdiSqNdKt95zqddStFUY/zVKIUujWfGWJkLM5KQ.7zY88Kxxa0qm78qLMFRAqDO2qOrp.qZBaQAKcUFm1Is70:18370:0:99999:7:::
 bin:*:17988:0:99999:7:::
@@ -147,21 +156,21 @@ ftp:*:17988:0:99999:7:::
 
 We are done with our limited nafarious activities, so proceed to `exit`
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*exit*
+exit
 ----
 
 == Session Play Back
 
 Session logs are configured to record in the system journal by default.  A distinct advantage to this approach is that session recordings are also augmented with meta data which includes: user, session-id, host-id and a log-message-id.  Let's have a look.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*journalctl -o verbose  --output-fields=TLOG_USER,TLOG_REC TLOG_USER=other-user*
+journalctl --no-pager -o verbose  --output-fields=TLOG_USER,TLOG_REC TLOG_USER=other-user 
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 Sat 2019-04-27 21:21:27.852913 EDT [s=bcde42e4c96048c3908657177414e202;i=700;b=b2333248c22a4c5f912a>
     TLOG_USER=other-user
@@ -183,13 +192,38 @@ Sat 2019-04-27 21:21:58.770887 EDT [s=bcde42e4c96048c3908657177414e202;i=70c;b=b
 Each one of those entries makes up a chunk of a session recording.  It is by way of searching the system journal and identifying the correct TLOG_REC for a specific session, that you can then play back the session using `tlog-play`.
 
 We have taken the liberty of scripting this "search" to playback the last session log from the user cloud-user.
+Once you hit enter on the command below, you will see a note that "Playback Started..." and again when "Playback Finished...".  
+Be patient until it completes and your root prompt returns.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*workshop-tlog-playback.sh*
+workshop-tlog-playback.sh
 ----
 
-Once you hit enter on the above command, you will see a note that "Playback Started..." and again when "Playback Finished...".  Be patient until it completes and your root prompt returns.
+[{format_plain}]
+----
+Playback Starting...
+[other-user@node1 ~]$ ls -l /etc
+total 1136
+-rw-r--r--.  1 root root       12 Feb 24  2022 adjtime
+-rw-r--r--.  1 root root     1529 Jun 23  2020 aliases
+drwxr-xr-x.  2 root root     4096 Sep  4 21:04 alternatives
+-rw-r--r--.  1 root root      541 Aug  9  2021 anacrontab
+drwxr-xr-x.  3 root root       51 Sep  4 21:04 ansible
+
+...<SNIP>...
+
+setroubleshoot:!!:19239::::::
+mysql:!!:19239::::::
+apache:!!:19239::::::
+other-user:$6$qbfI9WAi97Bpq2Cb$xGAZ90QHX3oPDF8whjame8UOTJKMFLgC2IjR5o2hm75k5PyL3cn9Hna8IpA8gt5yNP1ro0eiqAE3qsJHMVAok0:19239:0:99999:7:::
+tlog:!!:19239::::::
+[other-user@node1 ~]$ exit
+logout
+
+Playback Finished...
+----
+
 
 [NOTE]
 ====
@@ -201,40 +235,22 @@ tlog-play -r journal -M ${myTLOG}
 ----
 ====
 
-== Initial Setup of TLOG
+WARNING: It is important to wait until the playback is complete.  Do not proceed until you see the output `Playback Finished`.
 
-Clearly we have taken the liberty to pre-configure TLOG for this lab.  But, it was not very difficult.  TLOG requires a couple of packages, a configuration file and simple restart of the sssd service.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
+== Conclusion
+
+This concludes the exercises related to tlog.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
 ----
-yum install tlog cockpit-session-recording
-----
-
-Here is what the config file looks like _/etc/sssd/conf.d/sssd-session-recording.conf_
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*cat /etc/sssd/conf.d/sssd-session-recording.conf*
-----
-
-[bash,options="nowrap"]
-----
-# This file deployed by Ansible playbook
-# /etc/sssd/conf.d/sssd-session-recording.conf
-
-[session_recording]
-scope = some
-users = other-user
-groups = other-user
+workshop-finish-exercise.sh
 ----
 
-And lastly, reload systemd and restart the sssd service.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*systemctl daemon-reload*
-*systemctl restart sssd*
-----
 
 == Additional Resources
 
@@ -246,7 +262,7 @@ Red Hat Documentation
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////

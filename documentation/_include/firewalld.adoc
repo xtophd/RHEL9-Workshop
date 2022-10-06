@@ -1,5 +1,5 @@
 :sectnums:
-:sectnumlevels: 3
+:sectnumlevels: 2
 :markup-in-source: verbatim,attributes,quotes
 ifdef::env-github[]
 :tip-caption: :bulb:
@@ -9,9 +9,13 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :nic0: ens3
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
 ifeval::["%cloud_provider%" == "ec2"]
 :nic0: eth0
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
 endif::[]
+
 
 :toc:
 :toclevels: 1
@@ -20,7 +24,8 @@ endif::[]
 
 == Overview
 
-The *firewalld* daemon provides a dynamically managed firewall for enhanced network security.  The firewalld daemon is controlled by way of a command-line tool `firewall-cmd` or a gui tool provided by the `firewall-config` rpm package. For today's workshop, you will focus strictly on the command line interface.
+The *firewalld* daemon provides a dynamically managed network security layer that tightly controls what 
+connections (ports and services) are able to communicate via the system's network interfaces.
 
 Features of firewalld include:
 
@@ -28,7 +33,7 @@ Features of firewalld include:
   * support for ethernet bridges
   * support for network “zones” which assigns level of trust to a network / connections / interfaces
   * separation of runtime and permanent configuration options
-  * interface for external services to manage firewall rules directly
+  * an interface for external services to manage firewall rules directly
 
 == Getting Started
 
@@ -36,112 +41,76 @@ For these exercises, you will be using the host `node1` as user `root`.
 
 From host `bastion`, ssh to `node1`.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*ssh node1*
+ssh node1
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*workshop-firewalld-checkhost.sh*
+workshop-firewalld-checkhost.sh
 ----
 
 You are now ready to proceed with these exercises.
 
-== Installation & Configuration
 
-=== Packages and Services
 
-Firewalld is already installed and running on you host. These steps provided here will restore firewalld if it has been disabled. It should NOT be necessary to run these commands in this lab.
+== Core Concepts
 
-[NOTE]
-====
-_Native command(s) to enable firewalld_
-----
-systemctl stop nftables
-systemctl disable nftables
-yum install firewalld
-systemctl enable --now firewalld 
-systemctl status -l firewalld 
-----
-====
+The RHEL 9 firewall consists of:
+
+  * firewalld : daemon/service
+  * firewall-cmd : command line management utility
+  * firewall-config : a GUI based management utility 
+
+For this workshop, we are only going to be using firewall-cmd.
 
 === Configuration
 
-Firewalld uses several different, completely adaptable, XML config files to store configurations. These files also ensure run-time and persistent configuration separation. 
+The configuration files for firewalld are stored in two places:
 
-The configuration files are stored in
+  * /usr/lib/firewalld - distributed system default configs
+  * /etc/firewalld - user customizations / override configs
+ 
+Configurations stored in */usr/lib/firewalld* are NOT meant for customization.  They 
+WILL be overwritten and replaced from time to time as Red Hat releases new packages 
+or updates for the operating system.
 
-  * /usr/lib/firewalld
-  * /etc/firewalld
-  
-Red Hat distributes the default service configurations in /usr/lib/firewalld.  These configurations are NOT meant for customization.  They WILL be overwritten and replaced from time to time as Red Hat releases new packages or updates for the operating system.
+User customizations for firewalld belong in */etc/firewalld*.  These configuration 
+files take precedence over the system default configs.
 
-Customizations for the firewall configuration belong in */etc/firewalld*.  These configuration files (if they exist) take precedence over the default configs located in */usr/lib/firewalld*
 
-=== Zone Configs
 
-Firewalld uses zones to assign a level of trust to a network and its associated connections and interfaces. The zone files include definitions of Services, Ports (ranges) with protocols, Rich rules, Internet Control Message Protocol (ICMP) blocks , Masquerading and Port/packet forwarding. There are several built-in zones: block, dmz, drop, external, home, internal, public, trusted, work - and you can also create new zones 
+=== Services
 
-Each zone is similar to a complete firewall and there is a single zone selection per environment or connection. The public zone is the Initial default. Zones are identified in ifcfg files or NetworkManager configuration using: ZONE=<name> 
+Similar to systemd, firewalld implements the concept of a service:  
 
-Let us examine a couple of the system's default zone files in */usr/lib/firewalld/zones*
+  * a "service" includes a common name
+  * a port or range of ports
+  * a protocol
+  * a netfilter helper module
+  * a destination address (or range) for IPv4 and/or IPv6.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
+There are nearly 50 built-in services shipped with firewalld.  You can also create your own service configs from scratch or customize the default files.  More on that coovered in the exercises below.
+
+Let's take a quick look at the default configuration for ssh & http to start.
+
+[{format_cmd_exec}]
 ----
-*cat /usr/lib/firewalld/zones/public.xml*
-----
-
-.public.xml
-[bash,options="nowrap"]
-----
-<?xml version="1.0" encoding="utf-8"?>
-<zone>
-  <short>Public</short>
-  <description>For use in public areas. You do not trust the other computers on networks to not harm your computer. Only selected incoming connections are accepted.</description>
-  <service name="ssh"/>
-  <service name="dhcpv6-client"/>
-  <service name="cockpit"/>
-</zone>
+cat /usr/lib/firewalld/services/ssh.xml
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*cat /usr/lib/firewalld/zones/drop.xml*
-----
-
-.drop.xml
-[bash,options="nowrap""]
-----
-<?xml version="1.0" encoding="utf-8"?>
-<zone target="DROP">
-  <short>Drop</short>
-  <description>Unsolicited incoming network packets are dropped. Incoming packets that are related to outgoing network connections are accepted. Outgoing network connections are allowed.</description>
-</zone>
-----
-
-=== Service Configs
-
-There are nearly 50 built-in services files shipped with firewalld. Services files include Port (ranges) with protocol, Netfilter helper modules, and destination address (range) for IPv4 and/or IPv6. You can also create your own services files or customize the default files. To customize a file, simply copy it from /usr/lib/firewalld/services to /etc/firewalld/services then make any required changes. 
-
-Here are a couple common configs for services defined in */usr/lib/firewalld/services*
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*cat /usr/lib/firewalld/services/ssh.xml*
-----
-
-.ssh.xml
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
 <service>
@@ -151,13 +120,12 @@ Here are a couple common configs for services defined in */usr/lib/firewalld/ser
 </service>
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*cat /usr/lib/firewalld/services/http.xml*
+cat /usr/lib/firewalld/services/http.xml
 ----
 
-.http.xml
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
 <service>
@@ -167,31 +135,33 @@ Here are a couple common configs for services defined in */usr/lib/firewalld/ser
 </service>
 ----
 
-== Firewall Basics
+== Determine State
+
+NOTE: Firewalld maintains two states of the firewall configuration: runtime and permanent.
+When you make changes to the configuration it is important to consider what is currently
+running and what will persist past the next reboot.
 
 Determine current state of the firewalld service.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --state*
+firewall-cmd --state
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 running
 ----
 
 Get a list of currently configured and active "zones".
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --get-active-zones*
+firewall-cmd --get-active-zones
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
-libvirt
-  interfaces: virbr0
 public
   interfaces: {nic0}
 ----
@@ -205,38 +175,38 @@ NOTE:  In this sample output, the virtual bridge `libvirt` is created and manage
 
 We had this information from the previous command, but to be more specific let's just list the physical interfaces associated with the public zone.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-interfaces*
+firewall-cmd --zone=public --list-interfaces
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 {nic0}
 ----
 
 Get a list of services configured on the public zone.
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-services*
+firewall-cmd --zone=public --list-services
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 cockpit dhcpv6-client ssh
 ----
 
-We see the web console, the dhcp client and of course the sshd service.
+We see the web console, the dhcp client and of course the ssh service.
 
 Now let's get some specific data points on the web console service (cockpit).
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --info-service=cockpit*
+firewall-cmd --info-service=cockpit
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 cockpit
   ports: 9090/tcp
@@ -252,12 +222,12 @@ Nothing too exciting, but we can note that the web console is configured on port
 
 Finally, let's just list everything about the public zone.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-all*
+firewall-cmd --zone=public --list-all
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 public (active)
   target: default
@@ -288,19 +258,19 @@ Here we will take a moment to enable the http and https service ports.
 
 
 
-=== Add a Default Service
+=== Add a Service
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --add-service={http,https}*
-----
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*firewall-cmd --zone=public --list-all*
+firewall-cmd --add-service={http,https}
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec}]
+----
+firewall-cmd --zone=public --list-all
+----
+
+[{format_cmd_output}]
 ----
 public (active)
   target: default
@@ -317,12 +287,16 @@ public (active)
   rich rules:
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
+Remember how we mentioned above about the two configuration states: runtime and permanent?
+Notice below how the permanent state dose NOT include http or https.
+
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-all --permanent*
+firewall-cmd --zone=public --list-all --permanent
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 public
   target: default
@@ -339,20 +313,24 @@ public
   rich rules:
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*firewall-cmd --runtime-to-permanent*
-----
+A quick way to make them permanent is to save the current runtime state to permanent.
 
-NOTE: you could have also passed the *--permanent* flag to the original command as follows `firewall-cmd --permanent --add-service={http,https}`
-
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-all --permanent*
+firewall-cmd --runtime-to-permanent
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+NOTE: you could have also run the same configuration command a second time and 
+passed the *--permanent* flag as follows `firewall-cmd --permanent --add-service={http,https}`.  
+It's annoying but necessary to run configuration commands twice to manage both states and
+maintain consistency.
+
+[{format_cmd_exec}]
+----
+firewall-cmd --zone=public --list-all --permanent
+----
+
+[{format_cmd_output}]
 ----
 public
   target: default
@@ -371,94 +349,61 @@ public
 
 
 
-
-
 === Remove a Default Service
 
 Now let us disable a service port not needed for our workshop environment, namely *dhcp6-client*.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --remove-service=dhcpv6-client*
+firewall-cmd --remove-service=dhcpv6-client
+firewall-cmd --runtime-to-permanent
 ----
 
 Take a look at the active services now and you should find dhcp6-client absent.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --list-services*
+firewall-cmd --list-services
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 cockpit http https ssh
 ----
 
-Again, we point out that what we just did is not permanent (ie: these changes will not persist after a reboot).
+And since we also ran a --runtime-to-permanent, both the
+runtime and permanent configs were updated.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-all --permanent*
-----
-
-As the output above shows, our unwanted service will return if someone runs `firewall-command --reload` or after a system reboot.
-Thus, there is one more step.  Save our current active configuration to the permanent one.
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*firewall-cmd --runtime-to-permanent*
+firewall-cmd --list-services --permanent
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_output}]
 ----
-*firewall-cmd --zone=public --list-all --permanent*
-----
-
-[bash,options="nowrap",subs="{markup-in-source}"]
-----
-public
-  target: default
-  icmp-block-inversion: no
-  interfaces:
-  sources:
-  services: cockpit http https ssh
-  ports: 
-  protocols:
-  masquerade: no
-  forward-ports:
-  source-ports:
-  icmp-blocks:
-  rich rules:
+cockpit http https ssh
 ----
 
 
 
+== Managing Ad-hoc Ports
 
-
-== Managing Custom Services
-
-=== Add Custom Service (Port)
+=== Add a Port
 
 Since we have been toying with http, it's common for httpd to also be configured on ports 8080 and 8443.  So let's simply create and ad-hoc rule to make those ports available.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --add-port=8080/tcp --add-port=8443/tcp*
-----
-
-And to make the rules permanent, save the current active configuration.
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*firewall-cmd --runtime-to-permanent*
+firewall-cmd --add-port=8080/tcp --add-port=8443/tcp
+firewall-cmd --runtime-to-permanent
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-all --permanent*
+firewall-cmd --zone=public --list-all
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 public
   target: default
@@ -476,26 +421,22 @@ public
   rich rules:
 ----
 
-=== Remove Custom Service
+=== Remove a Port
 
-As much fun as that was, ad-hoc was quick and easy, but not ideal.  We really desire a formal configuration, so let us undo the ad-hoc rules.
+As much fun as that was, ad-hoc was quick and easy but not ideal.  We really desire a formal configuration, so let us undo the ad-hoc rules.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --remove-port=8080/tcp --remove-port=8443/tcp*
-----
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*firewall-cmd --runtime-to-permanent*
+firewall-cmd --remove-port=8080/tcp --remove-port=8443/tcp
+firewall-cmd --runtime-to-permanent
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-all --permanent*
+firewall-cmd --zone=public --list-all
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 public
   target: default
@@ -513,26 +454,27 @@ public
   rich rules:
 ----
 
-== Create a Custom Service Config
 
-=== Install Configuration File
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+== Customizing a Default Service
+
+=== Install Override Configuration 
+
+[{format_cmd_exec}]
 ----
-*workshop-firewalld-customconfigs.sh*
+workshop-firewalld-customconfigs.sh
 ----
 
 Two configuration files were just created */etc/firewalld/services*
 
-They are identical to the system default ones except that our additional ports (8080 and 8443) were added the the definition.
+They are identical to the system defaults except that our additional ports (8080 and 8443) were added the the definition.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*cat /etc/firewalld/services/http.xml*
+cat /etc/firewalld/services/http.xml
 ----
 
-./etc/firewalld/services/http.xml
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
 <service>
@@ -543,13 +485,12 @@ They are identical to the system default ones except that our additional ports (
 </service>
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*cat /etc/firewalld/services/https.xml*
+cat /etc/firewalld/services/https.xml
 ----
 
-./etc/firewalld/services/https.xml
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
 <service>
@@ -560,23 +501,23 @@ They are identical to the system default ones except that our additional ports (
 </service>
 ----
 
-===  Activate Customized Service
+===  Activate Service
 
 Since the httpd service is already active, all we really need to do is reload firewalld.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --reload*
+firewall-cmd --reload
 ----
 
 === Verification
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --info-service=http*
+firewall-cmd --info-service=http
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 http
   ports: 80/tcp 8080/tcp
@@ -588,12 +529,12 @@ http
   helpers:
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --info-service=https*
+firewall-cmd --info-service=https
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 https
   ports: 443/tcp 8443/tcp
@@ -605,12 +546,12 @@ https
   helpers:
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-all --permanent*
+firewall-cmd --zone=public --list-all --permanent
 ----
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 public
   target: default
@@ -627,21 +568,23 @@ public
   rich rules:
 ----
 
-== Create a Custom Named Service
+
+
+== Custom Service From Scratch
 
 In this exercise you will create a custom service with a unique name.
 
-=== Examine Config File
+=== Configuration File
 
 First, have a look at the configuration file which has already been prepared for you.  It should be fairly self explanatory.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*cat /usr/local/etc/firewalld-customname.xml*
+cat /usr/local/etc/firewalld-customname.xml
 ----
 
 ./usr/local/etc/firewalld-customname.xml
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 <?xml version="1.0" encoding="utf-8"?>
 <service>
@@ -652,32 +595,32 @@ First, have a look at the configuration file which has already been prepared for
 </service>
 ----
 
-=== Import Config File
+=== Configuration Import
 
 Now it is time to import the config file.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --new-service-from-file=/usr/local/etc/firewalld-customname.xml --name=workshop --permanent*
+firewall-cmd --new-service-from-file=/usr/local/etc/firewalld-customname.xml --name=workshop --permanent
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --reload*
+firewall-cmd --reload
 ----
 
 === Activate Service
 
 Finally, activate the service and verify.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --add-service=workshop*
+firewall-cmd --add-service=workshop
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*firewall-cmd --zone=public --list-all*
+firewall-cmd --zone=public --list-all
 ----
 
 
@@ -691,7 +634,7 @@ Panic mode allows you to immediately turn off all network traffic on a host.
 
 This is handy to know, but unless you are on the physical system console or remote managed console (ie: ILO, DRAC, etc...) this can be very disruptive.  So we'll provide the commands under the strict guidance that you *DON'T RUN THESE COMMANDS* during this workshop.
 
-[NOTE]
+[WARNING]
 ====
 _DO NOT RUN THESE COMMANDS_
 ----
@@ -703,9 +646,20 @@ firewall-cmd --panic-off
 ----
 ====
 
+== Conclusion
+
+That concludes this unit on firewalld. 
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
+
 == Additional Resources
 
-Red Hat Documentation
+You can find more information:
 
     * link:https://developers.redhat.com/blog/2018/08/10/firewalld-the-future-is-nftables/[Firewalld: The Future is nftables]
     * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_firewalls_and_packet_filters/using-and-configuring-firewalld_firewall-packet-filters[Using And Configuring Firewalls]

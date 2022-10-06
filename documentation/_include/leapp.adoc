@@ -1,6 +1,10 @@
 :sectnums:
 :sectnumlevels: 3
 :markup-in-source: verbatim,attributes,quotes
+:imagesdir: ./_images
+:ssh_command: %ssh_command%
+:ssh_password: %ssh_password%
+:ssh_username: %ssh_username%
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -8,176 +12,446 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_exec2: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+:format_cmd_exec2: source,options="nowrap",subs="{markup-in-source}",role="execute-2"
+endif::[]
+
 
 :toc:
 :toclevels: 1
 
-= Upgrading from RHEL 7 to RHEL 8
-
-WARNING: THIS UNIT IS A WORK IN PROGRESS AND NOT COMPLETE
+= Upgrading from RHEL 8 to RHEL 9
 
 == Overview
 
-WARNING:  This unit will only function if the workshop environment is provisioned with a local Satellite Server OR if the client is registered to redhat.com.  Please consult the instructor for directions before proceeding.
+WARNING:  This exercise requires the SECONDARY terminal and conflicts with any other exercise that 
+uses the secondary terminal.  Do not proceed if the secondary terminal is already in use with another exercise.
 
-In this unit, we will get familiar with the upgrade tool called LEAPP.
+In this unit, we will get familiar with the upgrade tool called LEAPP.  LEAPP is a tool used to analyze an 
+existing system and report on potential issues that could or would cause issues preventing an in-place 
+upgrade, and once issues are addressed then perform the upgrade itself.  
 
-== Getting Started
+Because the upgrade process is VERY time consuming lengthy process, this exercise uses the seconday terminal.  
+The intent is to dedicate secondary terminal to the leapp upgrade, there-by leaving the primary terminal available 
+for other exercises while the upgrade executes.
 
-For these exercises, you will be using the host `node4` as user `root`.  Before you begin, confirm the node was provisioned with RHEL 7.9
+The first several sections leading up to the actual upgrade are interactive and should take around 7 - 8 minutes to complete.  The sections which perform the actual upgrade and finalize it are almost completely non-interactive and each are expected to take 6 - 9 minutes to complete.  Once you start them, you will have time to look at other exercises in the PRIMARY terminal while waiting for them to complete.
 
-From host `bastion`, ssh to `node4`.
+To help you set up your second terminal (if you haven't connected to the bastion host already), here 
+is the ssh command and password which you can use.
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec2}]
 ----
-$ *ssh node4*
+[[ $(hostname -s) != "bastion" ]] && {ssh_command} -o "StrictHostKeyChecking no"
 ----
 
-Use `sudo` to elevate your priviledges.
-
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec2}]
 ----
-$ *sudo -i*
+{ssh_password}
 ----
 
-Verify that you are on the right host for these exercises.
-
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec2}]
 ----
-# *workshop-leapp-checkhost.sh*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 You are now ready to proceed with these exercises.
 
+
+== Getting Started
+
+For these exercises, you will be using the host `leapp` as user `root`.  Before you begin, confirm the node was provisioned with RHEL 8.6
+
+From host `bastion`, ssh to `leapp`.
+
+[{format_cmd_exec2}]
+----
+ssh leapp
+----
+
+Use `sudo` to elevate your privileges.
+
+[{format_cmd_exec2}]
+----
+[[ "$UID" == 0 ]] || sudo -i
+----
+
+Verify that you are on the right host for these exercises.
+
+[{format_cmd_exec2}]
+----
+workshop-leapp-checkhost.sh
+----
+
+== Current RHEL Version Verification
+
+Verify through a few commands that this is currently running RHEL8.  These will show the current version of RHEL, the version of the running kernel and the rpm repos available to the system.
+
+[{format_cmd_exec2}]
+----
+cat /etc/redhat-release
+----
+
+[{format_cmd_output}]
+----
+Red Hat Enterprise Linux release 8.6 (Ootpa)
+----
+
+[{format_cmd_exec2}]
+----
+uname -r
+----
+
+[{format_cmd_output}]
+----
+4.18.0-372.9.1.el8.x86_64
+----
+
+[{format_cmd_exec2}]
+----
+dnf repolist
+----
+
+[{format_cmd_output}]
+----
+Updating Subscription Management repositories.
+repo id                                    repo name
+rhel-8-for-x86_64-appstream-rpms           Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
+rhel-8-for-x86_64-baseos-rpms              Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
+rhel-8-for-x86_64-supplementary-rpms       Red Hat Enterprise Linux 8 for x86_64 - Supplementary (RPMs)----
+----
+
+You are now ready to proceed with the exercises.
+
 == Host Preparation
+
+NOTE: The steps listed here are for reference outside of this workshop only.  None of these steps need to be performed for the exercise to function.
 
 === Package Repositories
 
-First item of business is to ensure the proper software repositories are enabled on the host.  In our workshop environment, node4 was likely provisioned with a RHEL 7.x ISO image and configured with local static self-managed repos.
+First item of business is to ensure the proper software repositories are enabled on the host.  In our workshop environment, the leapp host was likely provisioned with a RHEL 8.x ISO image and configured with local static self-managed repos.
 
 If necessary, begin by disabling any local static repos and switching to the latest managed ones from Red Hat.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-yum-config-manager --disable my-rhel-7-server-rpms
+WARNING: You can probably skip this step if you are connected to a Satellite or directly to redhat.com.
 
+[{format_cmd_exec2}]
+----
+dnf config-manager --set-disabled my-rhel-8-server-rpm-repo
 ----
 
 Next, register the host and attach an entitlement.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
 subscription-manager register --auto-attach
-
 ----
 
 Finally, enable all of the correct software repositories.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
 subscription-manager repos --disable=*
 ----
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
-subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-extras-rpms
+subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms --enable=rhel-8-for-x86_64-appstream-rpms
 ----
 
-Ensure that Red Hat Subscription Manager is set to consume the latest RHEL 7 content.
+Ensure that Red Hat Subscription Manager is set to consume the latest RHEL 8 content.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
 subscription-manager release --unset
 ----
 
-If you use the yum-plugin-versionlock plug-in to lock packages to a specific version, clear the lock as follows.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
+== Installation
+
+=== Tools
+Install the LEAPP tools and any dependencies
+
+[{format_cmd_exec2}]
 ----
-yum versionlock clear
-----
-
-== LEAPP Installation
-
-=== LEAPP Tools
-Install the LEAPP tools.
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-yum install -y leapp leapp-repository leapp-repository-deps lvm2-python-boom cockpit-leapp
+dnf install -y leapp-upgrade
 ----
 
-=== LEAPP Data
+=== Cleanup
 
-Download and store the latest LEAPP data file in /etc/leapp/files.  This example assumes you downloaded leapp-data14.tar.gz from redhat.com and stored it in /var/tmp
+Delete any results from any possible previous attempts to run leapp
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
-mkdir -p /etc/leapp/files; cd /etc/leapp/files
-----
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-tar zxvf /var/tmp/leapp-data14.tar.gz
+rm -rf /root/tmp_leapp_py3
 ----
 
-== LEAPP Pre-Upgrade
+=== Data File (disconnected upgrades)
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+There are several files needed to complete the upgrade that are available online, which are not accessible if the system is not able to access the internet or is not registerd (see link at bottom of exercise).  For this workshop, the following command will put them where they need to go:
+
+[{format_cmd_exec2}]
+----
+cd /etc/leapp/files
+----
+
+[{format_cmd_exec2}]
+----
+tar -xzvf /usr/local/src/leapp-data17.tar.gz
+----
+
+== Pre-Upgrade
+
+=== Scan
+
+Now run the preupgrade option to generate a preliminary report to see if there are any issues found that could prevent the upgrade from proceeding smoothly.
+
+[{format_cmd_exec2}]
 ----
 leapp preupgrade
 ----
 
-== Pre-Upgrade Report
+=== Report
 
 The output from the previous command should have listed a few items that are inhibiting the upgrade of the host.
 
-[source,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
-============================================================
+=================================================
                      UPGRADE INHIBITED
-============================================================
+=================================================
 
-Upgrade has been inhibited due to the following problems:
-    1. Inhibitor: Possible problems with remote login using root account
-    2. Inhibitor: Detected loaded kernel drivers which have been removed in RHEL 8. Upgrade cannot proceed.
-    3. Inhibitor: Missing required answers in the answer file
-Consult the pre-upgrade report for details and possible remediation.
-----
 
-Notice that the output refers you to the pre-upgrade report for details and remediations.  If your system has the cockpit-leap package installed, you can switch to using a web-broswer to step through each item and inspect the remediation options.
+Debug output written to /var/log/leapp/leapp-preupgrade.log
 
+=================================================
+                           REPORT
+=================================================
+
+A report has been generated at /var/log/leapp/leapp-report.json
 A report has been generated at /var/log/leapp/leapp-report.txt
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+=================================================
+                       END OF REPORT
+=================================================
+
+Answerfile has been generated at /var/log/leapp/answerfile
+
 ----
-less /var/log/leapp/leapp-report.txt
+
+Notice that the output refers you to the pre-upgrade report for details and remediations.  If your system has the cockpit-leapp package installed, you can switch to using a web-broswer to step through each item and inspect the remediation options.
+
+Look at the first several lines of the report mentioned above, /var/log/leapp/leapp-report.txt
+
+[{format_cmd_exec2}]
+----
+head /var/log/leapp/leapp-report.txt
 ----
 
-Update sshd_config
+The first two lines indicate a Risk Factor, in this case high/inhibitor meaning that this issue will prevent the upgrade from proceeding.  Followed by a Summary of the issue:
 
-Remove kernel modules
+[{format_cmd_output}]
+----
+Summary: Firewalld has enabled configuration option "AllowZoneDrifiting" which has been removed in RHEL-9. New behavior is as if "AllowZoneDrifiting" was set to "no".
+----
 
-Python
+This tells us that there is a Firewalld configuration that was allowed in RHEL8 that is no longer allowed in RHEL9.  The next line tells us a "hint" at how to remediate the issue so that the upgrade can proceed:
 
-== Create Custom Actor
+[{format_cmd_output}]
+----
+Remediation: [hint] Set AllowZoneDrifting=no in /etc/firewalld/firewalld.conf
+----
+
+And the following line gives an actual command that can be used to make the change without having to edit the file directly:
 
 
-== Summary
+== Remediate
+
+Using the recommendation from the pre-upgrade results, let's fix the blocker.
+
+[{format_cmd_exec2}]
+----
+sed -i "s/^AllowZoneDrifting=.*/AllowZoneDrifting=no/" /etc/firewalld/firewalld.conf
+----
+
+Now re-run the preupgrade. This time there should be no inhibitors
+
+[{format_cmd_exec2}]
+----
+leapp preupgrade
+----
+
+The output to come back clean without any inhibitors that would prevent a successful upgrade.
+
+[{format_cmd_output}]
+----
+
+=================================================
+                           REPORT
+=================================================
+
+A report has been generated at /var/log/leapp/leapp-report.json
+A report has been generated at /var/log/leapp/leapp-report.txt
+
+=================================================
+                       END OF REPORT
+=================================================
+
+Answerfile has been generated at /var/log/leapp/answerfile
+----
+
+
+
+== Upgrade
+
+Everything should be ready to run the upgrade.  This will install several rpms, make some repo and other configuration changes, and will take several minutes (6 to 10 in our vm testing).  
+
+[{format_cmd_exec2}]
+----
+time leapp upgrade
+----
+
+After several minutes you should see an almost identical report output indicating that phase one of the upgrade has completed
+
+[{format_cmd_output}]
+----
+
+=================================================
+                           REPORT
+=================================================
+
+A report has been generated at /var/log/leapp/leapp-report.json
+A report has been generated at /var/log/leapp/leapp-report.txt
+
+=================================================
+                       END OF REPORT
+=================================================
+
+Answerfile has been generated at /var/log/leapp/answerfile
+
+real    5m51.542s
+user    4m30.154s
+sys     1m10.384s
+----
+
+== Finalize the Upgrade
+
+To finish the upgrade process, a reboot is now required.  Without console access you won't be able to see the final 
+and unfortunately this is the step that takes the longest. 
+
+[{format_cmd_exec2}]
+----
+[[ $(hostname -s) == "leapp" ]] && reboot
+----
+
+[{format_cmd_output}]
+----
+Connection to leapp closed by remote host.
+Connection to leapp closed.
+----
+
+After another 6 - 9 minutes, you should be able to ssh back in from the bastion host
+
+Here is a command you can run on the bastion to loop until the leapp host is
+back online
+
+[{format_cmd_exec2}]
+----
+time until $( nc -z leapp 22 ) ; do echo -n "." ; sleep 3 ; done
+----
+
+WARNING: Do not proceed until the leapp upgrade process is complete
+
+
+
+[{format_cmd_exec2}]
+----
+ssh leapp
+----
+
+Use `sudo` to elevate your privileges.
+
+[{format_cmd_exec2}]
+----
+[[ "$UID" == 0 ]] || sudo -i
+----
+
+== Final RHEL Version Verification
+
+Finally, re-run the commands from earlier to verify that the leapp node has actually been upgraded to RHEL9
+
+[{format_cmd_exec2}]
+----
+cat /etc/redhat-release
+----
+
+[{format_cmd_output}]
+----
+Red Hat Enterprise Linux release 9.0 (Plow)
+----
+
+[{format_cmd_exec2}]
+----
+uname -r
+----
+
+[{format_cmd_output}]
+----
+5.14.0-70.17.1.el9_0.x86_64
+----
+
+[{format_cmd_exec2}]
+----
+dnf repolist
+----
+
+[{format_cmd_output}]
+----
+Updating Subscription Management repositories.
+repo id                                    repo name
+rhel-9-for-x86_64-appstream-rpms           Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
+rhel-9-for-x86_64-baseos-rpms              Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
+rhel-9-for-x86_64-supplementary-rpms       Red Hat Enterprise Linux 9 for x86_64 - Supplementary (RPMs)
+----
+
+
+== A Word About Web Console Integration
+
+This exercise has illustrated a very simple example of upgrading a RHEL8 system in place to a RHEL9 system, with a single issue that was easy to remediate and no applications running on top of the OS.  In the real world, there are likely to be more issues that need to be addressed and in some cases there are known issues that will prevent an in place upgrade (see official Red Hat documentation link below).  There is a Web Console plugin that makes it easier to visualize and in many cases remediate upgrade inhibitors that arise.  The rpm is called "cockpit-leapp" and once installed will enable visualization like this
+
+====
+image::leapp-weboconsole-sample.png[Sample Leapp PreUpgrade Web Console Report]
+====
+
+== Conclusion
+
+Whether upgrading in place is right is a decision that needs to be made from one environment to the next, one group to the next, even from one system to the next.  What makes sense for one application might not make sense for another.  As with any OS upgrade, test in the lab and do backups!
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec2}]
+----
+workshop-finish-exercise.sh
+----
+
 
 
 [discrete]
 == Additional Reference Materials
 
-* link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/upgrading_from_rhel_7_to_rhel_8[UPGRADING FROM RHEL 7 TO RHEL 8]
-* link:https://access.redhat.com/articles/3664871[Data required by the Leapp utility for an in-place upgrade from RHEL 7 to RHEL 8]
-* link:https://www.redhat.com/en/blog/upgrading-rhel-7-rhel-8-leapp-and-boom[Upgrading from RHEL 7 to RHEL 8 with Leapp and BOOM - Victor Hernando]
+* link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/upgrading_from_rhel_8_to_rhel_9/index[Uprading from RHEL 8 to RHEL 9]
+* link:https://access.redhat.com/articles/3664871[Data required by the Leapp utility for a disconnected RHEL in-place upgrade]
 
 [discrete]
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////

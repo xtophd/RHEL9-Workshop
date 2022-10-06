@@ -7,13 +7,19 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+endif::[]
+
 
 :toc:
 :toclevels: 1
 
 = NETWORKMANAGER CLI
 
-WARNING: This unit is being ported to RHEL8 and is not part of the official workshop content yet.
+WARNING: This unit is being ported to RHEL9 and is not part of the official workshop content yet.
 
 
 
@@ -181,7 +187,7 @@ The next new concept to introduce is Network Teaming. The two main benefits of N
 Network teaming uses libteam to control one instance of the team driver. Ensure that teamd is already installed on your local bastion. We can also see that teamd.service is static, and doesn't need to be started or enabled. 
 
 ----
-# yum install -y teamd 
+# dnf install -y teamd 
 # systemctl list-unit-files | grep teamd
 ----
 

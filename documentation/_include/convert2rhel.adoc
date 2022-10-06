@@ -8,6 +8,12 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+endif::[]
+
 
 :toc:
 :toclevels: 1
@@ -33,7 +39,7 @@ From host `bastion`, ssh to `node4`.
 $ *ssh node4*
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
 [bash,options="nowrap",subs="{markup-in-source}"]
 ----
@@ -176,7 +182,7 @@ yum remove yum-plugin-fastestmirror
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////

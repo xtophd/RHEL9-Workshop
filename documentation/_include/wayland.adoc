@@ -8,6 +8,12 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :imagesdir: ./_images
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+endif::[]
+
 
 :toc:
 :toclevels: 1
@@ -59,7 +65,7 @@ For today’s lab this has already been done for you. In the event you installed
 ====
 _Native command(s) to install Wayland_
 ----
-yum groupinstall Workstation
+dnf groupinstall Workstation
  
 systemctl set-default graphical
 
@@ -270,7 +276,7 @@ Wayland Related Sites
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////

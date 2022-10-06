@@ -43,21 +43,22 @@ all:
       #admin_password:       ""
 
       enable_unit:
-        appstream:          True
-        boom:               False
+        appstream:          False
+        boom:               True
         buildah:            True
         ebpf:               True
-        firewalld:          False
+        firewalld:          True
         kpatch:             True
         nftables:           True
         podman:             True
         stratis:            True
         systemd:            True
-        tlog:               False
+        tlog:               True
         imagebuilder:       True
         virtualization:     True
         vdo:                True
         wayland:            False
+        leapp:              True
         webconsole:         True
 
     workshop_extras:
@@ -102,4 +103,6 @@ myNodes:
     node1:
     node2:
     node3:
-    node4:
+
+    leapp:
+      ansible_user: "ec2-user" 

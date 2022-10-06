@@ -1,5 +1,5 @@
 :sectnums:
-:sectnumlevels: 3
+:sectnumlevels: 2
 :markup-in-source: verbatim,attributes,quotes
 ifdef::env-github[]
 :tip-caption: :bulb:
@@ -8,6 +8,12 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+endif::[]
+
 
 
 :toc:
@@ -17,13 +23,16 @@ endif::[]
 
 == Overview
 
-In Red Hat Enterprise Linux 8 the network security dynamic duo Firewalld and NFTables make their new team debut.
+NFTables is the subsystem of the Linux kernel which provides filtering and classification of network packets, datagrams, or frames. This software provides an in-kernel packet classification framework that is based on a network-specific Virtual Machine (VM) and a new nft userspace command line tool.
 
-NFTables _(replacing IPTables)_ is a new subsystem of the Linux kernel which provides filtering and classification of network packets, datagrams, or frames. This software provides a new in-kernel packet classification framework that is based on a network-specific Virtual Machine (VM) and a new nft userspace command line tool.
+That is a lot of words to say: NFTables is a system that inspects network packets to and from your system, and based on a set of rules does something with those packets (ie: accept, deny, forward).
 
-The default firewall management tool in RHEL 8 continues to be firewalld _(firewall-cmd)_, which gained support for nftables with version 0.6.0.
+Primary benefits over the older system (iptables):
 
-NOTE: For 99% of all use cases the firewalld tools are the best choice.  For this lab however we are trying to introduce `nft` and demonstrate some differences to the former `iptables`.
+  * Better performance
+  * Better usability
+
+
 
 == Getting Started
 
@@ -31,280 +40,421 @@ For these exercises, you will be using the host `node2` as user `root`.
 
 From host `bastion`, ssh to `node2`.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*ssh node2*
+ssh node2
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*workshop-nftables-checkhost.sh*
+workshop-nftables-checkhost.sh
+----
+
+[discrete]
+=== Disable Firewalld
+
+For this unit, we also need to ensure firewalld is disabled.
+
+[{format_cmd_exec}]
+----
+systemctl disable firewalld --now
+----
+
+[{format_cmd_exec}]
+----
+systemctl enable nftables --now
 ----
 
 You are now ready to proceed with these exercises.
 
-== nft Fundamentals
+== Core Concepts
+
+It is not unusual for this subsystem of the linux kernel to get replaced from time to time.  You may be familiar with some of the prior filter systems:
+
+  * ip-firewall (linux kernel v2.0, managed with ipfwadm)
+  * ip-chains (linux kernel v2.2, managed with ipchains)
+  * ip-tables (linux kernel v2.4, managed with iptables)
+  * nf-tables (linux kernel v3.13, managed with nft)
+
+There are others, but these are the most famliar ones that appeared in the major distributions.
+
+In RHEL 9, you have a choice on how to implement and manage the firewall.  In which scenario should you use one of the following?
+
+  * *firewalld*: easy to use and covers traditional firewall use cases
+  * *nftables*: for complex and performance critical firewalls
+  * *iptables*: the nf_tables API provides backward compatibility so that scripts that use iptables commands still work
+
+For 99% of all use cases the firewalld tools are the best choice.  For this lab however we are trying to introduce `nft` and demonstrate some differences to the former `iptables`.
+
+Let us now being to understand the constructs that build the firewall rules: Tables, Chains & Rules.
+
+
+
+=== Tables
+
+Fundamentally speaking, filter rules are organized into chains and the chains are then further organized into tables.
+
+Tables are the top-level construct within the nftables ruleset.
+
+A table consists of:
+
+  * *chains*
+  * *sets*
+  * *maps*
+  * *flowtables*
+  * *stateful objects*
+
+Each table belongs to exactly one family:
+
+  * *ip* - IPv4
+  * *ip6* - IPv6
+  * *inet* - both IPv4 and IPv6
+  * *arp* 
+  * *bridge*
+  * *netdev*
+
+So your ruleset requires at least one table for each family you want to filter.
 
 Using nft, show the current state of the network tables.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*nft list tables*
+nft list tables
 ----
 
-[bash,options="nowrap"]
+There is nothing there, so let us create a new table called 'workshop'
+
+[{format_cmd_exec}]
 ----
-table ip filter
-table ip6 filter
-table bridge filter
-table ip security
-table ip raw
-table ip mangle
-table ip nat
-table ip6 security
-table ip6 raw
-table ip6 mangle
-table ip6 nat
-table bridge nat
-table inet firewalld
-table ip firewalld
-table ip6 firewalld
+nft add table inet workshop
 ----
+
+[{format_cmd_exec}]
+----
+nft list tables
+----
+
+
+[{format_cmd_output}]
+----
+table inet workshop
+----
+
+
+
+=== Chains
+
+NOTE: Unlike in iptables, there are no predefined chains like INPUT, OUTPUT, etc. 
+
+A *chain* is a collection of attached *rules* that take action on network packets (ie: accept, drop).
+
+Chain types are:
+
+  * *filter* -  filters packets (supported by the arp, bridge, ip, ip6 and inet families)
+  * *route* - reroutes packets (supported by the ip, ip6 and inet families)
+  * *nat* -  performs Networking Address Translation (supported by the ip, ip6 and inet families)
+
+Hooks you can use:
+
+  * *ingress* - sees packets immediately after passed up from NIC driver, before prerouting (only in netdev family since Linux kernel 4.2, and inet family since Linux kernel 5.10)
+  * *prerouting* : sees all incoming packets, before any routing decision has been made
+  * *input* : sees incoming packets that are addressed to and have now been routed to the local system
+  * *forward* : sees incoming packets that are not addressed to the local system
+  * *output* : sees packets that originated from processes in the local machine
+  * *postrouting* : sees all packets after routing, just before they leave the local system
 
 Using nft, show the current state of the network chains.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-# *nft list chains*
+nft list chains
 ----
 
-[bash,options="nowrap"]
+Again there is nothing there, so let use create a new chain in our table called 'INPUT'.
+
+NOTE: nft re-uses special characters (ie: curly braces and semicolons) so using single quotes is needed in this case
+
+[{format_cmd_exec}]
 ----
-table ip filter {
+nft 'add chain inet workshop INPUT { type filter hook input priority 0 ; }'
+----
+
+[{format_cmd_exec}]
+----
+*nft list chains*
+----
+
+[{format_cmd_output}]
+----
+table inet workshop {
         chain INPUT {
-                type filter hook input priority 0; policy accept;
-        }
-        chain FORWARD {
-                type filter hook forward priority 0; policy accept;
-        }
-        chain OUTPUT {
-                type filter hook output priority 0; policy accept;
+                type filter hook input priority filter; policy accept;
         }
 }
-...<snip>...
 ----
 
-NOTE: The output for this can be VERY long.  You can optionally use `nft list chains | less` if you would like a pageable view of the output.
 
-== Add Single Rule
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+=== Rules
+
+*Rules* take actions (ie: accept, drop, forward) on network packets based on specified criteria.
+
+  * a rule consists of zero or more *expressions* followed by one or more *statements*
+  * each *expression* tests whether a packet matches a specific payload field or packet/flow metadata
+  * if a packet matches all of the expressions in the rule, then rule's *statements* are executed
+
+Using the Table and Chain created above, let's proceed to implement and manage some basic rules.
+
+
+
+== Exercise: Managing Rules
+
+=== Add Single Rule
+
+[{format_cmd_exec}]
 ----
-*nft insert rule ip filter INPUT tcp dport http accept*
+nft insert rule inet workshop INPUT tcp dport http counter
 ----
 
 Verify the rule change.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*nft -n -a list table ip filter*
+nft -n -a list table inet workshop
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
-table ip filter { # handle 1
+table inet workshop { # handle 2
         chain INPUT { # handle 1
                 type filter hook input priority 0; policy accept;
-                tcp dport http accept # handle 4
-        }
-
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
-        }
-
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
+                tcp dport 80 counter packets 0 bytes 0 # handle 4
         }
 }
 ----
 
-Remember the rule handle, we will use it next to delete the rule
+Now is a good time to point out that the exercises in this unit are deliberately meant to be nondestructive.  Meaning, we don't want this machine to be unusable due to an error in rule insertion or deletion.
 
-== Delete Single Rule
+So what does the previos rule do?  It merely counts packaets that arrived at port 80 on our machine.  Let's send some packets.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*nft delete rule filter INPUT handle 4*
+curl localhost
+----
+
+There is no web server running on this system so you will get a failed connection message.  However, now we reexamine the counters.
+
+[{format_cmd_exec}]
+----
+nft -n -a list table inet workshop
+----
+
+[{format_cmd_output}]
+----
+table inet workshop { # handle 2
+        chain INPUT { # handle 1
+                type filter hook input priority 0; policy accept;
+                tcp dport 80 counter packets 2 bytes 140 # handle 4
+        }
+}
+----
+
+Not too exciting, but now you know how to add a rule.
+
+=== Delete Single Rule
+
+Deleting rules takes a little care in that you have to identify a *handle*.  Again, listing the rules make note of the *handle* provided next to each rule.
+
+[{format_cmd_exec}]
+----
+nft -n -a list table inet workshop
+----
+
+
+[{format_cmd_output}]
+----
+table inet workshop { # handle 2
+        chain INPUT { # handle 1
+                type filter hook input priority 0; policy accept;
+                tcp dport 80 counter packets 2 bytes 140 # *handle 4*
+        }
+}
+----
+
+We can now use that *handle* to delete the rule.
+
+[{format_cmd_exec}]
+----
+nft delete rule inet workshop INPUT handle 4
 ----
 
 Verify the rule change.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*nft -n -a list table ip filter*
+nft -n -a list table inet workshop
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
-table ip filter { # handle 1
+table inet workshop { # handle 2
         chain INPUT { # handle 1
                 type filter hook input priority 0; policy accept;
-        }
-
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
-        }
-
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
         }
 }
 ----
 
 
-== Add Multiple Rules at Once
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+=== Add Multiple Rules at Once
+
+[{format_cmd_exec}]
 ----
-*nft insert rule ip filter INPUT tcp dport { ssh, http, https, 8181 } accept*
+nft insert rule inet workshop INPUT tcp dport { ssh, http, https, 8181 } counter
 ----
 
 Verify the new rules.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*nft -n -a list table ip filter*
+nft -n -a list table inet workshop
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
-table ip filter { # handle 1
+table inet workshop { # handle 2
         chain INPUT { # handle 1
                 type filter hook input priority 0; policy accept;
-                tcp dport { ssh, http, https, 8181 } accept # handle 6
-        }
-
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
-        }
-
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
+                tcp dport { 22, 80, 443, 8181 } counter packets 10 bytes 712 # handle 6
         }
 }
 ----
 
-== Increase Network Security
+Again, our chosen hook (counter) is meant primarily to be a nondestructive rule.  By using the *input* hook and applying the *accept* and *drop* policies, you get into the business of recreating a firewall.  Let's go ahead and cleanup and restore firewalld and take one last look at the state of the system.
 
-WARNING: DO NOT do this step unless you successfully completed "Add Multiple Rules at Once" above.  You will get locked out of your network connection to node2.example.com if you have not.
 
-Set the INPUT chain default policy to drop all traffic not specifically accepted.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+=== Cleanup
+
+Remove the chain added during this exercise.
+
+[{format_cmd_exec}]
 ----
-*nft add chain ip filter INPUT { type filter hook input priority 0\; policy drop\; }*
-----
-
-Verify Increased Security
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*nft -n -a list table ip filter*
+nft flush table inet workshop
 ----
 
-[bash,options="nowrap"]
+Now delete the table
+
+[{format_cmd_exec}]
 ----
-table ip filter { # handle 1
-        chain INPUT { # handle 1
-                type filter hook input priority 0; policy drop;
-                tcp dport { ssh, http, https, 8181 } accept # handle 6
+nft delete table inet workshop
+----
+
+[{format_cmd_exec}]
+----
+systemctl disable nftables --now
+----
+
+[{format_cmd_exec}]
+----
+systemctl enable firewalld --now
+----
+
+And now check out how firewalld has built the ruleset in the netfilter.
+
+[{format_cmd_exec}]
+----
+nft list tables
+----
+
+[{format_cmd_output}]
+----
+table inet firewalld
+----
+
+Word of caution, the output here is long...
+
+[{format_cmd_exec}]
+----
+nft -n -a list table inet firewalld
+----
+
+[{format_cmd_output}]
+----
+table inet firewalld { # handle 3
+        chain mangle_PREROUTING { # handle 127
+                type filter hook prerouting priority -140; policy accept;
+                jump mangle_PREROUTING_ZONES # handle 131
         }
 
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
+        chain mangle_PREROUTING_POLICIES_pre { # handle 128
+                jump mangle_PRE_policy_allow-host-ipv6 # handle 297
         }
 
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
-        }
-}
-----
-
-== Cleanup
-
-Remove rules added during this exercise.  We begin by setting the INPUT chain default policy to accept all traffic.
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*nft add chain ip filter INPUT { type filter hook input priority 0\; policy accept\; }*
-----
-
-Now find the handle and remove the rule currently allowing access for SSH, HTTP, HTTPS, and 8181
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*nft -n -a list table ip filter*
-----
-
-[bash,options="nowrap"]
-----
-table ip filter { # handle 1
-        chain INPUT { # handle 1
-                type filter hook input priority 0; policy accept;
-                tcp dport { ssh, http, https, 8181 } accept # handle 6
+        chain mangle_PREROUTING_ZONES { # handle 129
+                iifname "eth0" goto mangle_PRE_public # handle 306
+                goto mangle_PRE_public # handle 261
         }
 
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
+        chain mangle_PREROUTING_POLICIES_post { # handle 130
         }
 
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
-        }
-}
-----
-
-In the output above, we determine the handle for our rule is '6'.
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*nft delete rule filter INPUT handle 6*
-----
-
-NOTE: You can also use the 'flush' option to clear an entire table: `nft flush table ip filter`
-
-Verify that everything is back to normal
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*nft -n -a list table ip filter*
-----
-
-[bash,options="nowrap"]
-----
-table ip filter { # handle 1
-        chain INPUT { # handle 1
-                type filter hook input priority 0; policy accept;
+        chain nat_PREROUTING { # handle 132
+                type nat hook prerouting priority -90; policy accept;
+                jump nat_PREROUTING_ZONES # handle 136
         }
 
-        chain FORWARD { # handle 2
-                type filter hook forward priority 0; policy accept;
-        }
-
-        chain OUTPUT { # handle 3
-                type filter hook output priority 0; policy accept;
-        }
-}
+<... SNIP ...>
 ----
+
+
+Now consider all of those rules to implement these basic firewall policies...
+
+[{format_cmd_exec}]
+----
+firewall-cmd --list-all
+----
+
+[{format_cmd_output}]
+----
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: eth0
+  sources:
+  services: cockpit dhcpv6-client ssh
+  ports:
+  protocols:
+  forward: yes
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+----
+
+Which is why we encourage you to use firewalld and firewall-cmd for 99% of your netfilter needs.
+
+== Conclusion
+
+That concludes this unit on nftables.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
+
 
 == Additional Resources
 
@@ -314,12 +464,13 @@ You can find more information:
   * link:https://en.wikipedia.org/wiki/Nftables[Wikipedia NFTables]
   * link:https://wiki.nftables.org/wiki-nftables/index.php/Main_Page[NFTables How-To]
   * link:https://wiki.nftables.org/wiki-nftables/index.php/Quick_reference-nftables_in_10_minutes[Quick Reference]
+  * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_firewalls_and_packet_filters/getting-started-with-nftables_firewall-packet-filters[Getting started with nftables]
 
 [discrete]
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////

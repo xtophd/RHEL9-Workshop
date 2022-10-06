@@ -1,0 +1,4 @@
+#/bin/bash
+
+echo "# Trying to mount shm"
+mount -t tmpfs -o rw,seclabel,nosuid,nodev,inode64 tmpfs /dev/shm

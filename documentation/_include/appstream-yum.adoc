@@ -8,6 +8,12 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+endif::[]
+
 
 
 :toc:
@@ -41,21 +47,21 @@ For these exercises, you will be using the host `node1` as user `root`.
 
 From host `bastion`, ssh to `node1`.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh node1*
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *sudo -i*
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *workshop-appstream-checkhost.sh*
 ----
@@ -66,12 +72,12 @@ You are now ready to proceed with these exercises.
 
 Determine what modules are available.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum module list | grep postgresql*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 postgresql           9.6         client, server [d]                       PostgreSQL server and client module
 postgresql           10 [d]      client, server [d]                       PostgreSQL server and client module
@@ -85,12 +91,12 @@ control with userspace than any previous version of RHEL.
 
 On your new RHEL 8 system, if you do:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum install -y postgresql-server*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 ...<SNIP>...
   Installing       : postgresql-server-10.6-1.module+el8+2469+5ecd5aae.x86_64            3/3
@@ -109,23 +115,23 @@ Complete!
 But let’s say that our application teams have a dependency on 9.6 but we
 want to move to RHEL 8. With the app stream, we can do this. Let's do this next exercise on node3. 
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec}]
 ----
-# *exit*
+*exit*
 ----
 
 Then:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *ssh node3*
 ----
 
-INFO: You may need to `sudo -i` to elevate your priviledges.  Just make sure you're the `root` user.
+INFO: You may need to `sudo -i` to elevate your privileges.  Just make sure you're the `root` user.
 
 On node3, let’s now run:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum module install -y postgresql:9.6/server*
 ----
@@ -135,12 +141,12 @@ in the 9.6 version.
 
 Once we’ve installed that, we will see:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum module list | grep postgresql*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 postgresql           9.6 [e]      client, server [d] [i]                   PostgreSQL server and client module
 postgresql           10 [d]       client, server [d]                       PostgreSQL server and client module
@@ -154,26 +160,26 @@ system.
 The server profile installs both the server and the client. If we just
 wanted the client, we could remove the server profile:
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec}]
 ----
 # *yum module remove -y postgresql:9.6/server*
 ----
 
 and install only the client:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum module install -y postgresql:9.6/client*
 ----
 
 Now let's inspect what yum tells us about the postgresql modules:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum module list | grep postgresql*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 postgresql           9.6 [e]      client [i], server [d]                   PostgreSQL server and client module                                         
 postgresql           10 [d]       client, server [d]                       PostgreSQL server and client module                                         
@@ -190,19 +196,19 @@ just installed postgresql. We don’t want to have another database on the
 same machine and we see app stream profiles for mysql and mariadb. Let’s
 disable these:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum module disable mariadb mysql -y*
 ----
 
 Now when we do yum module list, we will see:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-# *yum module list | grep -e mariadb -e mysql*
+*yum module list | grep -e mariadb -e mysql*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 mariadb                  10.3 [d][x]     client, server [d], galera                   MariaDB Module
 mysql                    8.0 [d][x]      client, server [d]                           MySQL Module
@@ -210,12 +216,12 @@ mysql                    8.0 [d][x]      client, server [d]                     
 
 The [x] stands for disabled. When we run:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum install mariadb -y*
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 No match for argument: mariadb
 Error: Unable to find a match
@@ -224,14 +230,14 @@ Error: Unable to find a match
 To re-enable these app streams and allow the packages to be installed,
 the command is:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *yum module enable mariadb mysql -y*
 ----
 
 You may now switch back to the bastion:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
 *exit*
 ----
@@ -266,16 +272,16 @@ A complete sample of a dnf based playbook for this cluster is provided on the ba
 
 As user `root` on the host `bastion`, run the following:
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_exec}]
 ----
-# *cd /usr/local/src*
+*cd /usr/local/src*
 
-# *ansible-playbook -i appstream-inventory.yml appstream-playbook.yml*
+*ansible-playbook -i appstream-inventory.yml appstream-playbook.yml*
 ----
 
 Then to verify, you can use an ansible adhoc command to check your work.
 
-[bash,options="nowrap",subs="{markup-in-source}"]
+[{format_cmd_output}]
 ----
 # *cd /usr/local/src*
 
@@ -307,7 +313,7 @@ Red Hat Documentation
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////

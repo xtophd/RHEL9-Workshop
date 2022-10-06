@@ -20,7 +20,7 @@ if grep -q '/boot' /proc/mounts ; then
  
   boom profile create \
     --from-host \
-    --uname-pattern el8
+    --uname-pattern el9
 
 else
 
@@ -31,6 +31,6 @@ else
     --kernel-pattern="/boot/vmlinuz-%{version}" \
     --initramfs-pattern="/boot/initramfs-%{version}.img" \
     --from-host \
-    --uname-pattern el8
+    --uname-pattern el9
 
 fi

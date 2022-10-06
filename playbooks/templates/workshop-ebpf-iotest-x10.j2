@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "# Running 10 parallel i/o tests"
+for i in $(seq 1 10); do dd if=/dev/urandom of=bigfile$i bs=1024 count=20000 & done
+

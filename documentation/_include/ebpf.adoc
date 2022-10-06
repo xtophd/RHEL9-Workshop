@@ -1,6 +1,9 @@
 :sectnums:
 :sectnumlevels: 3
 :markup-in-source: verbatim,attributes,quotes
+:ssh_command: %ssh_command%
+:ssh_password: %ssh_password%
+:ssh_username: %ssh_username%
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -8,6 +11,15 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_exec2: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+:format_plain: bash,options="nowrap"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+:format_cmd_exec2: source,options="nowrap",subs="{markup-in-source}",role="execute-2"
+endif::[]
+
 
 :toc:
 :toclevels: 1
@@ -16,13 +28,13 @@ endif::[]
 
 == Overview
 
+WARNING:  This exercise requires the SECONDARY terminal and conflicts with any other exercise that
+uses the secondary terminal.  Do not proceed if the secondary terminal is already in use with another exercise.
+
 eBPF (The Extended Berkeley Packet Filter) is an in-kernel virtual machine that allows code execution in the kernel space, in a restricted sandbox environment with access to a limited set of functions. There are numerous components shipped by Red Hat that utilize the eBPF virtual machine. Each component is in a different development phase, and thus not all components are currently fully supported. Those that are not supported are available as a *Technology Preview* and are not intended for production use.For information on Red Hat scope of support for Technology Preview features, see: link:https://access.redhat.com/support/offerings/techpreview/[Technology Preview Features Support Scope]
 
-In this unit, we will be focusing on the kernel tracing offering shipped as bcc-tools (BPF Compiler Collection Tools). There are just over 100 tools shipped in this package. A few things of note:
+In this unit, we will be focusing on the kernel tracing offering shipped as bcc-tools (BPF Compiler Collection Tools).   We will also touch on bpftrace which is a tool  to compile scripts to BPF-bytecode.  
 
-     * All of these tools live in `/usr/share/bcc/tools`.
-     * These tools must run as the root user as any eBPF program can read kernel data. As such, injecting eBPF bytecode as a regular user is not allowed in RHEL 8.
-     * Each tool has a man page to view the man page, run `man <tool name>`. These man pages include descriptions of the tools, provide the options that can be called and have information on the expected overhead of the specific tool.
 
 == Getting Started
 
@@ -30,36 +42,71 @@ For these exercises, you will primarily be using the host `node2` as user `root`
 
 TIP: Now is a great time to use the multi session capability of *tmux*.  Use `Ctrl-b "` to create another session with a split screen.  Cycle the active session back and forth with `CTRL-b n` (next) and `CTRL-b p` (previous).
 
+[discrete]
+==== Primary Terminal (node2)
+
 From host `bastion`, ssh to `node2`.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*ssh node2*
+ssh node2
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*sudo -i*
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 Verify that you are on the right host for these exercises.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*workshop-ebpf-checkhost.sh*
+workshop-ebpf-checkhost.sh
+----
+
+[discrete]
+==== Secondary Terminal (bastion)
+
+To help you set up your second terminal, here is the ssh command and password which you can use.
+
+[{format_cmd_exec2}]
+----
+[[ $(hostname -s) != "bastion" ]] && {ssh_command} -o "StrictHostKeyChecking no"
+----
+
+[{format_cmd_exec2}]
+----
+{ssh_password}
+----
+
+[{format_cmd_exec2}]
+----
+[[ "$UID" == 0 ]] || sudo -i
 ----
 
 You are now ready to proceed with these exercises.
 
-== Installation
+== Core Concepts
+
+There are just over 100 tools shipped in this package. A few things of note:
+
+     * All of these tools live in `/usr/share/bcc/tools`.
+     * These tools must run as the root user as any eBPF program can read kernel data. As such, injecting eBPF bytecode as a regular user is not allowed in RHEL 9.
+     * Each tool has a man page to view the man page, run `man <tool name>`. These man pages include descriptions of the tools, provide the options that can be called and have information on the expected overhead of the specific tool.
+
+
+=== Installation
+
+[discrete]
+==== Primary Terminal (node2)
 
 Start by installing the *BPF Compiler Collection* (bcc-tools) and kernel-devel packages for the installed kernel:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*yum install bcc-tools kernel-devel-$(uname -r) -y*
+dnf install bcc-tools bpftrace strace kernel-devel-$(uname -r) -y
 ----
 
 Now, we have a lot of interesting tools installed in /usr/share/bcc/tools along with accompanying man pages.
@@ -68,52 +115,57 @@ Now, we have a lot of interesting tools installed in /usr/share/bcc/tools along 
 
 
 
-== bcc-tools: tcplife
+== Exercise: tcplife
 
 The `tcplife` tool monitors tcp connections on the system and measures the amount of time that they've been open, the local and remote ports involved in the connection and the amount of data transferred and received in kilobytes.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/tcplife*
+/usr/share/bcc/tools/tcplife
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
 ----
 
-[discrete]
-==== Secondary Terminal
-
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *bastion*
-  * user: *root*
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*ssh node2 "sudo workshop-ebpf-rootkit.sh"*
-----
-
-This command should run for about 10 seconds and then exit.  
+WARNING: It is important to wait until the tool is setup.  Do not proceed until you see the output headers (displayed above) appear.
 
 [discrete]
-==== Primary Terminal
+==== Secondary Terminal (bastion)
 
-In the `tcplife` terminal, you should now see output similar to:
+Run a little script to generate some user activity.
 
-[bash,options="nowrap"]
+[{format_cmd_exec2}]
+----
+ssh node2 "sudo workshop-ebpf-rootkit.sh"
+----
+
+This command should run for about 10 seconds and then exit.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate tcplife.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill tcplife"
+----
+
+[discrete]
+==== Results 
+
+In the primary terminal, you should now see output similar to:
+
+[{format_cmd_output}]
 ----
 PID   COMM       LADDR           LPORT RADDR           RPORT TX_KB RX_KB MS
 28478 sshd       10.0.0.12       22    10.0.0.10       33514    14     2 9091.95
 ----
 
-Doing the math with my numbers above, my session was open for about 9 seconds and was initiated by IP 10.0.0.10, the bastion.
+Doing the math with the numbers above, this session was open for about 9 seconds and was initiated by IP 10.0.0.10 (the bastion host).
 
 In the `tcplife` terminal, issue a Ctrl-C and this will return you to a prompt.
 
@@ -121,44 +173,51 @@ In the `tcplife` terminal, issue a Ctrl-C and this will return you to a prompt.
 
 
 
-== bcc-tools: execsnoop
+== Exercise: execsnoop
 
 The `execsnoop` script monitors all calls to execve() and catches all processes that follow the fork->exec sequence, as well as processes that re-exec() themselves. Processes that fork() but do not exec() won't be caught by this script.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 Continuing on host `node2`, to run `execsnoop` as follows:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/execsnoop*
+/usr/share/bcc/tools/execsnoop
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 PCOMM            PID    PPID   RET ARGS
 ----
 
-[discrete]
-==== Secondary Terminal
-
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *bastion*
-  * user: *root*
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*ssh node2 "sudo workshop-ebpf-rootkit.sh"*
-----
+WARNING: It is important to wait until the tool is setup.  Do not proceed until you see the output headers (displayed above) appear.
 
 [discrete]
-==== Primary Terminal
+==== Secondary Terminal (bastion)
 
-In the `execsnoop` terminal, you should see output similar to:
+In your second terminal having established yourself as root, run the following command:
 
-[bash,options="nowrap"]
+[{format_cmd_exec2}]
+----
+ssh node2 "sudo workshop-ebpf-rootkit.sh"
+----
+
+Again, this command should run for about 10 seconds and then exit.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate execsnoop.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill execsnoop"
+----
+
+[discrete]
+==== Results
+
+In the primary terminal, you should see output similar to:
+
+[{format_plane}]
 ----
 PCOMM            PID    PPID   RET ARGS
 sshd             28512  749      0 /usr/sbin/sshd -D -oCiphers=aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cb -oMACs=hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2- -oGSSAPIKexAlgorithms=gss-gex-sha1-,gss-group14-sha1- -oKexAlgorithms=curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-excha -oHostKeyAlgorithms=rsa-sha2-256,ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nis -oPubkeyAcceptedKeyTypes=rsa-sha2-256,ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha -R
@@ -192,59 +251,50 @@ firewall-cmd     28542  28516    0 /usr/bin/firewall-cmd --state
 
 This shows you all the processes that ran exec() during that ssh login, their PID, their parent PID, their return code, and the arguments that were sent to the process. You could keep monitoring this for quite some time to catch potential bad actors on the system.
 
-In the `execsnoop` terminal, issue a Ctrl-C and this will return you to a prompt.
 
 
-
-
-
-== bcc-tools: mountsnoop
+== Exercise: mountsnoop
 
 Similar in nature to `execsnoop`, `mountsnoop` traces the mount() and umount() syscalls which show processes that are attempting to mount (or unmount) filesystems.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/mountsnoop*
+/usr/share/bcc/tools/mountsnoop
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 COMM             PID     TID     MNT_NS      CALL
 ----
 
+WARNING: It is important to wait until the tool is setup.  Do not proceed until you see the output headers (displayed above) appear.
+
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
-*PAY ATTENTION!!! USING A DIFFERENT HOST*
+In your second terminal having established yourself as root, let's try to unmount a something we know can NOT be unmounted. For this, we'll pick the root filesystem '/'.
 
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *node2*
-  * user: *root*
-
-Let's try to unmount a mount that we know cannot be unmounted. For this, we'll pick the root filesystem '/'.
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
-*umount /*
+ssh node2 "sudo workshop-ebpf-unmountroot.sh"
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 umount: /: target is busy.
 ----
 
 [discrete]
-==== Primary Terminal
+==== Results
 
 Taking a look at the terminal running `mountsnoop`, we see:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 umount           20001   20001   4026531840  umount("/", 0x0) = -EBUSY
 ----
@@ -252,33 +302,33 @@ umount           20001   20001   4026531840  umount("/", 0x0) = -EBUSY
 This shows us that the mount is busy and cannot be unmounted.
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
 Now let's try to unmount a filesystem that we should be able to unmount.  But before doing so, look at the mount options to ensure we can restore it correctly.  On `node2` run the following:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
-*grep /dev/shm /proc/mounts*
+ssh node2 "grep /dev/shm /proc/mounts"
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 tmpfs /dev/shm tmpfs *rw,seclabel,nosuid,nodev,relatime* 0 0
 ----
 
 Now proceed to umount `/dev/shm` on `node2`
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
-*umount /dev/shm*
+ssh node2 "sudo workshop-ebpf-unmountshm.sh"
 ----
 
 [discrete]
-==== Primary Terminal
+==== Results
 
-Back to the `mountsnoop` terminal and you should see the following:
+Back to the primary terminal and you should see the following:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
 umount           20003   20003   4026531840  umount("/dev/shm", 0x0) = 0
 ----
@@ -286,350 +336,329 @@ umount           20003   20003   4026531840  umount("/dev/shm", 0x0) = 0
 The umount command succeeded. 
 
 [discrete]
-==== Secondary Terminal
+==== Secondary Terminal (bastion)
 
 Proceed to restore the /dev/shm mount as follows:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec2}]
 ----
-*mount -t tmpfs -o rw,nosuid,nodev,relatime,seclabel tmpfs /dev/shm*
+ssh node2 "sudo workshop-ebpf-mountshm.sh"
+----
+
+This is the last step related to mountsnoop.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate mountsnoop.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill mountsnoop"
 ----
 
 [discrete]
-==== Primary Terminal
+==== Results
 
-Finally, back to the `mountsnoop` terminal and you should see the following:
+Finally, back to the primary terminal you should see the following:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
-mount            20004   20004   4026531840  mount("tmpfs", "/dev/shm", "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC|MS_SYNCHRONOUS|MS_DIRSYNC|MS_NOATIME|MS_NODIRATIME|MS_MOVE|MS_REC|MS_UNBINDABLE|MS_SLAVE|MS_SHARED|MS_I_VERSION|MS_STRICTATIME|MS_LAZYTIME|MS_NOUSER|0x7f2b30000000, "") = 0
+mount            48024   48024   1832832     mount("tmpfs", "/dev/shm", "tmpfs", MS_NOSUID|MS_NODEV, "seclabel,inode64") = 0
 ----
 
 This shows us that the mount succeeded and all the options that were passed into the system call.
 
-As you can see, the `mountsnoop` tool is very useful for seeing what processes are calling the mount and umount system calls and what the results of those calls are.
+As you can see, the `mountsnoop` tool is very useful for seeing what processes that are calling the mount and umount system calls and what the results of those calls are.
 
 In the `mountsnoop` terminal, issue a Ctrl-C and this will return you to a prompt.
 
 
 
-
-
-== bcc-tools: xfsslower
-
-WARNING: Please verify the filesystem your host is using with the command `df -T /`.  If your host is configured with ext4, then substitute the command `ext4slower` in place of `xfsslower`.
-
-The purpose of the `xfsslower` tool (also `ext4slower` and `nfsslower`) is to show you filesystem operations slower than  a particular threshold, that defaults to 10ms. It traces reads, writes, opens, and syncs and then prints out the timestamp of the operation, the process name, the ID, the type of operation, the file offset in kilobytes, the latency of the I/O measured from when it was issued by VFS to the filesystem to when it was completed, and finally, the filename being operated on.
-
-[discrete]
-==== Primary Terminal
-
-To run this tool, execute the following and give it a couple of seconds to get set up:
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*/usr/share/bcc/tools/xfsslower*
-----
-
-[bash,options="nowrap"]
-----
-Tracing xfs operations slower than 10 ms
-TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME
-----
-
-[discrete]
-==== Secondary Terminal
-
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *node2*
-  * user: *root*
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*dd if=/dev/urandom of=bigfile bs=1024 count=20000*
-----
-
-This writes out a 20M file called bigfile and should not register on your `xfsslower` window.
-
-Now, let's execute the above command in a for loop so that we get more I/O going in parallel:
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*for i in $(seq 1 10); do dd if=/dev/urandom of=bigfile$i bs=1024 count=20000 & done*
-----
-
-[discrete]
-==== Primary Terminal
-
-Now you should see similar output in your `xfsslower` window:
-
-[bash,options="nowrap"]
-----
-TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME
-20:44:43 b'dd'          32446  W 1024    778        44.11 b'bigfile1'
-20:44:43 b'dd'          32455  W 1024    818        55.11 b'bigfile10'
-20:44:43 b'dd'          32452  W 1024    1712       44.11 b'bigfile7'
-20:44:43 b'dd'          32455  W 1024    1778       55.02 b'bigfile10'
-20:44:43 b'dd'          32451  W 1024    2850       44.11 b'bigfile6'
-20:44:43 b'dd'          32447  W 1024    3598       44.10 b'bigfile2'
-20:44:43 b'dd'          32451  W 1024    3805       55.11 b'bigfile6'
-20:44:43 b'dd'          32446  W 1024    4612       44.28 b'bigfile1'
-20:44:43 b'dd'          32446  W 1024    5529       33.01 b'bigfile1'
-20:44:43 b'dd'          32454  W 1024    4504       55.11 b'bigfile9'
-20:44:43 b'dd'          32447  W 1024    7335       44.10 b'bigfile2'
-20:44:43 b'dd'          32455  W 1024    7545       44.02 b'bigfile10'
-20:44:43 b'dd'          32446  W 1024    8344       49.16 b'bigfile1'
-20:44:43 b'dd'          32448  W 1024    8183       44.18 b'bigfile3'
-20:44:43 b'dd'          32447  W 1024    9168       55.10 b'bigfile2'
-20:44:43 b'dd'          32449  W 1024    9728       54.10 b'bigfile4'
-20:44:43 b'dd'          32454  W 1024    10244      33.11 b'bigfile9'
-20:44:43 b'dd'          32447  W 1024    10989      55.02 b'bigfile2'
-20:44:43 b'dd'          32453  W 1024    11276      54.10 b'bigfile8'
-20:44:43 b'dd'          32453  W 1024    12169      33.10 b'bigfile8'
-20:44:43 b'dd'          32451  W 1024    13292      91.11 b'bigfile6'
-20:44:43 b'dd'          32453  W 1024    13108      47.24 b'bigfile8'
-20:44:43 b'dd'          32448  W 1024    13788      44.01 b'bigfile3'
-20:44:43 b'dd'          32454  W 1024    14137      44.23 b'bigfile9'
-20:44:43 b'dd'          32446  W 1024    16076      44.02 b'bigfile1'
-20:44:43 b'dd'          32447  W 1024    15796      44.26 b'bigfile2'
-20:44:44 b'dd'          32446  W 1024    17004      44.10 b'bigfile1'
-20:44:44 b'dd'          32455  W 1024    16697      44.16 b'bigfile10'
-20:44:44 b'dd'          32450  W 1024    18505      44.01 b'bigfile5'
-20:44:44 b'dd'          32451  W 1024    19056      44.17 b'bigfile6'
-20:44:44 b'dd'          32446  W 1024    19868      44.38 b'bigfile1'
-20:44:44 b'dd'          32452  W 1024    19272      44.14 b'bigfile7'
-20:44:44 b'dd'          32455  W 1024    19168      30.75 b'bigfile10'
-20:44:44 b'dd'          32453  W 1024    19612      31.16 b'bigfile8'
-20:44:44 b'dd'          32454  W 1024    19460      24.59 b'bigfile9'
-20:44:44 b'dd'          32447  W 1024    19508      36.20 b'bigfile2'
-----
-
-So we can see that when writing these files in parallel, we have xfs operations taking longer than 10ms to complete.
-
-In the `xfsslower` terminal, issue a Ctrl-C and this will return you to a prompt.
-
-
-
-
-
-== bcc-tools: cachestat
+== Exercise: cachestat
 
 The `cachestat` tool traces kernel page cache functions and prints every five second summaries to aid you in workload characterization.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
 To run this tool, execute the following and give it a couple of seconds to get set up:
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/cachestat*
+/usr/share/bcc/tools/cachestat 5
 ----
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
    TOTAL   MISSES     HITS  DIRTIES   BUFFERS_MB  CACHED_MB
 ----
 
-[discrete]
-==== Secondary Terminal
-
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *node2*
-  * user: *root*
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*echo 3 > /proc/sys/vm/drop_caches*
-*for i in $(seq 1 10); do dd if=/dev/urandom of=bigfile$i bs=1024 count=20000 & done*
-----
-
-This flushes the cache and then runs a series of `dd` commands to create some I/O.
+WARNING: It is important to wait until the tool is setup.  Do not proceed until you see the output headers (displayed above) appear.
 
 [discrete]
-==== Primary Terminal
+==== Secondary Terminal (bastion)
+
+Let's now run a little exercise that will generate some i/o.  This script 
+flushes the cache and then runs a series of `dd` commands.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "workshop-ebpf-cachestat.sh"
+----
+
+
+This command should run for a few seconds and then exit.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate cachestat.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill cachestat"
+----
+
+
+[discrete]
+==== Results
 
 In the `cachestat` window, you should output similar to:
 
-[bash,options="nowrap"]
+[{format_cmd_output}]
 ----
-   TOTAL   MISSES     HITS  DIRTIES   BUFFERS_MB  CACHED_MB
-       0        0        0        0            0        154
-   14773      901    13872    44133            1        200
-----
-
-This shows that we had 901 page cache misses during a five second period while running the above loop, but during that same second, there were 9,821 hits, indicating great performance from the page cache.
-
-In the `cachestat` terminal, issue a Ctrl-C and this will return you to a prompt.
-
-
-
-
-
-== bcc-tools: trace
-
-This tool is a swiss army knife allowing you to specify functions to trace and messages to be printed when certain conditions are met. You can read more about this by running:
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
-----
-*man 8 trace*
+    HITS   MISSES  DIRTIES HITRATIO   BUFFERS_MB  CACHED_MB
+   16016     1216        0   92.94%            0        266
+    8891        0        0  100.00%            0        322
+       0        0        0    0.00%            0        322
 ----
 
-Let's do a simple trace in which we will dynamically trace the do_sys_open() kernel function and print the names of the files opened. 
+This shows that we had 1216 page cache misses during a five second period while running the above loop but during that same period, there were 16016 hits, indicating great performance from the page cache.
+
+
+
+== Exercise: bpftrace
+
+This tool is a swiss army knife allowing you to specify functions to trace and messages to be printed when certain conditions are met.
+
+bpftrace makes use of:
+
+  * BCC for interacting with the Linux BPF system
+  * as well as existing Linux tracing capabilities: 
+    * kernel dynamic tracing (kprobes)
+    * user-level dynamic tracing (uprobes)
+    * tracepoints
+ 
+
+Let us start this educational journey by examining what system calls a simple command executes.  
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
-To run this tool, execute the following and give it a couple of seconds to get set up:
+To begin, we need a test file to use as our target.
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*/usr/share/bcc/tools/trace 'p::do_sys_open "%s", arg2'*
+touch /tmp/workshop.tmp
 ----
 
-[bash,options="nowrap"]
+The command we will evaluate is `cat /tmp/workshop.tmp` and we will use strace to list the system calls
+made and with what frequency (count). 
+
+[{format_cmd_exec}]
 ----
-PID     TID     COMM            FUNC             -
+strace -c cat /tmp/workshop.tmp
 ----
+
+[{format_cmd_output}]
+----
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 28.86    0.000267         267         1           execve
+ 28.76    0.000266           8        31        13 openat
+ 12.97    0.000120           5        22           mmap
+  9.19    0.000085           4        20           close
+  7.46    0.000069           3        19           newfstatat
+  3.24    0.000030           7         4           mprotect
+  2.38    0.000022          11         2           munmap
+  1.51    0.000014           3         4           read
+  1.30    0.000012           3         4           pread64
+  0.97    0.000009           3         3           brk
+  0.86    0.000008           8         1         1 access
+  0.54    0.000005           2         2         1 arch_prctl
+  0.54    0.000005           5         1           getrandom
+  0.32    0.000003           3         1           futex
+  0.32    0.000003           3         1           fadvise64
+  0.32    0.000003           3         1           prlimit64
+  0.22    0.000002           2         1           set_tid_address
+  0.22    0.000002           2         1           set_robust_list
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000925           7       119        15 total
+----
+
+What we see is that our command used the 'openat' systemcall 31 times.  Among those calls, 13 resulted in errors but 
+are likely harmless attempts to open files that do not exist.
+
+
+
+=== bpftrace: count all syscalls 
+
+Next, let's use *bpftrace* to create a similar output of counted system calls.  We will use a wildcarded tracepoint 'sys_enter_*'
+to get all the relevant syscalls.
 
 [discrete]
-==== Secondary Terminal
+==== Primary Terminal (node2)
 
-In your second terminal, establish yourself as described below and then run the following command:
-
-  * host: *node2*
-  * user: *root*
-
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+[{format_cmd_exec}]
 ----
-*cat /etc/fstab*
+bpftrace -e 'tracepoint:syscalls:sys_enter_* { if (comm == "cat") { @[probe] = count(); } }' -c "cat /tmp/workshop.tmp"
 ----
+
+[{format_cmd_output}]
+----
+Attaching 337 probes...
+
+
+@[tracepoint:syscalls:sys_enter_access]: 1
+@[tracepoint:syscalls:sys_enter_futex]: 1
+@[tracepoint:syscalls:sys_enter_set_tid_address]: 1
+@[tracepoint:syscalls:sys_enter_set_robust_list]: 1
+@[tracepoint:syscalls:sys_enter_prlimit64]: 1
+@[tracepoint:syscalls:sys_enter_fadvise64]: 1
+@[tracepoint:syscalls:sys_enter_getrandom]: 1
+@[tracepoint:syscalls:sys_enter_exit_group]: 1
+@[tracepoint:syscalls:sys_enter_munmap]: 2
+@[tracepoint:syscalls:sys_enter_arch_prctl]: 2
+@[tracepoint:syscalls:sys_enter_brk]: 3
+@[tracepoint:syscalls:sys_enter_mprotect]: 4
+@[tracepoint:syscalls:sys_enter_pread64]: 4
+@[tracepoint:syscalls:sys_enter_read]: 4
+@[tracepoint:syscalls:sys_enter_newfstatat]: 19
+@[tracepoint:syscalls:sys_enter_close]: 20
+@[tracepoint:syscalls:sys_enter_mmap]: 22
+@[tracepoint:syscalls:sys_enter_openat]: 31
+
+----
+
+This should line up almost 1-to-1 with the previous output from strace, note that 'sys_enter_openat' is 31.
+
+
+
+=== bpftrace: count specific syscall 
+
+Now we are going to limit the probe to only show 'sys_enter_openat' thereby only setting 1 probe and collecting a count.
 
 [discrete]
-==== Primary Terminal
+==== Primary Terminal (node2)
 
-In the `trace` terminal, you will see something similar to:
-
-[bash,options="nowrap"]
+[{format_cmd_exec}]
 ----
-32559   32559   cat             do_sys_open      b'/etc/ld.so.cache'
-32559   32559   cat             do_sys_open      b'/lib64/libc.so.6'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/locale-archive'
-32559   32559   cat             do_sys_open      b'/usr/share/locale/locale.alias'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_IDENTIFICATION'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_IDENTIFICATION'
-32559   32559   cat             do_sys_open      b'/usr/lib64/gconv/gconv-modules.cache'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_MEASUREMENT'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_MEASUREMENT'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_TELEPHONE'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_TELEPHONE'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_ADDRESS'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_ADDRESS'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_NAME'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_NAME'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_PAPER'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_PAPER'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_MESSAGES'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_MESSAGES'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_MESSAGES/SYS_LC_MESSAGES'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_MONETARY'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_MONETARY'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_COLLATE'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_COLLATE'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_TIME'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_TIME'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_NUMERIC'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_NUMERIC'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.UTF-8/LC_CTYPE'
-32559   32559   cat             do_sys_open      b'/usr/lib/locale/en_US.utf8/LC_CTYPE'
-32559   32559   cat             do_sys_open      b'/etc/fstab'
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat { if (comm == "cat") { @[probe] = count(); } }' -c "cat /tmp/workshop.tmp"
 ----
 
-Go ahead and Ctrl-C `trace` and then let's do one more trace, this time, tracing the return values out of `trace`:
+[{format_cmd_output}]
+----
+Attaching 1 probe...
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+
+@[tracepoint:syscalls:sys_enter_openat]: 31
+
 ----
-*/usr/share/bcc/tools/trace 'r::do_sys_open "ret: %d", retval'*
-----
+
+
+
+=== bpftrace: set probe on specific file
+
+NOTE: For this last exercise we will utilize both terminal sessions again.  
+
+The objective is to set a probe and identify any process that opens our targeted file.
+
+    * -e [PROBE CODE]
+    ** *tracepoint:syscalls:sys_enter_openat:* is the tracepoint probe type (kernel static tracing)
+    ** conditional if() to evaluate args->filename for a match
+    ** print() the desired output
+    *** typical *pid*, *uid*, *gid* fields
+    *** *comm* is process's name
+    *** *args->filename* is the filename being accessed
+    * -c [COMMAND] to run command after probes are set and exit
+
 
 [discrete]
-==== Secondary Terminal
+==== Primary Terminal (node2)
 
-[source,options="nowrap",subs="{markup-in-source}",role="copy"]
+Proceed to set the probe in the primary terminal.
+
+[{format_cmd_exec}]
 ----
-*cat /etc/fstab*
+bpftrace -e 'tracepoint:syscalls:sys_enter_openat { if (str(args->filename) == "/tmp/workshop.tmp") { printf( "%d %d %d %s %s\n", pid, uid, gid, comm, str(args->filename)); }}'
 ----
 
-[bash,options="nowrap"]
-----
-PID     TID     COMM            FUNC             -
-----
 
 [discrete]
-==== Primary Terminal
+==== Secondary Terminal (bastion)
 
-In the `trace` terminal, you will see something similar to:
+To generate some output, you will need to utilize the second terminal and open the target with a couple of different tools.  From the bastion host, run the following:
 
-[bash,options="nowrap"]
+[{format_cmd_exec2}]
 ----
-PID     TID     COMM            FUNC             -
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: -2
-32576   32576   cat             do_sys_open      ret: 3
-32576   32576   cat             do_sys_open      ret: 3
+ssh node2 "cat /tmp/workshop.tmp"
 ----
 
-Go to the terminal with `trace` running and issue a Ctrl-C. This will end the process and return you to the command line. 
+[{format_cmd_exec2}]
+----
+*ssh node2 "grep something /tmp/workshop.tmp"*
+----
 
-You may also now type `exit` in one of your tmux panes to return to having just one pane visible.
+[{format_cmd_exec2}]
+----
+ssh node2 "echo < /tmp/workshop.tmp"
+----
 
-There is a lot more that you can do with this tool when you actually need to start tracing what is getting passed into kernel functions and what is being returned by those kernel functions.
+This is the last step related to bpftrace.  Before porceeding to the results you can
+either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate bpftrace.
+
+[{format_cmd_exec2}]
+----
+ssh node2 "pkill bpftrace"
+----
+
+
+[discrete]
+==== Results
+
+Finally back to the primary terminal you should have seen some output like this:
+
+[{format_cmd_output}]
+----
+Attaching 1 probe...
+2741 0 0 cat /tmp/workshop.tmp
+2757 0 0 grep /tmp/workshop.tmp
+2772 0 0 bash /tmp/workshop.tmp
+----
+
+This displays the process-id along with the user and group ids of programs that tried to access our file.
+
+Go ahead and hit CTL-C in the primary terminal to exit bpftrace.
+
+== Conclusion
+
+This concludes the exercises related to EBPF.
+
+Time to finish this unit and return the shell to it's home position.
+
+[{format_cmd_exec}]
+----
+workshop-finish-exercise.sh
+----
 
 == Additional Resources
 
-NOTE: You are not required to reference any additional resources for these exercises.  This is informational only.
+You can find more information:
 
-    * link:https://www.redhat.com/en/blog/bcc-tools-brings-dynamic-kernel-tracing-red-hat-enterprise-linux-81[bcc-tools brings dynamic kernel tracing to Red Hat Enterprise Linux 8.1]
-    * link:https://www.redhat.com/en/blog/why-networkmanager-talking-staticredhatcom-find-out-bcc-tools[Why is NetworkManager talking to static.redhat.com? Find out with bcc-tools!]   
+    * link:https://github.com/iovisor/bpftrace/blob/master/docs/tutorial_one_liners.md[The bpftrace One-Liner Tutorial]
+    * link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_and_managing_networking/assembly_understanding-the-ebpf-features-in-rhel_configuring-and-managing-networking[Understanding eBPF Features]
     * link:https://lab.redhat.com/ebpf-tracing[Performance observability in practice with bcc-tools: A lab on lab.redhat.com]
     * link:http://www.brendangregg.com/ebpf.html[Linux Extended BPF (eBPF Tracing Tools) - Brendan Gregg]
-    * link:https://github.com/xdp-project/xdp-tutorial[Upstream XDP Tutorial (eXpress Data Path networking is tech preview in RHEL 8.2.)]
     * link:https://developers.redhat.com/search?t=bpf[eBPF blogs on Red Hat Developer]
 
 [discrete]
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////

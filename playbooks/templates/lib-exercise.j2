@@ -1,0 +1,90 @@
+{% raw %}
+
+##
+## These functions are designed to be sourced (included) by
+## the exercise scripts included with a workshop
+##
+
+
+
+function exercise_cmd() {
+
+  msg="$1"
+  cmd="$2"
+
+  echo ""
+  echo "## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+  echo "## Exercise Message: $msg"
+  echo "## COMMAND: $cmd"
+  echo ""
+
+  eval $cmd
+
+  rc="$?"
+
+  if [[ "$rc" != "0" ]] ; then
+      echo "EXERCISE_CMD FATAL: command returned non-zero ($rc)"
+      exit $rc
+  fi
+
+  echo ""
+}
+
+
+
+##
+##  ------------------------------------
+##
+
+
+
+function exercise_msg() {
+
+  msg="$1"
+  exp="$2"
+
+  echo ""
+  echo "## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+  echo "## Exercise Message: $msg"
+
+  if [[ ${#exp} > 0 ]] ; then
+    echo "## EXAMPLE: ${exp}"
+  fi
+
+  echo ""
+
+}
+
+
+
+##
+##  ------------------------------------
+##
+
+
+
+function exercise_wait() {
+
+  if [ "$1" -gt "0" ] ; then
+
+    delay="$1"
+
+    while [[ "${delay}" -gt "0" ]]; do
+      echo -n "."
+      sleep 1
+      ((--delay))
+
+    done
+
+  else
+
+    echo "EXERCISE_WAIT FATAL: invalid paramter passed to function.  Must be numeric > 0"
+
+  fi
+
+  echo ""
+
+}
+
+{% endraw %}
+

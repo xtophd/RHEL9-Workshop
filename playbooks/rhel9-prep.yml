@@ -198,6 +198,17 @@
     become: yes
     become_user: "{{ workshop_vars.student_name }}"
 
+  - name: "rhel9-prep : workshop file installs"
+    template:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: root
+      group: root
+      mode: "{{ item.mode }}"
+    with_items:
+      - {mode: '0755', src: 'workshop-finish-exercise.j2', dest: '/usr/local/bin/workshop-finish-exercise.sh'}
+ 
+
  
 
 

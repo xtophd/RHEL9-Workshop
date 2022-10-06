@@ -9,6 +9,12 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 :imagesdir: ./_images
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+endif::[]
+
 
 :toc:
 :toclevels: 1
@@ -36,7 +42,7 @@ From host `bastion`, ssh to `node2`.
 $ *ssh node2*
 ----
 
-Use `sudo` to elevate your priviledges.
+Use `sudo` to elevate your privileges.
 
 [bash,options="nowrap",subs="{markup-in-source}"]
 ----
@@ -58,7 +64,7 @@ Start by installing pcp,grafana,redis,js-d3-flame-graph, and others:
 
 [bash,options="nowrap",subs="{markup-in-source}"]
 ----
-# *yum install pcp pcp-system-tools grafana grafana-pcp cockpit-pcp bpftrace bcc-tools pcp-pmda-bpftrace cyrus-sasl-md5 cyrus-sasl-lib redis js-d3-flame-graph -y*
+# *dnf install pcp pcp-system-tools grafana grafana-pcp cockpit-pcp bpftrace bcc-tools pcp-pmda-bpftrace cyrus-sasl-md5 cyrus-sasl-lib redis js-d3-flame-graph -y*
 ----
 
 == pminfo and pmrep
@@ -692,7 +698,7 @@ NOTE: You are not required to reference any additional resources for these exerc
 == End of Unit
 
 ifdef::env-github[]
-link:../RHEL8-Workshop.adoc#toc[Return to TOC]
+link:../RHEL9-Workshop.adoc#toc[Return to TOC]
 endif::[]
 
 ////
