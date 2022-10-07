@@ -22,9 +22,6 @@ endif::[]
 
 = All In One: AIO Libvirt
 
-WARNING: As of October 2022, this is a new set of instructions being developed to help deploy the workshop on a single host using RHEL 9 with libvirt virtualization.  Please be patient, everything should be resolved shortly.
-
-
 [discrete]
 == Overview
 
@@ -224,6 +221,8 @@ cd ~/RHEL9-Workshop
 When it's done, you can ssh to the bastion host and get started with the exercises.
 
 == VNC Connection to the bastion host
+
+WARNING: As of October 2022, this is a new set of instructions being developed to help deploy the workshop on a single host using RHEL 9 with libvirt virtualization.  Please be patient, everything should be resolved shortly.
 
 If enabled in master-config.yml (now the default for the libvirt-nat.yml), a VNC server is configured on the bastion host.
 
