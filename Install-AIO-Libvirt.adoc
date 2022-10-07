@@ -179,6 +179,8 @@ mkdir -p /home/iso/
 
 wget -O /home/iso/rhel-baseos-9.0-x86_64-dvd.iso '<URL>'
 wget -O /home/iso/rhel-baseos-9.0-x86_64-boot.iso '<URL>'
+wget -O /home/iso/rhel-8.6-x86_64-dvd.iso '<URL>'
+wget -O /home/iso/rhel-8.6-x86_64-boot.iso '<URL>'
 ----
 
 === Final Check List
