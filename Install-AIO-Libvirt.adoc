@@ -1,4 +1,5 @@
 :gitrepo: https://github.com/xtophd/RHEL9-Workshop
+:docsdir: documentation
 :includedir: _includes
 :doctype: book
 :sectnums:
@@ -244,7 +245,7 @@ Don't forget to set the display quality to "High" in the VNC connection properti
 ifdef::env-github[]
 The workshop document and exercises can be found here:
 
-* link:../RHEL9-Workshop.adoc[RHEL9-Workshop Hands-on Lab]
+* link:{docsdir}/RHEL9-Workshop.adoc[RHEL9-Workshop Hands-on Lab]
 endif::[]
 
 [discrete]
