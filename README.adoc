@@ -21,3 +21,6 @@ Master document for this branch can be found here:
 
 * link:{docsdir}/RHEL9-Workshop.adoc[The Definitive Red Hat Enterprise Linux 9 Hands-on Lab]
 
+If you are looking for an easy way to deploy the workshop at home (on a single server using libvirt virtualization), check out these instructions:
+
+* link:./Install-AIO-Libvirt.adoc[All-in-One (AIO) Installation with kvm/libvirt]
