@@ -3,6 +3,7 @@
 :doctype: book
 :sectnums:
 :sectnumlevels: 3
+:markup-in-source: verbatim,attributes,quotes
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -10,6 +11,14 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
+:format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+ifeval::["%cloud_provider%" == "ec2"]
+:format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
+endif::[]
+
+
+
 
 = All In One: AIO Libvirt
 
@@ -72,6 +81,7 @@ WARNING: this process requires and is tested with ansible 2.9.  Anything older t
 
 Besides an @Base installation, you will need git and ansible installed before you begin.  Once installed, the playbooks will take care of the rest.
 
+[{format_cmd_exec}]
 ----
 yum -y install git
 ----
@@ -80,11 +90,10 @@ yum -y install git
 
 Still on your virt host:
 
+[{format_cmd_exec}]
 ----
 cd ~
-
 git clone http://github.com/xtophd/RHEL9-Workshop --recurse-submodules
-
 ----
 
 === Install Ansible
@@ -93,17 +102,17 @@ There are a pair of handy scripts to install ansible.  The first is useful IF yo
 
 To install ansible using rhsm:
 
+[{format_cmd_exec}]
 ----
 cd ~/RHEL9-Workshop
-
 ./sample-scripts/rhel9-install-ansible-rhsm.sh
 ----
 
 To install ansible using epel:
 
+[{format_cmd_exec}]
 ----
 cd ~/RHEL9-Workshop
-
 ./sample-scripts/rhel9-install-ansible-epel.sh
 ----
 
@@ -119,9 +128,9 @@ In this example, we will use the NAT'd configuration.
 
 Using the NAT'd network config will require the least amount of changes to the config.  You really only need to provide the provide proper info for IP address space.
 
+[{format_cmd_exec}]
 ----
 cd ~/RHEL9-Workshop/config
-
 cp ../sample-configs/libvirt-nat/* .
 ----
 
@@ -137,8 +146,7 @@ It is paramount that you update the configs for your environment accurately.  Pl
 
 NOTE: Again, MAC addresses for a libvirt deployment are automatically generated.  You only need to create/edit MAC addresses if you want to assign them yourself.
 
-Just like the name implies 'master-config.yml' is the main configuration file.  Most parameters should be straight forward, but
-in particular you need to:
+Just like the name implies 'master-config.yml' is the main configuration file.  Most parameters should be straight forward, but in particular you need to:
 
   * adjust the dns and time servers (MANDATORY!!!)
   * fix hostnames, mac addresses & ip addresses
@@ -155,12 +163,15 @@ There are 2 variables that need to be defined in this file:
 The default rhel9workshop_student_name is `cloud-user` with an empty password.  Create a password for the user and then save save the file.
  
 Now you can use ansible-vault to encrypt the file for improved security:
- 
+
+[{format_cmd_exec}]
 ----
-ansible-vault encrypt config/credentials.yml
+ansible-vault encrypt ~/RHEL9-Workshop/config/credentials.yml
 ----
 
-If you need to make changes to the content of the file you can do the following:
+Create a password and remember it.  You will need it shortly.
+
+If you want to make changes to the contents of the credentials you can do the following:
 
 ----
 ansible-vault edit config/credentials.yml
@@ -172,11 +183,15 @@ For the purposes of this deployment with sample-configs/libvirt-nat, the options
 
 === Retrieve RHEL 9.0 DVD and BOOT ISOs
 
-You can copy the URL from the access.redhat.com download page, and be sure to use single quotes to prevent bash from parsing the string.
 
+[{format_cmd_exec}]
 ----
 mkdir -p /home/iso/
+----
 
+Now log into the Red Hat customer portal (https://access.redhat.com) and download the needed ISOs.  You can copy the URL from the download button, but be sure to use single quotes to prevent bash from parsing the string.  Some example commands are provided below.  Remember, YOU HAVE TO PRIOVIDE THE URL!
+
+----
 wget -O /home/iso/rhel-baseos-9.0-x86_64-dvd.iso '<URL>'
 wget -O /home/iso/rhel-baseos-9.0-x86_64-boot.iso '<URL>'
 wget -O /home/iso/rhel-8.6-x86_64-dvd.iso '<URL>'
@@ -195,16 +210,20 @@ wget -O /home/iso/rhel-8.6-x86_64-boot.iso '<URL>'
 == Platform Setup
 
 ----
+cd ~/RHEL9-Workshop
 ./xtoph-deploy.sh setup
 ----
 
 == RHEL9-Workshop Deployment
 
 ----
+cd ~/RHEL9-Workshop
 ./xtoph-deploy.sh deploy
 ----
 
-=== VNC Connection to the bastion host
+When it's done, you can ssh to the bastion host and get started with the exercises.
+
+== VNC Connection to the bastion host
 
 If enabled in master-config.yml (now the default for the libvirt-nat.yml), a VNC server is configured on the bastion host.
 
@@ -213,7 +232,7 @@ You could then use an ssh tunnel to setup up a port on the virt host which will 
 ----
 firewall-cmd --add-port=5903/tcp
 firewall-cmd --permanent --add-port=5903/tcp
-ssh -L <your-host-ipaddr>:5903:192.168.123.160:5903 root@192.168.123.160 -N
+ssh -L <your-host-ipaddr>:5903:192.168.127.110:5903 root@192.168.127.110 -N
 ----
 
 Now you should be able to use VNC client to connect to <your-host-ipaddr>:3
