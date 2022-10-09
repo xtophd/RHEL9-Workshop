@@ -38,7 +38,7 @@ fi
 
 ##    Check if a client is already attached to existing session
 
-if [[ $(tmux list-clients -s ${session_name} | wc -l) -gt 1 ]] ; then
+if [[ $(tmux list-clients -t ${session_name} | wc -l) -gt 1 ]] ; then
   echo "WARNING: for purposes of this workshop... you should not create recursive 'tmux' sessions, detach existing clients first"
   exit 1
 fi
