@@ -10,6 +10,7 @@ ifdef::env-github[]
 endif::[]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
 :format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
+:format_plain: bash,options="nowrap"
 ifeval::["%cloud_provider%" == "ec2"]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"
 endif::[]
@@ -328,7 +329,7 @@ WARNING: You must add your service customizations BETWEEN the commented lines ne
 
 Your edit should look like this before you save it.
 
-[{format_cmd_output}]
+[{format_plain}]
 ----
 ### Editing /etc/systemd/system/mariadb.service.d/override.conf
 ### Anything between here and the comment below will become the new contents of the file
