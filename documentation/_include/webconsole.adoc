@@ -79,7 +79,7 @@ That completes the installation and configuration of the Web Console.
 
 == Webconsole Login
 
-NOTE:  Please note that by default, the webconsole is configured to use port 9090 and accessible via a link like this: https://{targethost_fqdn}:9090/, however for the purposes of this lab and to provide the greatest degree of internet compatability the webconsole has been additionally enabled on port 443.
+NOTE:  Please note that by default, the webconsole is configured to use port 9090.  Thus you would normally add :9090 to the end of the URL.  However for the purposes of this lab and to provide the greatest degree of internet compatability the webconsole has been additionally enabled on port 443.
 
 Your instructors (or workshop portal) may provide you with a unique link and special instructions to access the web-console on the *bastion*. It is PREFERRED that you use your local web browser.
 
