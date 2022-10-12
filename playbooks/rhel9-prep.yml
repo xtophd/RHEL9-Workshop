@@ -222,19 +222,18 @@
   ##            part of ansible-core.  So, we revert to shell commands.
   ##
 
-  - name: "rhel9-prep : test for root ssh key"
+  - name: "rhel9-prep : test for root ssh key on bastion"
     stat: 
       path: /root/.ssh/id_rsa
     register: root_sshkey
 
-  - name: "rhel9-prep : create ssh key for root"
+  - name: "rhel9-prep : create ssh key for root on bastion"
     shell: 
       cmd: |          
         ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
     when: not root_sshkey.stat.exists
 
-  - name: "rhel9-prep : save temp copy of root ssh key"
-    delegate_to: localhost
+  - name: "rhel9-prep : save local temp copy of root ssh key from bastion"
     fetch:
       src:  "/root/.ssh/id_rsa.pub"
       dest: "../config/root_sshkey.temp"
@@ -285,7 +284,7 @@
       - { user: '{{ workshop_vars.student_name }}', path: '/home/{{ workshop_vars.student_name }}/.ssh/authorized_keys' }
 
 
-  - name: "rhel9-prep : remove local temp copy of ssh key"
+  - name: "rhel9-prep : remove local temp copy of pub ssh key"
     delegate_to: localhost
     file: path="../config/{{ item }}_sshkey.temp" state=absent
     with_items:
