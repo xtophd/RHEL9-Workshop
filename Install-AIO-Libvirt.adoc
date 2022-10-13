@@ -171,6 +171,7 @@ Create a password and remember it.  You will need it shortly.
 
 If you want to make changes to the contents of the credentials you can do the following:
 
+[{format_cmd_exec}]
 ----
 ansible-vault edit config/credentials.yml
 ----
@@ -207,6 +208,7 @@ wget -O /home/iso/rhel-8.6-x86_64-boot.iso '<URL>'
 
 == Platform Setup
 
+[{format_cmd_exec}]
 ----
 cd ~/RHEL9-Workshop
 ./xtoph-deploy.sh setup
@@ -214,6 +216,7 @@ cd ~/RHEL9-Workshop
 
 == RHEL9-Workshop Deployment
 
+[{format_cmd_exec}]
 ----
 cd ~/RHEL9-Workshop
 ./xtoph-deploy.sh deploy
