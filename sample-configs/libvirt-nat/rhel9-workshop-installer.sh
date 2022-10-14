@@ -38,11 +38,13 @@ main_menu () {
           ;;
 
         "Set DNS Server")
-          read -p "Please enter dns server ipv4 address: "  DNS_SERVER
+          read -p "Enter dns server ipv4 address [${DNS_SERVER}]: " input
+          DNS_SERVER=${input:-$DNS_SERVER}
           ;;
 
         "Set TIME Server")
-          read -p "Please enter time server ipv4 address: "  TIME_SERVER
+          read -p "Enter time server ipv4 address [${TIME_SERVER}]: " input
+          TIME_SERVER=${input:-$TIME_SERVER}
           ;;
 
         "Install")
