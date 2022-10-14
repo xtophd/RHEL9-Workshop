@@ -35,7 +35,7 @@ NAT is easy because:
   * dhcp, pxe don't conflict with public network
   * the outside world cannot reach your cluster nodes directly
 
-After setup of the libvirt host is complete, the bastion host and supporting nodes are built from a DVD and post-configured with ansible plays to set up the various exercises.
+After setup of the libvirt host is complete, the bastion host and supporting nodes are built from a DVD and post-configured with ansible playbooks to set up the various exercises.
 
 Lastly, these are default configurations on the virt host but can be changed in the config files:
 
