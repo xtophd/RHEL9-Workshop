@@ -188,7 +188,7 @@ For the purposes of this deployment with sample-configs/libvirt-nat, the options
 mkdir -p /home/iso/
 ----
 
-Now log into the Red Hat customer portal (https://access.redhat.com) and download the needed ISOs.  You can copy the URL from the download button, but be sure to use single quotes to prevent bash from parsing the string.  Some example commands are provided below.  Remember, YOU HAVE TO PRIOVIDE THE URL!
+Now log into the Red Hat customer portal (https://access.redhat.com) and download the needed ISOs.  You can copy the URL from the download button, but be sure to use single quotes to prevent bash from parsing the string.  Some example commands are provided below.  Remember, YOU HAVE TO PROVIDE THE URL!
 
 ----
 wget -O /home/iso/rhel-baseos-9.0-x86_64-dvd.iso '<URL>'
