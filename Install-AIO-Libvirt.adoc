@@ -35,7 +35,7 @@ NAT is easy because:
   * dhcp, pxe don't conflict with public network
   * the outside world cannot reach your cluster nodes directly
 
-After setup of the libvirt host is complete, the bastion host and supporting nodes are built from a DVD and post-configured with ansible plays to set up the various exercises.
+After setup of the libvirt host is complete, the bastion host and supporting nodes are built from a DVD and post-configured with ansible playbooks to set up the various exercises.
 
 Lastly, these are default configurations on the virt host but can be changed in the config files:
 
@@ -188,7 +188,7 @@ For the purposes of this deployment with sample-configs/libvirt-nat, the options
 mkdir -p /home/iso/
 ----
 
-Now log into the Red Hat customer portal (https://access.redhat.com) and download the needed ISOs.  You can copy the URL from the download button, but be sure to use single quotes to prevent bash from parsing the string.  Some example commands are provided below.  Remember, YOU HAVE TO PRIOVIDE THE URL!
+Now log into the Red Hat customer portal (https://access.redhat.com) and download the needed ISOs.  You can copy the URL from the download button, but be sure to use single quotes to prevent bash from parsing the string.  Some example commands are provided below.  Remember, YOU HAVE TO PROVIDE THE URL!
 
 ----
 wget -O /home/iso/rhel-baseos-9.0-x86_64-dvd.iso '<URL>'
