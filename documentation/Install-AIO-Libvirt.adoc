@@ -170,7 +170,10 @@ The workshop document and exercises can be found here:
 * link:{docsdir}/RHEL9-Workshop.adoc[RHEL9-Workshop Hands-on Lab]
 endif::[]
 
-[discrete]
+
+
+
+[appendix]
 == VNC Connection to the bastion host
 
 WARNING: As of October 2022, this is a new set of instructions being developed to help deploy the workshop on a single host using RHEL 9 with libvirt virtualization.  Please be patient, everything should be resolved shortly.
@@ -189,10 +192,10 @@ Now you should be able to use VNC client to connect to <your-host-ipaddr>:3
 
 Don't forget to set the display quality to "High" in the VNC connection properties, and increase the display resolution on the bastion's desktop GUI settings.
 
-[discrete]
-== Alternative Configuration: The Manual Way
+[appendix]
+== Manual Configuration
 
-===== Install Ansible
+=== Install Ansible
 
 There are a pair of handy scripts to install ansible.  The first is useful IF you have an entitlement for your system and can utilize the Red Hat Subscription Manager (rhsm).  The second script will configure the use of the EPEL repo install an unsupported (community) version of ansible.
 
@@ -212,7 +215,7 @@ cd ~/RHEL9-Workshop
 ./sample-scripts/rhel9-install-ansible-epel.sh
 ----
 
-===== Copy NAT configurations to './config' directory
+=== Copy NAT configurations to './config' directory
 
 Using the NAT'd network config will require the least amount of changes to the config.  You really only need to provide the provide proper info for IP address space.
 
@@ -222,7 +225,7 @@ cd ~/RHEL9-Workshop/config
 cp ../sample-configs/libvirt-nat/* .
 ----
 
-===== Edit the Config Files
+=== Edit the Config Files
 
 NOTE: Any changes you make to the files in './config/' will be left untouched in the event you update the project repo with `git pull`.  Git is configured to ignore files in ../config
 
@@ -230,8 +233,8 @@ WARNING: Adjusting the default dns and timeserver for your home/lab is critical 
 
 It is paramount that you update the configs for your environment accurately.  Please pay close attention to the general network information, and of course the IP and MAC addresses for your systems (vms).  In a libvirt (or ovirt) environment, the default behaviour is to allow the playbooks to generate MAC addresses.  The randomly generated MACs are stored and will persist in the configs until the config directory is deleted (../config/host_vars/*).
 
-[discrete]
-===== master-config.yml
+
+==== master-config.yml
 
 NOTE: Again, MAC addresses for a libvirt deployment are automatically generated.  You only need to create/edit MAC addresses if you want to assign them yourself.
 
@@ -240,8 +243,8 @@ Just like the name implies 'master-config.yml' is the main configuration file.  
   * adjust the dns and time servers (MANDATORY!!!)
   * fix hostnames, mac addresses & ip addresses
   
-[discrete]
-===== credentials.yml
+
+==== credentials.yml
 
 WARNING: ENCRYPT THIS FILE WHEN DONE EDITING!
 
