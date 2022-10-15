@@ -38,24 +38,30 @@ prepare_deployment () {
 
     echo ""
 
-    echo -n "## Install Ansible"
+    echo "## Install Ansible from ${ANSIBLE_SOURCE}"
 
-    case "${ANSIBLE_SOURCE}" in 
+    case ${ANSIBLE_SOURCE} in 
 
-      "RHSM" ) 
-        ./sample-scripts/rhel9-install-ansible-rhsm.sh" ;;
+      "RHSM") 
+        ./sample-scripts/rhel9-install-ansible-rhsm.sh 
+        ;;
 
-      "EPEL" ) 
-        ./sample-scripts/rhel9-install-ansible-epel.sh" ;;
+      "EPEL") 
+        ./sample-scripts/rhel9-install-ansible-epel.sh 
+        ;;
     
-      "INSTALLED" ) 
-        echo " - success (ansible already installed)" ;;
+      "INSTALLED") 
+        echo " - success (ansible already installed)"
+        ;;
 
       "*" )
         echo "WARNING: you must set a valid ansible source"
         return 1
         ;;
     esac
+
+
+
 
 
     echo -n "## Copy Configs"
@@ -73,6 +79,7 @@ prepare_deployment () {
     echo -n "## Adjust Workshop Admin Password"
 
     if [[ -z "${ADMIN_PASSWORD}" ]]; then
+      echo " - FAILED" 
       echo "WARNING: you must set the ADMIN PASSWORD"
       return 1
     else
@@ -89,6 +96,7 @@ prepare_deployment () {
     echo -n "## Adjust DNS Configuration"
 
     if [[ -z "${DNS_SERVER}" ]]; then
+      echo " - FAILED" 
       echo "WARNING: you must set the DNS SERVER"
       return 1
     else
@@ -105,6 +113,7 @@ prepare_deployment () {
     echo -n "## Adjust TIME Configuration"
 
     if [[ -z "${TIME_SERVER}" ]]; then
+      echo " - FAILED" 
       echo "WARNING: you must set the TIME SERVER"
       return 1
     else
@@ -121,6 +130,7 @@ prepare_deployment () {
     echo -n "## Encrypt the credentials.yml"
 
     if [[ -z "${VAULT_PASSWORD}" ]]; then
+      echo " - FAILED" 
       echo "WARNING: you must set the VAULT_PASSWORD"
       return 1
     else
@@ -153,7 +163,7 @@ main_menu () {
     select action in "Set Ansible Source" "Set Vault Password" "Set Admin Password" "Set DNS Server" "Set TIME Server" "Prepare Deployment" "Quit"
     do
       case ${action}  in
-        "Set Ansible Source" )
+        "Set Ansible Source")
           if [[ "${ANSIBLE_SOURCE}" == "INSTALLED" ]]; then
             echo ""
             echo "NOTE: Ansible is already installed"
@@ -253,7 +263,7 @@ main_menu () {
 
 echo "## Testing for 'ansible-playbook' command"
 
-which ansible-playbook >/dev/null 2>&1
+rpm -qi ansible >/dev/null 2>&1
 
 if [[ $? -eq 0 ]] ; then
     echo "Found ansible"
