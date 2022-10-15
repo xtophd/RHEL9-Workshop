@@ -20,6 +20,7 @@ endif::[]
   * Christoph Doerbeck
   * Eddie Chen
   * Gordon Keegan
+  * Matt St. Onge
   
 [discrete]
 == Introduction
