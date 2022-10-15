@@ -46,6 +46,7 @@ Lastly, these are default configurations on the virt host but can be changed in 
 Virt host should be loaded with either RHEL 8.6+, RHEL 9.0+
 
 
+[discrete]
 == Prerequisites
 
   * RHEL 9.0+ or 8.6+ base installation
@@ -53,6 +54,7 @@ Virt host should be loaded with either RHEL 8.6+, RHEL 9.0+
   * RHEL 9.0+ or 8.6+ DVD ISO saved in /home/iso
   * RHEL 9.0+ or 8.6+ BOOT ISO saved in /home/iso
 
+[discrete]
 == Register system
 
 However you get it done, the primary virthost system will need access to additional RHEL repos.  At this time, I'm testing on RHEL 9.0 and RHEL 8.6.
