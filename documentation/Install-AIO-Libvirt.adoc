@@ -46,7 +46,6 @@ Lastly, these are default configurations on the virt host but can be changed in 
 Virt host should be loaded with either RHEL 8.6+, RHEL 9.0+
 
 
-
 == Prerequisites
 
   * RHEL 9.0+ or 8.6+ base installation
@@ -68,7 +67,8 @@ For RHEL 8.6:
     - "rhel-8-for-x86_64-appstream-rpms"
 
 And yes, I test with CentOS from time to time and it should work as both the virthost platform and for the workshop nodes.
- 
+
+
 == Install Git
 
 WARNING: this process requires and is tested with ansible 2.9.  Anything older that Ansible 2.9 *WILL NOT WORK!!!*
@@ -80,6 +80,7 @@ Besides an @Base installation, you will need git and ansible installed before yo
 yum -y install git
 ----
 
+
 == Git Clone Repo
 
 Still on your virt host:
@@ -90,8 +91,8 @@ cd ~
 git clone http://github.com/xtophd/RHEL9-Workshop --recurse-submodules
 ----
 
-== Retrieve RHEL 9.0/8.6 DVD and BOOT ISOs
 
+== Retrieve RHEL 9.0/8.6 DVD and BOOT ISOs
 
 [{format_cmd_exec}]
 ----
@@ -107,9 +108,11 @@ wget -O /home/iso/rhel-8.6-x86_64-dvd.iso '<URL>'
 wget -O /home/iso/rhel-8.6-x86_64-boot.iso '<URL>'
 ----
 
-== Recommended: New Installer/Config Script
+== Run the Configuration Script
 
-There is a new installation (configuration) script I am working on to tighten up the install process for the libvirt-nat AIO model.
+NOTE: There is a new installation (configuration) script I am working on to tighten up the configuration and installation process for the libvirt-nat AIO model.  The manual approach is still outlined at the end of this document for the curious.
+
+Time to run the new installation helper script.
 
 [{format_cmd_exec}]
 ----
@@ -117,18 +120,79 @@ cd ~/RHEL9-Workshop
 ./sample-configs/libvirt-nat/rhel9-workshop-installer.sh
 ----
 
-Just step through the options and enter the values.  When ready, select "Create Configs" and the configuration
-files should be ready to go.
+Just step through the options and enter the values.  When ready, select "Prepare Deployment" and the configuration files will
+get created and the deployment should be ready to go.
 
-The script will:
+In sumary, the script will: 
 
+  * collect necessary information
   * install ansible
-  * create config files
-  * adjust config files with entered parameters
+  * create the config files with the adjusted values
 
-== Alternative: The Manual Way
 
-=== Install Ansible
+== Final Check List
+
+    - Is there enough memory?
+    - Is there enough cpu?
+    - Is there enough disk space and is it in the right location?
+    - Is the RHEL ISO downloaded and stored in the right place
+    - Did you install (upgrade) Ansible 2.9+
+
+
+== AIO-Libvirt Platform Setup
+
+This step runs the playbooks that setup the virtualization platform.
+
+[{format_cmd_exec}]
+----
+cd ~/RHEL9-Workshop
+./xtoph-deploy.sh setup
+----
+
+== AIO-Libvirt Workshop Deployment
+
+This step runs the playbooks that create the VMs and deploy the RHEL9-Workshop.
+
+[{format_cmd_exec}]
+----
+cd ~/RHEL9-Workshop
+./xtoph-deploy.sh deploy
+----
+
+When it's done, you can ssh to the bastion host and get started with the exercises.
+
+
+== Get Started with the RHEL9-Workshop
+
+ifdef::env-github[]
+The workshop document and exercises can be found here:
+
+* link:{docsdir}/RHEL9-Workshop.adoc[RHEL9-Workshop Hands-on Lab]
+endif::[]
+
+[discrete]
+== VNC Connection to the bastion host
+
+WARNING: As of October 2022, this is a new set of instructions being developed to help deploy the workshop on a single host using RHEL 9 with libvirt virtualization.  Please be patient, everything should be resolved shortly.
+
+If enabled in master-config.yml (now the default for the libvirt-nat.yml), a VNC server is configured on the bastion host.
+
+You could then use an ssh tunnel to setup up a port on the virt host which will connect to the bastion vm.  If you left all of the default parameters and substituting your-host-ipaddr, run the following on the libvirt host.
+
+----
+firewall-cmd --add-port=5903/tcp
+firewall-cmd --permanent --add-port=5903/tcp
+ssh -L <your-host-ipaddr>:5903:192.168.127.110:5903 root@192.168.127.110 -N
+----
+
+Now you should be able to use VNC client to connect to <your-host-ipaddr>:3
+
+Don't forget to set the display quality to "High" in the VNC connection properties, and increase the display resolution on the bastion's desktop GUI settings.
+
+[discrete]
+== Alternative Configuration: The Manual Way
+
+===== Install Ansible
 
 There are a pair of handy scripts to install ansible.  The first is useful IF you have an entitlement for your system and can utilize the Red Hat Subscription Manager (rhsm).  The second script will configure the use of the EPEL repo install an unsupported (community) version of ansible.
 
@@ -148,9 +212,7 @@ cd ~/RHEL9-Workshop
 ./sample-scripts/rhel9-install-ansible-epel.sh
 ----
 
-=== Create the Config Files
-
-==== Copy NAT configurations to './config' directory
+===== Copy NAT configurations to './config' directory
 
 Using the NAT'd network config will require the least amount of changes to the config.  You really only need to provide the provide proper info for IP address space.
 
@@ -160,7 +222,7 @@ cd ~/RHEL9-Workshop/config
 cp ../sample-configs/libvirt-nat/* .
 ----
 
-==== Edit the Config Files
+===== Edit the Config Files
 
 NOTE: Any changes you make to the files in './config/' will be left untouched in the event you update the project repo with `git pull`.  Git is configured to ignore files in ../config
 
@@ -169,7 +231,7 @@ WARNING: Adjusting the default dns and timeserver for your home/lab is critical 
 It is paramount that you update the configs for your environment accurately.  Please pay close attention to the general network information, and of course the IP and MAC addresses for your systems (vms).  In a libvirt (or ovirt) environment, the default behaviour is to allow the playbooks to generate MAC addresses.  The randomly generated MACs are stored and will persist in the configs until the config directory is deleted (../config/host_vars/*).
 
 [discrete]
-==== master-config.yml
+===== master-config.yml
 
 NOTE: Again, MAC addresses for a libvirt deployment are automatically generated.  You only need to create/edit MAC addresses if you want to assign them yourself.
 
@@ -179,7 +241,7 @@ Just like the name implies 'master-config.yml' is the main configuration file.  
   * fix hostnames, mac addresses & ip addresses
   
 [discrete]
-==== credentials.yml
+===== credentials.yml
 
 WARNING: ENCRYPT THIS FILE WHEN DONE EDITING!
 
@@ -205,65 +267,6 @@ If you want to make changes to the contents of the credentials you can do the fo
 ----
 ansible-vault edit config/credentials.yml
 ----
-
-[discrete]
-==== xtoph-deploy-config.yml
-
-For the purposes of this deployment with sample-configs/libvirt-nat, the options in xtoph-deploy-config.yml are left to defaults.  But you may be interested to review the parameters to understand what is available.
-
-== Final Check List
-
-    - Is there enough memory?
-    - Is there enough cpu?
-    - Is there enough disk space and is it in the right location?
-    - Is the RHEL ISO downloaded and stored in the right place
-    - Did you install (upgrade) Ansible 2.9+
-
-
-== Platform Setup
-
-[{format_cmd_exec}]
-----
-cd ~/RHEL9-Workshop
-./xtoph-deploy.sh setup
-----
-
-== RHEL9-Workshop Deployment
-
-[{format_cmd_exec}]
-----
-cd ~/RHEL9-Workshop
-./xtoph-deploy.sh deploy
-----
-
-When it's done, you can ssh to the bastion host and get started with the exercises.
-
-== VNC Connection to the bastion host
-
-WARNING: As of October 2022, this is a new set of instructions being developed to help deploy the workshop on a single host using RHEL 9 with libvirt virtualization.  Please be patient, everything should be resolved shortly.
-
-If enabled in master-config.yml (now the default for the libvirt-nat.yml), a VNC server is configured on the bastion host.
-
-You could then use an ssh tunnel to setup up a port on the virt host which will connect to the bastion vm.  If you left all of the default parameters and substituting your-host-ipaddr, run the following on the libvirt host.
-
-----
-firewall-cmd --add-port=5903/tcp
-firewall-cmd --permanent --add-port=5903/tcp
-ssh -L <your-host-ipaddr>:5903:192.168.127.110:5903 root@192.168.127.110 -N
-----
-
-Now you should be able to use VNC client to connect to <your-host-ipaddr>:3
-
-Don't forget to set the display quality to "High" in the VNC connection properties, and increase the display resolution on the bastion's desktop GUI settings.
-
-[discrete]
-== Continue to the Workshop
-
-ifdef::env-github[]
-The workshop document and exercises can be found here:
-
-* link:{docsdir}/RHEL9-Workshop.adoc[RHEL9-Workshop Hands-on Lab]
-endif::[]
 
 [discrete]
 = The End
