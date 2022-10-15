@@ -76,7 +76,7 @@ prepare_deployment () {
       echo "WARNING: you must set the ADMIN PASSWORD"
       return 1
     else
-      sed -i -e "s/^\(.*xtoph_deploy_root_passwd:\).*\$/x\1: \"${ADMIN_PASSWORD}\"/" ./config/credentials.yml
+      sed -i -e "s/^\(.*xtoph_deploy_root_passwd:\).*\$/\1 \"${ADMIN_PASSWORD}\"/" ./config/credentials.yml
       if [[ $? ]] ; then
         echo " - success" 
       else
