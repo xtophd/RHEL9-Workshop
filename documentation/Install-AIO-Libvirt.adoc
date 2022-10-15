@@ -114,7 +114,7 @@ There is a new installation (configuration) script I am working on to tighten up
 [{format_cmd_exec}]
 ----
 cd ~/RHEL9-Workshop
-./sample-config/libvirt-nat/rhel9-workshop-installer.sh
+./sample-configs/libvirt-nat/rhel9-workshop-installer.sh
 ----
 
 Just step through the options and enter the values.  When ready, select "Create Configs" and the configuration
