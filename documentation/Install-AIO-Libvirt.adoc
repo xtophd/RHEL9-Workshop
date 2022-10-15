@@ -109,7 +109,7 @@ wget -O /home/iso/rhel-8.6-x86_64-boot.iso '<URL>'
 
 == Recommended: New Installer/Config Script
 
-There is a new installation (configuration) script I am working on to tighten up the install process the libvirt-nat AIO model.
+There is a new installation (configuration) script I am working on to tighten up the install process for the libvirt-nat AIO model.
 
 [{format_cmd_exec}]
 ----
