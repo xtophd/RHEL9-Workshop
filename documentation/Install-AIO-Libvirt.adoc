@@ -54,26 +54,22 @@ Virt host should be loaded with either RHEL 8.6+, RHEL 9.0+
   * RHEL 9.0+ or 8.6+ DVD ISO saved in /home/iso
   * RHEL 9.0+ or 8.6+ BOOT ISO saved in /home/iso
 
-=== Register system
+== Register system
 
 However you get it done, the primary virthost system will need access to additional RHEL repos.  At this time, I'm testing on RHEL 9.0 and RHEL 8.6.
 
 For RHEL 9.0:
 
-    - TBD: THIS SETUP IS BEING WORKED OUT
     - "rhel-9-for-x86_64-baseos-rpms"
-    - "ansible-2.9-for-rhel-9-x86_64-rpms"
-
 
 For RHEL 8.6:
 
     - "rhel-8-for-x86_64-baseos-rpms"
     - "rhel-8-for-x86_64-appstream-rpms"
-    - "ansible-2.9-for-rhel-8-x86_64-rpms"
-    
+
 And yes, I test with CentOS from time to time and it should work as both the virthost platform and for the workshop nodes.
  
-=== Install Git
+== Install Git
 
 WARNING: this process requires and is tested with ansible 2.9.  Anything older that Ansible 2.9 *WILL NOT WORK!!!*
 
@@ -84,7 +80,7 @@ Besides an @Base installation, you will need git and ansible installed before yo
 yum -y install git
 ----
 
-=== Git Clone Repo
+== Git Clone Repo
 
 Still on your virt host:
 
@@ -93,6 +89,44 @@ Still on your virt host:
 cd ~
 git clone http://github.com/xtophd/RHEL9-Workshop --recurse-submodules
 ----
+
+== Retrieve RHEL 9.0/8.6 DVD and BOOT ISOs
+
+
+[{format_cmd_exec}]
+----
+mkdir -p /home/iso/
+----
+
+Now log into the Red Hat customer portal (https://access.redhat.com) and download the needed ISOs.  You can copy the URL from the download button, but be sure to use single quotes to prevent bash from parsing the string.  Some example commands are provided below.  Remember, YOU HAVE TO PROVIDE THE URL!
+
+----
+wget -O /home/iso/rhel-baseos-9.0-x86_64-dvd.iso '<URL>'
+wget -O /home/iso/rhel-baseos-9.0-x86_64-boot.iso '<URL>'
+wget -O /home/iso/rhel-8.6-x86_64-dvd.iso '<URL>'
+wget -O /home/iso/rhel-8.6-x86_64-boot.iso '<URL>'
+----
+
+== Recommended: New Installer/Config Script
+
+There is a new installation (configuration) script I am working on to tighten up the install process the libvirt-nat AIO model.
+
+[{format_cmd_exec}]
+----
+cd ~/RHEL9-Workshop
+./sample-config/libvirt-nat/rhel9-workshop-install.sh
+----
+
+Just step through the options and enter the values.  When ready, select "Create Configs" and the configuration
+files should be ready to go.
+
+The script will:
+
+  * install ansible
+  * create config files
+  * adjust config files with entered parameters
+
+== Alternative: The Manual Way
 
 === Install Ansible
 
@@ -116,12 +150,6 @@ cd ~/RHEL9-Workshop
 
 === Create the Config Files
 
-==== Determine Network Configuration
-
-In both cases (NAT or Bridge), the libvirt 'default' network is left alone and unused.  This allows for the continued use of whatever you may already have configured on the virt host without conflict with what is about to be deployed.
-
-In this example, we will use the NAT'd configuration.
-
 ==== Copy NAT configurations to './config' directory
 
 Using the NAT'd network config will require the least amount of changes to the config.  You really only need to provide the provide proper info for IP address space.
@@ -132,7 +160,7 @@ cd ~/RHEL9-Workshop/config
 cp ../sample-configs/libvirt-nat/* .
 ----
 
-=== Edit the Config Files
+==== Edit the Config Files
 
 NOTE: Any changes you make to the files in './config/' will be left untouched in the event you update the project repo with `git pull`.  Git is configured to ignore files in ../config
 
@@ -140,6 +168,7 @@ WARNING: Adjusting the default dns and timeserver for your home/lab is critical 
 
 It is paramount that you update the configs for your environment accurately.  Please pay close attention to the general network information, and of course the IP and MAC addresses for your systems (vms).  In a libvirt (or ovirt) environment, the default behaviour is to allow the playbooks to generate MAC addresses.  The randomly generated MACs are stored and will persist in the configs until the config directory is deleted (../config/host_vars/*).
 
+[discrete]
 ==== master-config.yml
 
 NOTE: Again, MAC addresses for a libvirt deployment are automatically generated.  You only need to create/edit MAC addresses if you want to assign them yourself.
@@ -149,6 +178,7 @@ Just like the name implies 'master-config.yml' is the main configuration file.  
   * adjust the dns and time servers (MANDATORY!!!)
   * fix hostnames, mac addresses & ip addresses
   
+[discrete]
 ==== credentials.yml
 
 WARNING: ENCRYPT THIS FILE WHEN DONE EDITING!
@@ -176,28 +206,12 @@ If you want to make changes to the contents of the credentials you can do the fo
 ansible-vault edit config/credentials.yml
 ----
 
+[discrete]
 ==== xtoph-deploy-config.yml
 
 For the purposes of this deployment with sample-configs/libvirt-nat, the options in xtoph-deploy-config.yml are left to defaults.  But you may be interested to review the parameters to understand what is available.
 
-=== Retrieve RHEL 9.0 DVD and BOOT ISOs
-
-
-[{format_cmd_exec}]
-----
-mkdir -p /home/iso/
-----
-
-Now log into the Red Hat customer portal (https://access.redhat.com) and download the needed ISOs.  You can copy the URL from the download button, but be sure to use single quotes to prevent bash from parsing the string.  Some example commands are provided below.  Remember, YOU HAVE TO PROVIDE THE URL!
-
-----
-wget -O /home/iso/rhel-baseos-9.0-x86_64-dvd.iso '<URL>'
-wget -O /home/iso/rhel-baseos-9.0-x86_64-boot.iso '<URL>'
-wget -O /home/iso/rhel-8.6-x86_64-dvd.iso '<URL>'
-wget -O /home/iso/rhel-8.6-x86_64-boot.iso '<URL>'
-----
-
-=== Final Check List
+== Final Check List
 
     - Is there enough memory?
     - Is there enough cpu?
