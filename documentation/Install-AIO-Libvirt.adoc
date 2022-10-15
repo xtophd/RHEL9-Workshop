@@ -130,7 +130,7 @@ In sumary, the script will:
   * create the config files with the adjusted values
 
 
-== Final Check List
+== Final Check List [[ _final_checklist]]
 
     - Is there enough memory?
     - Is there enough cpu?
@@ -270,6 +270,10 @@ If you want to make changes to the contents of the credentials you can do the fo
 ----
 ansible-vault edit config/credentials.yml
 ----
+
+==== Return to Normal Workflow
+
+Now you can return to the section titled link:#_final_checklist[Final Check List] and resume the deployment from there.
 
 [discrete]
 = The End
