@@ -1,5 +1,5 @@
 :gitrepo: https://github.com/xtophd/RHEL9-Workshop
-:docsdir: documentation
+:docsdir: /documentation
 :includedir: _includes
 :doctype: book
 :sectnums:
