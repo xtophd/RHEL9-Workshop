@@ -130,7 +130,8 @@ In sumary, the script will:
   * create the config files with the adjusted values
 
 
-== Final Check List [[ _final_checklist]]
+[[ _final_checklist]]
+== Final Check List 
 
     - Is there enough memory?
     - Is there enough cpu?
