@@ -278,7 +278,7 @@ fi
 
 echo ""
 echo "** THIS IS AN EXPERIMENTAL WORK-IN-PROGRESS AND IS NOT FUNCTIONAL"
-echo "** DO NOT USER THIS"
+echo "** DO NOT USE THIS"
 echo ""
 
 main_menu
