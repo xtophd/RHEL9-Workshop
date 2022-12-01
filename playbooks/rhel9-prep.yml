@@ -58,7 +58,7 @@
     delay: 5
 
   - name: "rhel9-prep : YUM install WANTED packages"
-    yum: name=tmux state=installed
+    yum: name=tmux,policycoreutils-python-utils state=installed
     register: result
     retries: 10
     until: result is succeeded
