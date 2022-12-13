@@ -12,6 +12,37 @@ TIME_SERVER=""
 # ---
 
 
+##
+##    Load answer file if it exists
+##
+
+[[ -e ./config/rhel9-workshop.ans ]] && . ./config/rhel9-workshop.ans
+
+
+# ---
+
+
+save_settings () {
+
+##
+##    NOTE: don't save the passwords
+##          user will always need to enter them
+##
+
+cat > ./config/rhel9-workshop.ans <<EO_ANSWERS
+ANSIBLE_SOURCE="${ANSIBLE_SOURCE}"
+ADMIN_PASSWORD=""
+VAULT_PASSWORD=""
+DNS_SERVER="${DNS_SERVER}"
+TIME_SERVER="${TIME_SERVER}"
+EO_ANSWERS
+
+}
+
+
+# ---
+
+
 current_settings () {
 
    ##
@@ -160,7 +191,7 @@ main_menu () {
 
     current_settings
 
-    select action in "Set Ansible Source" "Set Vault Password" "Set Admin Password" "Set DNS Server" "Set TIME Server" "Prepare Deployment" "Quit"
+    select action in "Set Ansible Source" "Set Vault Password" "Set Admin Password" "Set DNS Server" "Set TIME Server" "Prepare Deployment" "Save Settings" "Quit"
     do
       case ${action}  in
         "Set Ansible Source")
@@ -224,7 +255,12 @@ main_menu () {
           ;;
 
         "Prepare Deployment")
+          save_settings
           prepare_deployment
+          ;;
+
+        "Save Settings")
+          save_settings
           ;;
 
         "Quit")
