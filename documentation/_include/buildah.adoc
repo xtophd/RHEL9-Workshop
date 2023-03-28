@@ -116,7 +116,7 @@ We need to install an httpd server in our image, and what better way to do that 
 
 [{format_cmd_exec}]
 ----
-buildah run ubi-working-container dnf install -y httpd
+buildah run ubi-working-container dnf --disablerepo=* --enablerepo=ubi-9-baseos-rpms --enablerepo=ubi-9-appstream-rpms install -y httpd
 ----
 
 [{format_cmd_output}]

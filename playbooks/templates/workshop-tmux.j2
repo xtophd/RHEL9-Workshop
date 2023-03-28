@@ -1,0 +1,50 @@
+#!/bin/bash
+
+
+
+if [[ -n "$1" ]]; then
+  session_name="$1"
+else
+  session_name="workshop"
+fi
+
+
+##    Check if current host is bastion
+
+if [[ $(hostname -s) != "bastion" ]]; then
+  echo "WARNING: for purposes of this workshop... only use 'tmux' on the bastion host"
+  exit 1
+fi
+
+
+
+##    Check if current user is student
+
+if [[ $(id -un) != "student" ]]; then
+  echo "WARNING: for purposes of this workshop... only use 'tmux' as user 'student'"
+  exit 1
+fi
+
+
+
+##    Check if current term is already in a tmux session
+
+if [[ -n "$TMUX" ]]; then
+  echo "WARNING: for purposes of this workshop... you should not nest additional 'tmux' sessions"
+  exit 1
+fi
+
+
+
+##    Check if a client is already attached to existing session
+
+if [[ $(tmux list-clients -t ${session_name} | wc -l) -ge 1 ]] ; then
+  echo "WARNING: for purposes of this workshop... you should not create recursive 'tmux' sessions, detach existing clients first"
+  exit 1
+fi
+
+
+
+##    Create (or connect to existing) named session
+
+exec tmux new-session -A -s ${session_name}

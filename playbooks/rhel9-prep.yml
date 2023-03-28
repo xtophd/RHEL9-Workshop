@@ -58,7 +58,7 @@
     delay: 5
 
   - name: "rhel9-prep : YUM install WANTED packages"
-    yum: name=tmux state=installed
+    yum: name=tmux,policycoreutils-python-utils state=installed
     register: result
     retries: 10
     until: result is succeeded
@@ -207,6 +207,7 @@
       mode: "{{ item.mode }}"
     with_items:
       - {mode: '0755', src: 'workshop-finish-exercise.j2', dest: '/usr/local/bin/workshop-finish-exercise.sh'}
+      - {mode: '0755', src: 'workshop-tmux.j2',            dest: '/usr/local/bin/workshop-tmux.sh'}
  
 
  

@@ -108,7 +108,7 @@ uname -r
 
 [{format_cmd_output}]
 ----
-4.18.0-372.9.1.el8.x86_64
+4.18.0-372.32.1.el8_6.x86_64
 ----
 
 [{format_cmd_exec2}]
@@ -163,11 +163,16 @@ subscription-manager repos --disable=*
 subscription-manager repos --enable=rhel-8-for-x86_64-baseos-rpms --enable=rhel-8-for-x86_64-appstream-rpms
 ----
 
-Ensure that Red Hat Subscription Manager is set to consume the latest RHEL 8 content.
+Ensure that Red Hat Subscription Manager is set to consume the latest RHEL 8.6 content.
 
 [{format_cmd_exec2}]
 ----
-subscription-manager release --unset
+subscription-manager release 
+----
+
+[{format_cmd_output}]
+----
+Release: 8.6
 ----
 
 

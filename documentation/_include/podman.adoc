@@ -189,10 +189,10 @@ podman images
 
 [{format_cmd_output}]
 ----
-REPOSITORY                               TAG         IMAGE ID      CREATED      SIZE
-registry.access.redhat.com/ubi9-init     latest      632d4802e2e9  5 weeks ago  246 MB
-registry.access.redhat.com/ubi9/ubi      latest      46720ac964ac  5 weeks ago  229 MB
-registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago  129 MB
+REPOSITORY                                   TAG         IMAGE ID      CREATED     SIZE
+registry.access.redhat.com/ubi9/ubi-init     latest      ce6c603a0f34  7 days ago  237 MB
+registry.access.redhat.com/ubi9/ubi          latest      9877f06ecc6f  7 days ago  219 MB
+registry.access.redhat.com/ubi9/ubi-minimal  latest      3135bd90aad6  7 days ago  97.5 MB
 ----
 
 
@@ -214,11 +214,11 @@ podman images
 
 [{format_cmd_output}]
 ----
-REPOSITORY                               TAG         IMAGE ID      CREATED      SIZE
-registry.access.redhat.com/ubi9-init     latest      632d4802e2e9  5 weeks ago  246 MB
-registry.access.redhat.com/ubi9/ubi      latest      46720ac964ac  5 weeks ago  229 MB
-localhost/myfavorite                     latest      46720ac964ac  5 weeks ago  229 MB
-registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago  129 MB
+REPOSITORY                                   TAG         IMAGE ID      CREATED     SIZE
+registry.access.redhat.com/ubi9/ubi-init     latest      ce6c603a0f34  7 days ago  237 MB
+registry.access.redhat.com/ubi9/ubi          latest      9877f06ecc6f  7 days ago  219 MB
+localhost/myfavorite                         latest      9877f06ecc6f  7 days ago  219 MB
+registry.access.redhat.com/ubi9/ubi-minimal  latest      3135bd90aad6  7 days ago  97.5 MB
 ----
 
 Notice how the image-id for "ubi" and "myfavorite" are identical.
@@ -236,7 +236,7 @@ podman images
 
 [{format_cmd_exec}]
 ----
-podman rmi ubi9-init
+podman rmi ubi-init
 ----
 
 [{format_cmd_exec}]
@@ -246,10 +246,10 @@ podman images
 
 [{format_cmd_output}]
 ----
-REPOSITORY                               TAG         IMAGE ID      CREATED      SIZE
-registry.access.redhat.com/ubi9/ubi      latest      46720ac964ac  5 weeks ago  229 MB
-localhost/myfavorite                     latest      46720ac964ac  5 weeks ago  229 MB
-registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago  129 MB
+REPOSITORY                                   TAG         IMAGE ID      CREATED     SIZE
+registry.access.redhat.com/ubi9/ubi          latest      9877f06ecc6f  7 days ago  219 MB
+localhost/myfavorite                         latest      9877f06ecc6f  7 days ago  219 MB
+registry.access.redhat.com/ubi9/ubi-minimal  latest      3135bd90aad6  7 days ago  97.5 MB
 ----
 
 
@@ -560,7 +560,7 @@ cat /root/custom_image.OCIFile
 ----
 FROM ubi9/ubi
 
-RUN dnf install -y httpd
+RUN dnf --disablerepo=* --enablerepo=ubi-9-baseos-rpms --enablerepo=ubi-9-appstream-rpms install -y httpd
 RUN dnf clean all
 
 RUN echo "The Web Server is Running" > /var/www/html/index.html
