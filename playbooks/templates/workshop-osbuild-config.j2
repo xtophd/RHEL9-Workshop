@@ -40,7 +40,7 @@ export APPSTREAM_URL=`dnf repoinfo rhel-9-for-x86_64-appstream-rpms 2>/dev/null 
 ## 
 
 exercise_cmd "Start a new osbuilder override config" \
-             "jq '.x86_64 | { \"x86_64\" : . }' /usr/share/osbuild-composer/repositories/rhel-90.json > /var/tmp/osbuild-new.json"
+             "jq '.x86_64 | { \"x86_64\" : . }' /usr/share/osbuild-composer/repositories/rhel-91.json > /var/tmp/osbuild-new.json"
 
 ##
 ##  
@@ -57,7 +57,7 @@ exercise_cmd "Patch osbuilder override config with appstream url" \
 ##
 
 exercise_cmd "Copy the override to it's destination" \
-             "cp -f /var/tmp/osbuild-fixed-appstream.json /etc/osbuild-composer/repositories/rhel-90.json"
+             "cp -f /var/tmp/osbuild-fixed-appstream.json /etc/osbuild-composer/repositories/rhel-91.json"
 
 ##
 ## 
