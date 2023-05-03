@@ -31,7 +31,7 @@ endif::[]
 WARNING:  This exercise requires the SECONDARY terminal and conflicts with any other exercise that
 uses the secondary terminal.  Do not proceed if the secondary terminal is already in use with another exercise.
 
-eBPF (The Extended Berkeley Packet Filter) is an in-kernel virtual machine that allows code execution in the kernel space, in a restricted sandbox environment with access to a limited set of functions. There are numerous components shipped by Red Hat that utilize the eBPF virtual machine. Each component is in a different development phase, and thus not all components are currently fully supported. Those that are not supported are available as a *Technology Preview* and are not intended for production use.For information on Red Hat scope of support for Technology Preview features, see: link:https://access.redhat.com/support/offerings/techpreview/[Technology Preview Features Support Scope]
+eBPF (The Extended Berkeley Packet Filter) is an in-kernel virtual machine that allows code execution in the kernel space, in a restricted sandbox environment with access to a limited set of functions. There are numerous components shipped by Red Hat that utilize the eBPF virtual machine. Each component is in a different development phase, and thus not all components are currently fully supported. Those that are not supported are available as a *Technology Preview* and are not intended for production use. For information on Red Hat scope of support for Technology Preview features, see: link:https://access.redhat.com/support/offerings/techpreview/[Technology Preview Features Support Scope]
 
 In this unit, we will be focusing on the kernel tracing offering shipped as bcc-tools (BPF Compiler Collection Tools).   We will also touch on bpftrace which is a tool  to compile scripts to BPF-bytecode.  
 
@@ -146,7 +146,7 @@ Run a little script to generate some user activity.
 ssh node2 "sudo workshop-ebpf-rootkit.sh"
 ----
 
-This command should run for about 10 seconds and then exit.  Before porceeding to the results you can
+This command should run for about 10 seconds and then exit.  Before proceeding to the results you can
 either hit `Ctrl-C` in the primary terminal OR send a sigkill to the process to terminate tcplife.
 
 [{format_cmd_exec2}]

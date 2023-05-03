@@ -39,7 +39,7 @@ to your toolbox: *Image Builder*.
 
 *Image Builder* is a collection of tools that create custom RHEL images in a variety of formats for 
 compatibility with major cloud providers and virtualization technologies.  Meaning, you can design 
-an OS blueprint and then specify the target platfrom to create an appropriate image (ie: VMWare, 
+an OS blueprint and then specify the target platform to create an appropriate image (ie: VMWare, 
 AWS, Openstack, KVM, etc...).
 
 NOTE: You CAN create images of multiple RHEL minor releases that are different from the host (ex: RHEL 8.4, RHEL 8.5) but to do so requires additional repo configurations which are not available in this workshop environment.
@@ -173,7 +173,7 @@ A nice quick way to determine if the local `Image Builder` can resolve all depen
 composer-cli blueprints depsolve sample-webserver
 ----
 
-If everything is in order, you output should look something like this.
+If everything is in order, your output should look something like this.
 
 [{format_plain}]
 ----

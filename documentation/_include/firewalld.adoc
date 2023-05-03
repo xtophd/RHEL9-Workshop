@@ -101,7 +101,7 @@ Similar to systemd, firewalld implements the concept of a service:
   * a destination address (or range) for IPv4 and/or IPv6.
 
 
-There are nearly 50 built-in services shipped with firewalld.  You can also create your own service configs from scratch or customize the default files.  More on that coovered in the exercises below.
+There are nearly 50 built-in services shipped with firewalld.  You can also create your own service configs from scratch or customize the default files.  More on that covered in the exercises below.
 
 Let's take a quick look at the default configuration for ssh & http to start.
 
@@ -250,7 +250,7 @@ public (active)
 
 == Managing Default Services
 
-Default Services are those that are pre-defined by configuration files in either */etc/firewalld* or */usr/lib/firewalld*.  This would include any configs delivered by Red Hat as part of the operating system or those added by a system administer.
+Default Services are those that are pre-defined by configuration files in either */etc/firewalld* or */usr/lib/firewalld*.  This would include any configs delivered by Red Hat as part of the operating system or those added by a system administrator.
 
 Here we will take a moment to enable the http and https service ports.
 

@@ -163,7 +163,7 @@ fsadm
 
 In this exercise, you will perform steps to make a new filesystem available to the system using the Logical Volume Management tools.  
 
-We will begin with a simple linear volume (concatination).
+We will begin with a simple linear volume (concatenation).
 
 === Clean Up Devices
 
@@ -319,7 +319,7 @@ resize2fs /dev/vg_lab/lab1
 Let us take a look at the logical volume.  Notice a few things:
 
   * we added `seg_size` to the options to report segment size
-  * the logical volume is comprised of 2 devices (vdb, vdc)
+  * the logical volume is comprised of 2 devices ({disk1},{disk2})
   * the first segment is completely used at 5g
   * the second segment is almost used, but has some space remaining
   * Over all, the volume group has approximately 500mb remaining

@@ -95,7 +95,7 @@ In RHEL 9, you have a choice on how to implement and manage the firewall.  In wh
 
 For 99% of all use cases the firewalld tools are the best choice.  For this lab however we are trying to introduce `nft` and demonstrate some differences to the former `iptables`.
 
-Let us now being to understand the constructs that build the firewall rules: Tables, Chains & Rules.
+Let us now begin to understand the constructs that build the firewall rules: Tables, Chains & Rules.
 
 
 
@@ -244,7 +244,7 @@ table inet workshop { # handle 2
 
 Now is a good time to point out that the exercises in this unit are deliberately meant to be nondestructive.  Meaning, we don't want this machine to be unusable due to an error in rule insertion or deletion.
 
-So what does the previos rule do?  It merely counts packaets that arrived at port 80 on our machine.  Let's send some packets.
+So what does the previous rule do?  It merely counts packets that arrived at port 80 on our machine.  Let's send some packets.
 
 [{format_cmd_exec}]
 ----

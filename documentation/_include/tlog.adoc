@@ -27,7 +27,7 @@ Tlog is a terminal I/O recording and playback package for Linux.  The session lo
 
 If you have successfully run the RHEL 8 lab preparation playbook, then node1.example.com has already been properly configured for session logging.  What follows are some basic exercises to demonstrate how this facility functions.
 
-Starting with RHEL 9, TLOG is configured by a relatively simple system-role.  We will com back to that later.
+Starting with RHEL 9, TLOG is configured by a relatively simple system-role.  We will come back to that later.
 
 == Getting Started
 
@@ -154,7 +154,7 @@ ftp:*:17988:0:99999:7:::
 ...SNIP...
 ----
 
-We are done with our limited nafarious activities, so proceed to `exit`
+We are done with our limited nefarious activities, so proceed to `exit`
 
 [{format_cmd_exec}]
 ----
@@ -191,7 +191,7 @@ Sat 2019-04-27 21:21:58.770887 EDT [s=bcde42e4c96048c3908657177414e202;i=70c;b=b
 
 Each one of those entries makes up a chunk of a session recording.  It is by way of searching the system journal and identifying the correct TLOG_REC for a specific session, that you can then play back the session using `tlog-play`.
 
-We have taken the liberty of scripting this "search" to playback the last session log from the user cloud-user.
+We have taken the liberty of scripting this "search" to playback the last session log from the user other-user.
 Once you hit enter on the command below, you will see a note that "Playback Started..." and again when "Playback Finished...".  
 Be patient until it completes and your root prompt returns.
 

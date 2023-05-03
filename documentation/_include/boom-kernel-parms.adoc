@@ -213,7 +213,7 @@ Boot Entry (boot_id=0d96d09)
 
 ==== Create
 
-First we need to determine the root device.  We can do this by inspecting the current kernel's boot commandline.
+First we need to determine the root device.  We can do this by inspecting the current kernel's boot command line.
 
 [{format_cmd_exec}]
 ----

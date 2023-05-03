@@ -64,7 +64,7 @@ Linux containers are technologies (plural) that allow you to package and isolate
   * improve flexibilty over virtual machines
 
 Because container images include only the content needed to run an application, a container is more efficient 
-requires less to run.  Likewise, since the container is not running the entirty of a complete operating system,
+requires less to run.  Likewise, since the container is not running the entirety of a complete operating system,
 it will typically run faster than an application that carries with it the overhead of a whole new virtual 
 machine.  Lastly with an application’s run time requirements included in the image itself, a container is 
 far more capable of being run in multiple environments (without modification).
@@ -411,7 +411,7 @@ Error: crun: executable file 'ps' not found in $PATH: No such file or directory:
 
 What just happened?
 
-For the most part, containers are not meant for interactive (user) sessions.  In this instance, the image that we are using (ie: ubi) does not have the traditional commandline utilities a user might expect.  Common tools to configure network interfaces like 'ip' simply aren't there.
+For the most part, containers are not meant for interactive (user) sessions.  In this instance, the image that we are using (ie: ubi) does not have the traditional command line utilities a user might expect.  Common tools to configure network interfaces like 'ip' simply aren't there.
 
 So for this exercise, we leverage something called a 'bind mount' to effectively mirror a portion of the host's filesystem into the container's namespace.  Bind mounts are declared using the '-v' option.  In the example below, /usr/bin from the host will be exposed and accessible to the containers namespace mounted at '/usr/bin' (ie: /usr/bin:/usr/bin).
 
@@ -498,7 +498,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 
 === Filesystem
 
-Finally, look at the filesystem(S) in the container's namespace.
+Finally, look at the filesystem(s) in the container's namespace.
 
 [{format_cmd_exec}]
 ----
@@ -573,7 +573,7 @@ ENTRYPOINT ["/usr/sbin/httpd"]
 
 Notice a few things about the configuration:
 
-  * that our image is based on `ubi8/ubi`
+  * that our image is based on `ubi9/ubi`
   * the build process will install an additional package `httpd` along with it's dependencies
   * httpd is configured by default to run on port 80, so that is the port we will expose
   * the build will create a file `/var/www/html/index.html` with the contents "The Web Server is Running".
@@ -677,7 +677,7 @@ tcp        0      0 0.0.0.0:8080            0.0.0.0:*               LISTEN      
 ----
 
 
-Now let's introduce a commandline utility 'lsns' to check out the namespaces.
+Now let's introduce a command line utility 'lsns' to check out the namespaces.
 
 [{format_cmd_exec}]
 ----
