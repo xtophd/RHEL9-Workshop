@@ -713,7 +713,7 @@ lsns
 4026532379 cgroup      5 48787 root   /usr/sbin/httpd -D FOREGROUND
 ----
 
-We see that the httpd processes running are using the mnt uts ipc pid and net namespaces.
+We see that the running httpd processes are using the mnt uts ipc pid and net namespaces.
 
 Since we explored namespaces earlier, we may as well have a look at the control-groups aligned with our process.  
 
