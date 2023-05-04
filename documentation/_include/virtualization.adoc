@@ -103,7 +103,7 @@ will not work, but it does mean that (if it does work) it will be VERY slow.
 
 NOTE: Please note that all software has been pre-installed and configured.  These steps are provided as reference material only.
 
-System needs to be configure with access to the following repos:
+The system needs configured with access to the following repos:
 
   * rhel-9-baseos-rpms
   * rhel-9-appstream-rpms
