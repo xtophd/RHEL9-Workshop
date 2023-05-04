@@ -64,7 +64,7 @@ Linux containers are technologies (plural) that allow you to package and isolate
   * improve flexibilty over virtual machines
 
 Because container images include only the content needed to run an application, a container is more efficient 
-requires less to run.  Likewise, since the container is not running the entirety of a complete operating system,
+requires less to run.  Likewise, since the container is not running complete operating system,
 it will typically run faster than an application that carries with it the overhead of a whole new virtual 
 machine.  Lastly with an application’s run time requirements included in the image itself, a container is 
 far more capable of being run in multiple environments (without modification).
