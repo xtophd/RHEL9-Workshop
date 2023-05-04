@@ -428,7 +428,7 @@ UID          PID    PPID  C STIME TTY          TIME CMD
 root           1       0  0 17:23 ?        00:00:00 /bin/ps -ef
 ----
 
-Notice that all the process belonging to host itself are absent.  The programs running in the container's namespace are isolated from the rest of the host.  From the container's perspective, the process in the container is the only process running.
+Notice all the process belonging to the host itself are absent.  The programs running in the container's namespace are isolated from the rest of the host.  From the container's perspective, the process in the container is the only process running.
 
 === Network
 
