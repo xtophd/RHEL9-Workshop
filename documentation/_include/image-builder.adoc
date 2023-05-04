@@ -87,7 +87,7 @@ systemctl stop osbuild-worker@.service.d osbuild-worker@1.service osbuild-compos
 Depending on the environment the workshop is running in, probably need to adjust
 the sources of the available repos used by the image-builder.
 
-WARNING:  At this time, the assumption is that this host registered to a Red Hat Satellite Server.  Please consult your instructor for alternative instructions if this is not the case:
+WARNING:  At this time, the assumption is that this host is registered to a Red Hat Satellite Server.  Please consult your instructor for alternative instructions if this is not the case:
 
 The steps to configure the image-builder have been condensed into a shell script.  If you are curious to examine exactly what is being done, have 
 a look at /usr/local/bin/workshop-imagebuilder-config.sh.  Either way, go ahead and run it now.
