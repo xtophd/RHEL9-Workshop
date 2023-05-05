@@ -117,16 +117,16 @@ workshop-boom-mkprofile.sh
 Determining root device...
 Creating default BOOM profile
 
-Created profile with os_id e0ef3eb:
-  OS ID: "e0ef3ebf3862de64e4082062f0063422796dcca6",
+Created profile with os_id 9a774ee:
+  OS ID: "9a774eea9ec42cbb3b7c9598b18d9617242729ec",
   Name: "Red Hat Enterprise Linux", Short name: "rhel",
-  Version: "9.0 (Plow)", Version ID: "9.0",
+  Version: "9.1 (Plow)", Version ID: "9.1",
   Kernel pattern: "/vmlinuz-%{version}", Initramfs pattern: "/initramfs-%{version}.img",
   Root options (LVM2): "rd.lvm.lv=%{lvm_root_lv}",
   Root options (BTRFS): "rootflags=%{btrfs_subvolume}",
   Options: "root=%{root_device} ro %{root_opts}",
   Title: "%{os_name} %{os_version_id} (%{version})",
-  Optional keys: "", UTS release pattern: "el9"
+  Optional keys: "grub_users grub_arg grub_class id", UTS release pattern: "el9"
 ----
 
 NOTE: In this example, the root disk is identified by a UUID.  As a result, `boom` will incorrectly identify the paths to the kernel and initiramfs when creating the grub entry.  To avoid this current problem (bug?), we tweak the boom profile to add `/boot` to the paths.
@@ -139,34 +139,34 @@ Verify that the boom profile was created by the previous command:
 
 [{format_cmd_exec}]
 ----
-boom profile list --osversion "9.0 (Plow)"
+boom profile list --osversion "9.1 (Plow)"
 ----
 
 [{format_cmd_output}]
 ----
 OsID    Name                     OsVersion
-e0ef3eb Red Hat Enterprise Linux 9.0 (Plow)
+9a774ee Red Hat Enterprise Linux 9.1 (Plow)
 ----
 
 And for a more detailed view:
 
 [{format_cmd_exec}]
 ----
-boom profile show --osversion "9.0 (Plow)"
+boom profile show --osversion "9.1 (Plow)"
 ----
 
 [{format_cmd_output}]
 ----
-OS Profile (os_id=e0ef3eb)
-  OS ID: "e0ef3ebf3862de64e4082062f0063422796dcca6",
+OS Profile (os_id=9a774ee)
+  OS ID: "9a774eea9ec42cbb3b7c9598b18d9617242729ec",
   Name: "Red Hat Enterprise Linux", Short name: "rhel",
-  Version: "9.0 (Plow)", Version ID: "9.0",
+  Version: "9.1 (Plow)", Version ID: "9.1",
   Kernel pattern: "/vmlinuz-%{version}", Initramfs pattern: "/initramfs-%{version}.img",
   Root options (LVM2): "rd.lvm.lv=%{lvm_root_lv}",
   Root options (BTRFS): "rootflags=%{btrfs_subvolume}",
   Options: "root=%{root_device} ro %{root_opts}",
   Title: "%{os_name} %{os_version_id} (%{version})",
-  Optional keys: "", UTS release pattern: "el9"
+  Optional keys: "grub_users grub_arg grub_class id", UTS release pattern: "el9"
 ----
 
 
@@ -188,8 +188,8 @@ boom entry list
 
 [{format_cmd_output}]
 ----
-BootID  Version                     Name                     RootDevice
-0d96d09 5.14.0-70.13.1.el9_0.x86_64 Red Hat Enterprise Linux UUID=2af18441-b487-4dac-9729-2c12f5adc6ed
+BootID  Version                      Name                     RootDevice
+b5ef59d 5.14.0-162.23.1.el9_1.x86_64 Red Hat Enterprise Linux UUID=a50ce001-2116-4f9f-ae6c-fbb66636ce1b
 ----
 
 And for a more detailed view
@@ -201,12 +201,16 @@ boom entry show
 
 [{format_cmd_output}]
 ----
-Boot Entry (boot_id=0d96d09)
-  title Red Hat Enterprise Linux (5.14.0-70.13.1.el9_0.x86_64) 9.0 (Plow)
-  version 5.14.0-70.13.1.el9_0.x86_64
-  linux /vmlinuz-5.14.0-70.13.1.el9_0.x86_64
-  initrd /initramfs-5.14.0-70.13.1.el9_0.x86_64.img $tuned_initrd
-  options root=UUID=2af18441-b487-4dac-9729-2c12f5adc6ed console=ttyS0,115200n8 console=tty0 net.ifnames=0 rd.blacklist=nouveau nvme_core.io_timeout=4294967295 crashkernel=1G-4G:192M,4G-64G:256M,64G-:512M $tuned_params
+Boot Entry (boot_id=b5ef59d)
+  title Red Hat Enterprise Linux (5.14.0-162.23.1.el9_1.x86_64) 9.1 (Plow)
+  version 5.14.0-162.23.1.el9_1.x86_64
+  linux /vmlinuz-5.14.0-162.23.1.el9_1.x86_64
+  initrd /initramfs-5.14.0-162.23.1.el9_1.x86_64.img $tuned_initrd
+  options root=UUID=a50ce001-2116-4f9f-ae6c-fbb66636ce1b console=ttyS0,115200n8 console=tty0 net.ifnames=0 rd.blacklist=nouveau nvm
+e_core.io_timeout=4294967295 crashkernel=1G-4G:192M,4G-64G:256M,64G-:512M $tuned_params
+  grub_users $grub_users
+  grub_arg --unrestricted
+  grub_class rhel
 ----
 
 
@@ -222,7 +226,7 @@ cat /proc/cmdline
 
 [{format_cmd_output}]
 ----
-BOOT_IMAGE=(hd0,gpt3)/vmlinuz-5.14.0-70.13.1.el9_0.x86_64 root=UUID=2af18441-b487-4dac-9729-2c12f5adc6ed console=ttyS0,115200n8 console=tty0 net.ifnames=0 rd.blacklist=nouveau nvme_core.io_timeout=4294967295 crashkernel=1G-4G:192M,4G-64G:256M,64G-:512M
+BOOT_IMAGE=(hd0,gpt3)/vmlinuz-5.14.0-162.23.1.el9_1.x86_64 root=UUID=a50ce001-2116-4f9f-ae6c-fbb66636ce1b console=ttyS0,115200n8 console=tty0 net.ifnames=0 rd.blacklist=nouveau nvme_core.io_timeout=4294967295 crashkernel=1G-4G:192M,4G-64G:256M,64G-:512M
 ----
 
 We can further isolate the undesired parameters with a simple grep.
@@ -234,7 +238,7 @@ grep -o '\broot=[^ ]*' /proc/cmdline
 
 [{format_cmd_output}]
 ----
-root=UUID=f7614c41-2835-4125-bb13-50772dc2f30c
+root=UUID=a50ce001-2116-4f9f-ae6c-fbb66636ce1b
 ----
 
 NOTE: In this scenario, the boot device is listed by a UUID.  Depending on the lab environment, you could see a logical volume name or a physcial device path.
@@ -254,14 +258,16 @@ Creating GRUB2 entry...
 
 DEBUG: boom create --title 'RHEL 9 Workshop' --root-device /dev/nvme0n1p4
 
-WARNING - Options for BootEntry(boot_id=0d96d09) do not match OsProfile: marking read-only
-Created entry with boot_id ed93f0f:
+Created entry with boot_id d936e44:
   title RHEL 9 Workshop
-  machine-id ec2e0c92349d906c08af3ffadd95217f
-  version 5.14.0-70.13.1.el9_0.x86_64
-  linux /vmlinuz-5.14.0-70.13.1.el9_0.x86_64
-  initrd /initramfs-5.14.0-70.13.1.el9_0.x86_64.img
+  machine-id ec214d9b91cfabb46efd49648d4e3671
+  version 5.14.0-162.23.1.el9_1.x86_64
+  linux /vmlinuz-5.14.0-162.23.1.el9_1.x86_64
+  initrd /initramfs-5.14.0-162.23.1.el9_1.x86_64.img
   options root=/dev/nvme0n1p4 ro
+  grub_users $grub_users
+  grub_arg --unrestricted
+  grub_class kernel
 ----
 
 
@@ -277,10 +283,9 @@ boom entry list
 
 [{format_cmd_output}]
 ----
-WARNING - Options for BootEntry(boot_id=0d96d09) do not match OsProfile: marking read-only
-BootID  Version                     Name                     RootDevice
-0d96d09 5.14.0-70.13.1.el9_0.x86_64 Red Hat Enterprise Linux UUID=2af18441-b487-4dac-9729-2c12f5adc6ed
-ed93f0f 5.14.0-70.13.1.el9_0.x86_64 Red Hat Enterprise Linux /dev/nvme0n1p4
+BootID  Version                      Name                     RootDevice
+b5ef59d 5.14.0-162.23.1.el9_1.x86_64 Red Hat Enterprise Linux UUID=a50ce001-2116-4f9f-ae6c-fbb66636ce1b
+d936e44 5.14.0-162.23.1.el9_1.x86_64 Red Hat Enterprise Linux /dev/nvme0n1p4
 ----
 
 Show details about our boom-boot entry.
@@ -293,13 +298,16 @@ boom entry show $BOOM_BOOTID
 
 [{format_cmd_output}]
 ----
-Boot Entry (boot_id=ed93f0f)
+Boot Entry (boot_id=d936e44)
   title RHEL 9 Workshop
-  machine-id ec2e0c92349d906c08af3ffadd95217f
-  version 5.14.0-70.13.1.el9_0.x86_64
-  linux /vmlinuz-5.14.0-70.13.1.el9_0.x86_64
-  initrd /initramfs-5.14.0-70.13.1.el9_0.x86_64.img
+  machine-id ec214d9b91cfabb46efd49648d4e3671
+  version 5.14.0-162.23.1.el9_1.x86_64
+  linux /vmlinuz-5.14.0-162.23.1.el9_1.x86_64
+  initrd /initramfs-5.14.0-162.23.1.el9_1.x86_64.img
   options root=/dev/nvme0n1p4 ro
+  grub_users $grub_users
+  grub_arg --unrestricted
+  grub_class kernel
 ----
 
 
@@ -324,21 +332,21 @@ Let's take a look at the details to confirm everthing is in order.
 
 [{format_cmd_exec}]
 ----
-boom profile show --osversion "9.0 (Plow)"
+boom profile show --osversion "9.1 (Plow)"
 ----
 
 [{format_cmd_output}]
 ----
-OS Profile (os_id=e0ef3eb)
-  OS ID: "e0ef3ebf3862de64e4082062f0063422796dcca6",
+OS Profile (os_id=9a774ee)
+  OS ID: "9a774eea9ec42cbb3b7c9598b18d9617242729ec",
   Name: "Red Hat Enterprise Linux", Short name: "rhel",
-  Version: "9.0 (Plow)", Version ID: "9.0",
+  Version: "9.1 (Plow)", Version ID: "9.1",
   Kernel pattern: "/vmlinuz-%{version}", Initramfs pattern: "/initramfs-%{version}.img",
   Root options (LVM2): "rd.lvm.lv=%{lvm_root_lv}",
   Root options (BTRFS): "rootflags=%{btrfs_subvolume}",
   Options: "root=%{root_device} ro %{root_opts}",
   Title: "%{os_name} %{os_version_id} (%{version})",
-  Optional keys: "", UTS release pattern: "el9"
+  Optional keys: "grub_users grub_arg grub_class id", UTS release pattern: "el9"
 ----
 
 
@@ -361,14 +369,16 @@ Creating GRUB2 entry...
 
 DEBUG: boom create --title 'RHEL 9 Workshop' --root-device /dev/nvme0n1p4 -a custom_value=true
 
-WARNING - Options for BootEntry(boot_id=0d96d09) do not match OsProfile: marking read-only
-Created entry with boot_id d3958f5:
+Created entry with boot_id c9ff949:
   title RHEL 9 Workshop
-  machine-id ec2456f2c1811fbaaee80613c453f272
-  version 5.14.0-70.13.1.el9_0.x86_64
-  linux /vmlinuz-5.14.0-70.13.1.el9_0.x86_64
-  initrd /initramfs-5.14.0-70.13.1.el9_0.x86_64.img
+  machine-id ec214d9b91cfabb46efd49648d4e3671
+  version 5.14.0-162.23.1.el9_1.x86_64
+  linux /vmlinuz-5.14.0-162.23.1.el9_1.x86_64
+  initrd /initramfs-5.14.0-162.23.1.el9_1.x86_64.img
   options root=/dev/nvme0n1p4 ro custom_value=true
+  grub_users $grub_users
+  grub_arg --unrestricted
+  grub_class kernel
 ----
 
 Notice in the options that we slipped in the `custom_value=true`.
@@ -393,7 +403,7 @@ workshop-boom-grublist.sh
 
 [{format_cmd_output}]
 ----
-     0  title="Red Hat Enterprise Linux (4.18.0-147.el8.x86_64) 8.1 (Ootpa)"
+     0  title="Red Hat Enterprise Linux (5.14.0-162.23.1.el9_1.x86_64) 9.1 (Plow)"
      1  title="RHEL 9 Workshop"
 ----
 
@@ -407,13 +417,13 @@ grubby --info=$(workshop-boom-grublist.sh | grep -m1 "Workshop" | awk '{print $1
 
 [{format_cmd_output}]
 ----
-index=2
-kernel="/boot/vmlinuz-5.14.0-70.13.1.el9_0.x86_64"
+index=1
+kernel="/boot/vmlinuz-5.14.0-162.23.1.el9_1.x86_64"
 args="ro custom_value=true"
 root="/dev/nvme0n1p4"
-initrd="/boot/initramfs-5.14.0-70.13.1.el9_0.x86_64.img"
+initrd="/boot/initramfs-5.14.0-162.23.1.el9_1.x86_64.img"
 title="RHEL 9 Workshop"
-id="ec2e0c92349d906c08af3ffadd95217f-ba5706a-5.14.0-70.13.1.el9_0.x86_64"
+id="ec214d9b91cfabb46efd49648d4e3671-c9ff949-5.14.0-162.23.1.el9_1.x86_64"
 ----
 
 WARNING: *DO NOT PROCEED* unless both `kernel=` and `initrd=` include the path `/boot/<filename>`.
@@ -440,7 +450,7 @@ grub2-editenv list
 [{format_cmd_output}]
 ----
 saved_entry=1
-boot_success=0
+boot_success=1
 ----
 
 
@@ -452,6 +462,15 @@ We will now reset our host and boot with the alternate kernel arguments.
 [{format_cmd_exec}]
 ----
 reboot
+----
+
+
+Here is a command you can run on the bastion to loop until the node3 host is
+back online
+
+[{format_cmd_exec2}]
+----
+time until $( nc -z node3 22 ) ; do echo -n "." ; sleep 3 ; done
 ----
 
 
@@ -472,7 +491,7 @@ cat /proc/cmdline
 
 [{format_cmd_output}]
 ----
-BOOT_IMAGE=(hd0,gpt3)/vmlinuz-5.14.0-70.13.1.el9_0.x86_64 root=/dev/nvme0n1p4 ro custom_value=true
+BOOT_IMAGE=(hd0,gpt3)/vmlinuz-5.14.0-162.23.1.el9_1.x86_64 root=/dev/nvme0n1p4 ro custom_value=true
 ----
 
 Confirm that the custom key-value is now part of the kernel boot options.
