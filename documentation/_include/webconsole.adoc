@@ -130,7 +130,7 @@ image::Slide3.PNG[Cockpit Overview]
 
 It's nice that certain statistics about your system are available for inspection, but by default the webconsole does NOT store statistics long term.  For this, you need to install “Performance Co-pilot (pcp)”, the cockpit-pcp plugin and lastly enable "persistent metrics collection" in the webconsole.
 
-Start by clicking on the link "View details and history" on the "Usage" tile.
+Start by clicking on the link "View metrics and history" on the "Usage" tile.
 
 ====
 image::Slide4.PNG[View details and history]
@@ -194,9 +194,11 @@ image::Slide10.PNG[Cockpit Logs]
 
 Have a look at the search capabilities and notice that you can set criteria by:
 
-  * Date
-  * Severity
+  * Time
+  * Priority
   * Service
+
+You can also build a filter rule to customize your output.
 
 ====
 image::Slide11.PNG[Cockpit Logs Criteria]
@@ -208,7 +210,7 @@ image::Slide11.PNG[Cockpit Logs Criteria]
 
 Under the networking section, you can monitor and manage current networking activities and devices. You can create a network bond, team, bridge, and vlan all driven by the webconsle GUI.
 
-Due to the nature of workshops, we refrain from making and saving changes to the network at this time but feel free to explore.
+Due to the nature of workshops, we refrain from making and saving changes to the network at this time but feel free to explore available options and configuration choices.
 
 ====
 image::Slide12.PNG[Cockpit Network]
