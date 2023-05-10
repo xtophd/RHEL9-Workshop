@@ -234,7 +234,7 @@ public (active)
   icmp-block-inversion: no
   interfaces: {nic0}
   sources:
-  services: cockpit dhcpv6-client http ssh
+  services: cockpit dhcpv6-client ssh
   ports:
   protocols:
   forward: yes
@@ -259,6 +259,8 @@ Here we will take a moment to enable the http and https service ports.
 
 
 === Add a Service
+
+In the last unit, you installed a LAMP stack which included an http service.  Although you enabled the service itself, what you did NOT do was configure the firewall port that permits the network connectivity.  So let us configure that now.
 
 [{format_cmd_exec}]
 ----
