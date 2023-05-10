@@ -263,18 +263,9 @@ systemctl --no-pager status httpd mariadb
 
 === Enable Firewall
 
-Last but not least, you need to enable a firewall port.
+Steps to enable the firewall rule are reserved for the next unit.  
 
-[{format_cmd_exec}]
-----
-firewall-cmd --add-service=http
-----
-
-[{format_cmd_output}]
-----
-success
-----
-
+Make a mental note however, in order to complete the installation and enablement of a network based service (like http) requires firewall rule updates.
 
 
 == Exercise: Customize Default Services
