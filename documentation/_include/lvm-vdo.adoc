@@ -430,6 +430,11 @@ lvcreate -y --type raid10 -m1 -i 2 -n lv_raid10 -l 95%FREE vg_lab
 
 === Add VDO Deduplication
 
+
+WARNING: (WORKSHOP VERSON 9.1) PLEASE NOTE THAT THE VDO PORTION OF THIS LAB IS NON-FUNCTIONAL 
+AND TEMPORARILY DISABLED.  WE LOOK TOWARD THE 9.2 RELEASE TO REMEDIATE THIS ISSUE.
+
+
 [{format_cmd_exec}]
 ----
 lvconvert --type vdo-pool --name=lab2 -V 30G vg_lab/lv_raid10 -y

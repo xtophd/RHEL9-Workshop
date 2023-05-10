@@ -80,7 +80,13 @@ eed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 
 pke avx512_vnni md_clear arch_capabilities
 ----
 
-You are looking for either the Intel flag (vmx) or the AMD flag (svm).  A more sophisticated command makes it a little easier to determine.
+You are looking for either the Intel flag (vmx) or the AMD flag (svm).  
+
+WARNING:  It could very well be that your environment does not support
+native or nested virtualization.  This does not mean that this exercise
+will not work, but it does mean that (if it does work) it will be VERY slow.
+
+A more sophisticated command makes it a little easier to determine.
 
 [{format_cmd_exec}]
 ----
@@ -94,7 +100,7 @@ Virt Supported
 
 After you install all the required software, there are some additional tools to provide more detailed reporting on system capabilities.
 
-WARNING:  It could very well be that your environment does not support 
+WARNING:  AGAIN ... It could very well be that your environment does not support 
 native or nested virtualization.  This does not mean that this exercise 
 will not work, but it does mean that (if it does work) it will be VERY slow.
 
@@ -253,6 +259,11 @@ access the VM's console and see what's going on.  Just be sure you
 selected administrative access.
 
 == Virtual Machine Connectivity
+
+
+WARNING: REMINDER: If your environment does not support
+native or nested virtualization it does not mean that this exercise
+will not work, but it does mean that (if it does work) it will be VERY slow.
 
 To determine what IP address was assigned to the new host, we can using some options to the virsh utility
 
