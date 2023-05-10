@@ -468,7 +468,7 @@ reboot
 Here is a command you can run on the bastion to loop until the node3 host is
 back online
 
-[{format_cmd_exec2}]
+[{format_cmd_exec}]
 ----
 time until $( nc -z node3 22 ) ; do echo -n "." ; sleep 3 ; done
 ----
