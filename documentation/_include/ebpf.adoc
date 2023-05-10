@@ -599,7 +599,7 @@ ssh node2 "cat /tmp/workshop.tmp"
 
 [{format_cmd_exec2}]
 ----
-*ssh node2 "grep something /tmp/workshop.tmp"*
+ssh node2 "grep something /tmp/workshop.tmp"
 ----
 
 [{format_cmd_exec2}]
