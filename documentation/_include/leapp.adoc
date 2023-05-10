@@ -122,7 +122,6 @@ Updating Subscription Management repositories.
 repo id                                    repo name
 rhel-8-for-x86_64-appstream-rpms           Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
 rhel-8-for-x86_64-baseos-rpms              Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
-rhel-8-for-x86_64-supplementary-rpms       Red Hat Enterprise Linux 8 for x86_64 - Supplementary (RPMs)----
 ----
 
 You are now ready to proceed with the exercises.
