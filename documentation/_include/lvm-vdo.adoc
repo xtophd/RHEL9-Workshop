@@ -33,6 +33,11 @@ endif::[]
 
 = LVM and VDO : Storage Management and Data Optimization
 
+WARNING: (WORKSHOP VERSON 9.1) PLEASE NOTE THAT THE VDO PORTION OF THIS LAB IS NON-FUNCTIONAL
+AND TEMPORARILY DISABLED.  THE LVM EXERCISES ARE FINE AND WE ENCOURAGE YOU TO PROCEEDURE UNTIL THE
+ACTUAL ACTIVATION OF THE VDO DEDUP MODULE (7.5), AFTER WHICH PLEASE SCROLL TO
+THE CONCLUSION OF THIS UNIT AND RUN `workshop-finish-exercise.sh`
+
 == Overview
 
 A Logical Volume Manager is a software layer on top of physical hard disks and partitions, which creates an abstraction of continuity and ease-of-use for managing the lifecycle of those devices (ie: addition, removal, replacement, repartitioning, backup, etc).
@@ -432,7 +437,8 @@ lvcreate -y --type raid10 -m1 -i 2 -n lv_raid10 -l 95%FREE vg_lab
 
 
 WARNING: (WORKSHOP VERSON 9.1) PLEASE NOTE THAT THE VDO PORTION OF THIS LAB IS NON-FUNCTIONAL 
-AND TEMPORARILY DISABLED.  WE LOOK TOWARD THE 9.2 RELEASE TO REMEDIATE THIS ISSUE.
+AND TEMPORARILY DISABLED.  WE LOOK TOWARD THE 9.2 RELEASE TO REMEDIATE THIS ISSUE.  PLEASE SCROLL TO
+THE CONCLUSION OF THIS UNIT AND RUN THE `workshop-finish-exercise.sh`
 
 
 [{format_cmd_exec}]
