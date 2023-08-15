@@ -1,0 +1,155 @@
+##
+## CUSTOM PLATFORM PROFILES
+##
+
+
+
+custom_baremetal:
+
+    type: "custom_baremetal"
+    description: "Custom baremetal profile good for most"
+
+
+    vm:
+{% raw %}
+        name: "{{ xtoph_vars.projectname }}_{{ inventory_hostname_short }}"
+{% endraw %}
+
+    network:
+        default:
+            description:       "default baremetal network parameters"
+{% raw %}  
+            basedomain:        "{{ workshop_vars.network_basedomain }}"
+            network:           "{{ workshop_vars.network_network    }}"
+            netmask:           "{{ workshop_vars.network_netmask    }}"
+            broadcast:         "{{ workshop_vars.network_broadcast  }}"
+            prefix:            "{{ workshop_vars.network_prefix     }}"
+            gateway:           "{{ workshop_vars.network_gateway    }}"
+            nameserver:        "{{ workshop_vars.network_nameserver }}"
+            timeserver:        "{{ workshop_vars.network_timeserver }}"
+            fqdn:              "{{ workshop_extras.network_fqdn     }}"
+{% endraw %}
+
+    storage:
+        default:
+            description:       "default baremetal storage parameters"
+            noop:              "noop value to force list for lookup"
+
+
+
+custom_platform:
+
+{% if t_virthost_type == "libvirt" %}
+    type:        "libvirt"
+    host_fqdn:   "{{ t_virthost_fqdn }}"
+    host_ip:     "{{ t_virthost_ip   }}"
+    description: "Custom kvm platform host: bridged net, nested_virt"
+
+    vm:
+{% raw %}
+        name: "{{ xtoph_vars.projectname }}_{{ inventory_hostname_short }}"
+{% endraw %}
+  
+    nested_virt_enable: true
+
+    kickstart:
+        description: "hints to where installers can find devices"
+{% raw %}  
+        netdev:  "{{ h_netDEV | default('eno1') }}"
+        blkdev:  "{{ h_blkDEV | default('sda') }}"
+{% endraw %}
+  
+    network:
+        default:
+  
+            description:     "default libvirt network parameters"
+            undeploy:        true
+{% if   t_virthost_br_type == "bridge" %}
+            network_name:    "br0"
+{% elif t_virthost_br_type == "nat" %}
+{% raw %}  
+            network_name:    "{{ 'br_' + workshop_vars.projectname|checksum|truncate(10,true,'') }}"
+{% endraw %}
+{% elif t_virthost_br_type == "macvtap" %}
+{% raw %}  
+            network_name:    "{{ workshop_vars.projectname|checksum|truncate(10,true,'') + \"{{ inventory_hostname }}\"|checksum|truncate(10,true,'') }}"
+{% endraw %}
+{% endif %}
+
+
+            fwd_type:        "{{ t_virthost_br_type }}"
+{% if   ( t_virthost_br_type == "bridge" ) or (t_virthost_br_type == "macvtap")  %}
+            bridge_netdev:   "{{ t_virthost_br_dev }}"
+{% endif %}
+            model:           "virtio"
+
+{% raw %}  
+            basedomain:        "{{ workshop_vars.network_basedomain }}"
+            network:           "{{ workshop_vars.network_network    }}"
+            netmask:           "{{ workshop_vars.network_netmask    }}"
+            broadcast:         "{{ workshop_vars.network_broadcast  }}"
+            prefix:            "{{ workshop_vars.network_prefix     }}"
+            gateway:           "{{ workshop_vars.network_gateway    }}"
+            nameserver:        "{{ workshop_vars.network_nameserver }}"
+            timeserver:        "{{ workshop_vars.network_timeserver }}"
+            fqdn:              "{{ workshop_extras.network_fqdn     }}"
+{% endraw %}
+
+    storage:
+        default:
+
+            description: "default libvirt storage parameters"
+            qcow_dir: "/home/virt-images"
+
+{% elif t_virthost_type == "ovirt" %}
+
+    type: "ovirt"
+    description: "Custom platform ocp_ovirt_platform: virtio, virtio_scsi,sparse"
+
+    cluster_name:  "{{ t_ovirt_datacenter }}"
+    engine_cafile: "/etc/pki/ovirt-engine/ca.pem"
+    insecure:      true
+
+    api:
+
+        ip: "{{ t_ovirt_manager_ip }}"
+        fqdn: "{{ t_ovirt_manager_fqdn }}"
+
+        note: "api credentials are stored in the encrypted credentials.yml"
+
+    vm:
+{% raw %}
+        name: "{{ xtoph_vars.projectname }}_{{ inventory_hostname_short }}"
+{% endraw %}
+
+    kickstart:
+        description: "hints to where installers can find devices"
+{% raw %}  
+        netdev:  "{{ h_netDEV | default('ens3') }}"
+        blkdev:  "{{ h_blkDEV | default('sda') }}"
+{% endraw %}
+
+    network:
+        default:
+            description: "default ovirt network parameters"
+            model: "virtio"
+            network_name: "{{ t_ovirt_network_domain }}"
+{% raw %}  
+            basedomain:        "{{ workshop_vars.network_basedomain }}"
+            network:           "{{ workshop_vars.network_network    }}"
+            netmask:           "{{ workshop_vars.network_netmask    }}"
+            broadcast:         "{{ workshop_vars.network_broadcast  }}"
+            prefix:            "{{ workshop_vars.network_prefix     }}"
+            gateway:           "{{ workshop_vars.network_gateway    }}"
+            nameserver:        "{{ workshop_vars.network_nameserver }}"
+            timeserver:        "{{ workshop_vars.network_timeserver }}"
+            fqdn:              "{{ workshop_extras.network_fqdn     }}"
+{% endraw %}
+
+    storage:
+        default:
+            description: "default ovirt storage parameters"
+            bus:         "virtio_scsi"
+            sparse:      "true"
+            domain_name: "{{ t_ovirt_storage_domain }}"
+{% endif %}

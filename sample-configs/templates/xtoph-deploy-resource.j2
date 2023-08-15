@@ -1,0 +1,28 @@
+##
+## RESOURCE PROFILES
+##
+
+custom_bastion:
+    name: "custom openshift bastion"
+    description: "Custom Bastion Utility Server"
+    vcpus:    4
+    memsize:  8000
+    storage:
+      root:
+        size: 50 
+        hw_storage_profile: default
+
+custom_aap:
+    name: "custom aap"
+    description: "Custom Satellite Server [4cpu,16GB,50GB + 100GB disk]"
+    vcpus:    4
+    memsize:  16000
+    storage:
+      root:
+        size: 50
+        hw_storage_profile: default
+      extra:
+        disk1:
+          size: 100
+          hw_storage_profile: default
+

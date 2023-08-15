@@ -1,0 +1,259 @@
+##
+##    !! WARNING !!  Ansible only interprets 'True' and 'False'
+##                   as booleans when reading ini files.  Other
+##                   values such as 'true' or 'false' would be 
+##                   interpreted as strings and would break various
+##                   logic tests.  
+##
+##                   When reading YML files, booleans can take on
+##                   many forms and be interpreted correctly.
+##
+##                   For consistency, only use unquoted booleans: True & False
+
+all: 
+
+  vars:
+
+    ## ----------------------------------------
+    ##    Workshop Variables
+
+    workshop_vars:
+
+      projectname:          "{{ t_project_name }}"
+
+      network_basedomain:   "{{ t_network_basedomain }}"
+
+      network_network:      "{{ t_network_id }}"
+      network_netmask:      "{{ t_network_netmask }}"
+      network_broadcast:    "{{ t_network_broadcast }}"
+      network_prefix:       "{{ t_network_prefix }}"
+      network_gateway:      "{{ t_network_gateway }}"
+      network_nameserver:   "{{ t_network_dns_server }}"
+      network_timeserver:   "{{ t_network_time_server }}"
+
+      set_student_password: True
+      set_admin_password:   True
+
+      ##
+      ##    Passwords should be loaded from a file
+      ##    or be set in credentials.yml.  Never here
+      ##    unless you understand the risks.
+      ##
+      ##    !!! LEAVE PASSWORDS COMMENTED OUT !!!
+      ##
+
+      student_name:         "cloud-user"
+      #student_password:     ""
+      admin_name:           "root"
+      #admin_password:       ""
+
+      enable_unit:
+        appstream:          True
+        boom:               True
+        buildah:            True
+        ebpf:               True
+        firewalld:          True
+        kpatch:             True
+        nftables:           True
+        podman:             True
+        stratis:            True
+        systemd:            True
+        tlog:               True
+        imagebuilder:       True
+        virtualization:     True
+        vdo:                True
+        wayland:            True
+        leapp:              True
+        webconsole:         True
+
+    bastion:
+
+        firewalld:          True
+        cockpit:            False
+        dns:                True
+        dhcp:               False
+        dhcp_pxe:           False
+        dhcp_uefi_http:     False
+        nfs:                False
+        ntp:                False
+        workshop_user:      True
+        workshop_materials: True
+        desktop_gui:        False
+        desktop_chrome:     False
+        desktop_vnc:        False
+
+    workshop_extras:
+
+      network_fqdn:         "{{ t_network_basedomain }}"
+
+
+
+    ## ----------------------------------------
+    ##    Xtoph Deploy Variables
+
+    xtoph_vars:
+
+      deployhost_ip:       "{{ t_ansible_ip }}"
+      projectname:         "{{ t_project_name }}"
+      tmp_dir:             "/home/tmp/{{ t_project_name }}/{% raw %}{{ inventory_hostname_short }}{% endraw %}"
+
+
+
+## ----------------------------------------
+## HOSTGROUPS & VARS
+## ----------------------------------------
+
+myLibvirtHosts:
+
+  hosts:
+{% if t_virthost_type == "libvirt" and t_virthost_fqdn|length %}
+    {{ t_virthost_fqdn }}:
+      h_pubIP:  "{{ t_virthost_ip }}"
+      h_plPROF: "custom_platform"
+{% if t_virthost_fqdn == "localhost.localdomain" %}
+      ansible_connection: local
+{% endif %}
+{% endif %}
+
+
+
+## -----------------
+
+
+
+myDeployhost:
+  hosts:
+    deployer:
+      h_pubIP:       {% raw %}"{{ xtoph_vars.deployhost_ip }}"{% endraw %}
+
+  vars:
+    ansible_connection: local
+
+
+
+
+## -----------------
+
+
+
+myBastion:
+  hosts:
+    {{t_name_bastion }}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_bastion }}"
+{% if t_mac_bastion|length %}
+      h_pubMAC:        "{{ t_mac_bastion }}"
+{% endif -%}
+{% if t_hw_bastion|length  %}
+      h_hwPROF:        "{{ t_hw_bastion  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "vmedia_nowait"
+{% endif %}
+
+{% if t_bmc_bastion|length %}
+      bmc_fqdn:        "{{ t_bmc_bastion }}"
+{% endif %}
+
+  vars:
+{% if t_virthost_type == "libvirt" %}
+    h_hwPROF:        "kvm_vda"
+{% elif t_virthost_type == "ovirt" %}
+    h_hwPROF:        "ovirt_sda"
+{% endif %}
+    h_plPROF:        "custom_platform"
+    h_rsPROF:        "custom_bastion"
+    h_ksPROF:        "rhel92-bootiso"
+
+
+
+
+## -----------------
+
+
+
+myNodes:
+  hosts:
+
+{% if t_addr_node1 is defined and t_addr_node1|length %}
+    {{ t_name_node1}}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_node1 }}"
+{% if t_mac_node1|length %}
+      h_pubMAC:        "{{ t_mac_node1 }}"
+{% endif -%}
+{% if t_hw_node1|length  %}
+      h_hwPROF:        "{{ t_hw_node1  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "vmedia_nowait"
+{% endif %}
+
+{% if t_bmc_node1|length %}
+      bmc_fqdn:        "{{ t_bmc_node1 }}"
+{% endif %}
+{% endif %}
+
+{% if t_addr_node2 is defined and t_addr_node2|length %}
+    {{ t_name_node2}}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_node2 }}"
+{% if t_mac_node2|length %}
+      h_pubMAC:        "{{ t_mac_node2 }}"
+{% endif -%}
+{% if t_hw_node2|length  %}
+      h_hwPROF:        "{{ t_hw_node2  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "vmedia_nowait"
+{% endif %}
+
+{% if t_bmc_node2|length %}
+      bmc_fqdn:        "{{ t_bmc_node2 }}"
+{% endif %}
+{% endif %}
+
+{% if t_addr_node3 is defined and t_addr_node3|length %}
+    {{ t_name_node3}}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_node3 }}"
+{% if t_mac_node3|length %}
+      h_pubMAC:        "{{ t_mac_node3 }}"
+{% endif -%}
+{% if t_hw_node3|length  %}
+      h_hwPROF:        "{{ t_hw_node3  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "vmedia_nowait"
+{% endif %}
+
+{% if t_bmc_node3|length %}
+      bmc_fqdn:        "{{ t_bmc_node3 }}"
+{% endif %}
+{% endif %}
+
+{% if t_addr_node4 is defined and t_addr_node4|length %}
+    {{ t_name_node4}}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_node4 }}"
+{% if t_mac_node4|length %}
+      h_pubMAC:        "{{ t_mac_node4 }}"
+{% endif -%}
+{% if t_hw_node4|length  %}
+      h_hwPROF:        "{{ t_hw_node4  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "vmedia_nowait"
+{% endif %}
+
+{% if t_bmc_node4|length %}
+      bmc_fqdn:        "{{ t_bmc_node4 }}"
+{% endif %}
+{% endif %}
+
+
+  vars:
+{% if t_virthost_type == "libvirt" %}
+    h_hwPROF:        "kvm_vda"
+{% elif t_virthost_type == "ovirt" %}
+    h_hwPROF:        "ovirt_sda"
+{% endif %}
+    h_plPROF:        "custom_platform"
+    h_rsPROF:        "custom_bastion"
+    h_ksPROF:        "rhel92-bootiso"
+

@@ -1,0 +1,118 @@
+debug: true
+
+cleanup: true
+
+{% raw %}
+hostname: "{{ inventory_hostname }}"
+
+selected_profile:
+    kickstart: "{{ h_ksPROF | default ('') }}"
+    platform:  "{{ h_plPROF | default ('') }}"
+    resource:  "{{ h_rsPROF | default ('') }}"
+    machine:   "{{ h_hwPROF | default ('') }}"
+{% endraw %}
+
+deployhost:
+
+  ##
+  ##     platform_enable: one or more of the following
+  ##       - "ovirt" 
+  ##       - "libvirt"
+  ##       - "baremetal"
+  ##
+
+  platform_enable: 
+      - "baremetal"
+{% if t_virthost_type == "libvirt" %}
+      - "libvirt"
+{% elif t_virthost_type == "ovirt" %}
+      - "ovirt"
+{% endif %}
+  
+  ##
+  ##    deployhost hostname OR ip that will
+  ##    accessible to the deployed VMs
+  ##
+
+{% raw %}
+  ip: "{{ xtoph_vars.deployhost_ip }}"
+{% endraw %}
+
+  ##
+  ##    dnsmasq_enable:      ensures dnsmasq is installed
+  ##                         and enabled on the deployhost
+  ##
+  ##    dnsmasq_asprimary    host/vm resolves to ->
+  ##                           deployhost which forwards to ->
+  ##                             real-dns
+  ##
+  ##    dnsmasq_override_nm  overrides whatever NetworkManager put
+  ##                         in resolv.conf with 127.0.0.1
+  ##
+  ##    dnsmasq_override_ip  writes this ip into dnsmasq.conf as
+  ##                         the forwarding NS to resolv lookups
+  ##
+
+{% if   t_virthost_br_type == "nat" %}
+  dnsmasq_enable:      true
+{% else %}
+  dnsmasq_enable:      false
+{% endif %}
+  dnsmasq_asprimary:   false
+  dnsmasq_override_nm: false
+  dnsmasq_override_ip: ""
+
+  ##
+  ##    http_port:      port to provide kickstart and
+  ##                    yum repo services
+  ##
+
+  http_enable:  true
+  http_port:    "8008"
+
+  ##
+  ##    cockpit_enable: install and configure cockpit
+  ##
+  ##    cockpit_port:   defaults to 9090 if left empty
+  ##                    if you change it, the config
+  ##                    will ADD the specifed port.
+  ##
+
+  cockpit_enable:  true
+  cockpit_port:    ""
+
+  ##
+  ##    temporary directory for various tasks
+  ##
+  ##    NOTE: needs to be unique for every host
+  ##
+
+
+{% raw %}
+  tmp_dir: "/home/tmp/{{ xtoph_vars.projectname }}/{{ inventory_hostname_short }}"
+
+  ##
+  ##    Where with the kickstart configs are stored 
+  ##    What is the URL to access the kickstarts
+  ##
+
+  kickstart:
+      dir: "/var/www/html/ks"
+      url: "http://{{ xtoph_vars.deployhost_ip }}:8008/ks"
+
+  ##
+  ##    Where will the repos be mounted
+  ##    What is the URL to access the repos
+  ##
+
+  repos:
+      dir: "/var/www/html/repos"
+      url: "http://{{ xtoph_vars.deployhost_ip }}:8008/repos"
+{% endraw %}
+
+  ##
+  ##    Where are the ISOs stored
+  ##
+
+  iso:
+      dir: "/home/iso"

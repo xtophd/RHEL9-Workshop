@@ -1,0 +1,30 @@
+##
+## KICKSTART PROFILES
+##
+
+
+
+custom_kickstart:
+
+    name:              "custom_kickstart"
+
+{% if t_virthost_type == "libvirt" %}
+
+    description:       "Custom kickstart: (libvirt) simple_cdrom + wait_for_ssh"
+    method:            "simple_cdrom"
+    wait_for_shutdown: true
+    wait_for_ssh:      true
+
+{% elif t_virthost_type == "ovirt" %}
+
+    description:       "Custom kickstart: (ovirt) simple_cdrom + wait_for_ssh"
+    method:            "simple_cdrom"
+    wait_for_shutdown: false
+    wait_for_ssh:      true
+
+{% endif %}
+
+{% raw %}
+    iso_url:           "{{ h_isoURL | default('') }}"
+{% endraw %}
+
