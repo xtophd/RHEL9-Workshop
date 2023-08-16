@@ -28,7 +28,7 @@ endif::[]
 
 If you plan to deploy the RHEL9-Workshop in a libvirt/kvm based environment, you are in luck.  These playbooks can automate everything including the setup of the libvirt/kvm host itself.
 
-Using this configuration, RHEL9 Workshop nodes will be deployed as virtual machines in a NAT'd internal network.  You can easily change this to a bridged network by using alternate configuration templates.
+Using this configuration, RHEL9 Workshop nodes will be deployed as virtual machines in a NAT'd internal network.  You can easily change this to a bridged network by using alternate configuration answer files.
 
 NAT is easy because:
 
@@ -50,16 +50,16 @@ Virt host should be loaded with either RHEL 8.6+, RHEL 9.0+
 == Prerequisites
 
   * RHEL 9.0+ or 8.6+ base installation
-  * Installed packages: git, ansible 2.9
+  * Installed packages: git, ansible 2.9 or ansible-core
   * RHEL 9.0+ or 8.6+ DVD ISO saved in /home/iso
   * RHEL 9.0+ or 8.6+ BOOT ISO saved in /home/iso
 
 [discrete]
 == Register system
 
-However you get it done, the primary virthost system will need access to additional RHEL repos.  At this time, I'm testing on RHEL 9.0 and RHEL 8.6.
+However you get it done, the primary virthost system will need access to additional RHEL repos.  At this time, I'm testing on RHEL 9.2 and RHEL 8.6.
 
-For RHEL 9.0:
+For RHEL 9.2:
 
     - "rhel-9-for-x86_64-baseos-rpms"
 
@@ -82,18 +82,6 @@ Besides an @Base installation, you will need git and ansible installed before yo
 yum -y install git
 ----
 
-
-== Git Clone Repo
-
-Still on your virt host:
-
-[{format_cmd_exec}]
-----
-cd ~
-git clone http://github.com/xtophd/RHEL9-Workshop --recurse-submodules
-----
-
-
 == Retrieve RHEL 9.0/8.6 DVD and BOOT ISOs
 
 [{format_cmd_exec}]
@@ -104,31 +92,50 @@ mkdir -p /home/iso/
 Now log into the Red Hat customer portal (https://access.redhat.com) and download the needed ISOs.  You can copy the URL from the download button, but be sure to use single quotes to prevent bash from parsing the string.  Some example commands are provided below.  Remember, YOU HAVE TO PROVIDE THE URL!
 
 ----
-wget -O /home/iso/rhel-baseos-9.0-x86_64-dvd.iso '<URL>'
-wget -O /home/iso/rhel-baseos-9.0-x86_64-boot.iso '<URL>'
+wget -O /home/iso/rhel-baseos-9.2-x86_64-dvd.iso '<URL>'
+wget -O /home/iso/rhel-baseos-9.2-x86_64-boot.iso '<URL>'
 wget -O /home/iso/rhel-8.6-x86_64-dvd.iso '<URL>'
 wget -O /home/iso/rhel-8.6-x86_64-boot.iso '<URL>'
 ----
 
-== Run the Configuration Script
+== Git Clone Repo
 
-NOTE: There is a new installation (configuration) script I am working on to tighten up the configuration and installation process for the libvirt-nat AIO model.  The manual approach is still outlined at the end of this document for the curious.
+Still on your virt host:
+
+[{format_cmd_exec}]
+----
+cd /usr/local/src
+git clone http://github.com/xtophd/RHEL9-Workshop -b rhel92-dev --recurse-submodules
+----
+
+== Copy the default answer file
+
+[{format_cmd_exec}]
+----
+cd /usr/local/src/RHEL9-Workshop
+cp ./sample-configs/libvirt-nat/rhel9-workshop-setup.ans ./configs
+----
+
+== Run the Setup (Configuration) Script
 
 Time to run the new installation helper script.
 
 [{format_cmd_exec}]
 ----
-cd ~/RHEL9-Workshop
-./sample-configs/libvirt-nat/rhel9-workshop-installer.sh
+./sample-configs/rhel9-workshop-setup.sh
 ----
 
-Just step through the options and enter the values.  When ready, select "Prepare Deployment" and the configuration files will
-get created and the deployment should be ready to go.
+For the libvirt-nat setup, the default options should all work.  The only thing that needs to be done is
+set the passwords for the ansible-vault, workshop-admin and workshop user.
+Just step through the options and enter the values.
+
+When ready, get back to the main menu and select "Prepare Deployment".  The configuration files will
+get generated and the deployment should be ready to go.
 
 In sumary, the script will: 
 
   * collect necessary information
-  * install ansible
+  * install ansible or ansible-collections
   * create the config files with the adjusted values
 
 
@@ -148,7 +155,7 @@ This step runs the playbooks that setup the virtualization platform.
 
 [{format_cmd_exec}]
 ----
-cd ~/RHEL9-Workshop
+cd /usr/local/src/RHEL9-Workshop
 ./xtoph-deploy.sh setup
 ----
 
@@ -158,7 +165,7 @@ This step runs the playbooks that create the VMs and deploy the RHEL9-Workshop.
 
 [{format_cmd_exec}]
 ----
-cd ~/RHEL9-Workshop
+cd /usr/local/src/RHEL9-Workshop
 ./xtoph-deploy.sh deploy
 ----
 
@@ -179,7 +186,7 @@ endif::[]
 [appendix]
 == VNC Connection to the bastion host
 
-WARNING: As of October 2022, this is a new set of instructions being developed to help deploy the workshop on a single host using RHEL 9 with libvirt virtualization.  Please be patient, everything should be resolved shortly.
+WARNING: As of Aug 2023, this is a new set of instructions being developed to help deploy the workshop on a single host using RHEL 9 with libvirt virtualization.  Please be patient, everything should be resolved shortly.
 
 If enabled in master-config.yml (now the default for the libvirt-nat.yml), a VNC server is configured on the bastion host.
 
