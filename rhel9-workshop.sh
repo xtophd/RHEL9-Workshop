@@ -52,6 +52,7 @@ case "$1" in
         time  ansible-playbook ${askVaultPass} -i ${myInventory} -f 10  ./playbooks/rhel9-workshop.yml
         ;;
 
+    "bastion"     | \
     "appstream"   | \
     "boom"        | \
     "buildah"     | \
@@ -76,7 +77,7 @@ case "$1" in
         ;;
 
     *)
-        echo "USAGE: rhel9-workshop [ all | prep | appstream | boom | buildah | ebpf | firewalld | nftables | leapp | osbuild | podman | settings | stratis | systemd | tlog | virt | vdo | wayland | webconsole | kpatch ]"
+        echo "USAGE: rhel9-workshop [ all | bastion | prep | appstream | boom | buildah | ebpf | firewalld | nftables | leapp | osbuild | podman | settings | stratis | systemd | tlog | virt | vdo | wayland | webconsole | kpatch ]"
         ;;
 
 esac

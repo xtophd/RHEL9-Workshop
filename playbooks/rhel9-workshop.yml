@@ -3,6 +3,9 @@
 - import_playbook: rhel9-settings.yml
   tags: settings
 
+- import_playbook: bastion-dns.yml
+  tags: bastion
+
 - import_playbook: rhel9-prep.yml
   tags: prep
 
