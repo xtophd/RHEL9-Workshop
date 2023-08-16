@@ -129,7 +129,9 @@ For the libvirt-nat setup, the default options should all work.  The only thing 
 set the passwords for the ansible-vault, workshop-admin and workshop user.
 Just step through the options and enter the values.
 
-When ready, get back to the main menu and select "Prepare Deployment".  The configuration files will
+You will find the password settings under `Vault Settings`.
+
+When ready, get back to the main menu and select `Prepare Deployment`.  The configuration files will
 get generated and the deployment should be ready to go.
 
 In sumary, the script will: 
