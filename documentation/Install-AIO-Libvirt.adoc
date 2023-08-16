@@ -141,8 +141,9 @@ Just step through the options and enter the values.
 
 NOTE: You will find the password settings under `Vault Settings`.
 
-When ready, get back to the main menu and select `Prepare Deployment`.  The configuration files will
-get generated and the deployment should be ready to go.
+When ready, get back to the main menu and select `Prepare Deployment`.  
+The configuration files will get generated and the deployment should be ready to go.
+To exit the setup script just hit `ctl-c` or `Save and Quit`.
 
 In sumary, the script will: 
 
