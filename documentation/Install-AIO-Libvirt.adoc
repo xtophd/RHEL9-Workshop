@@ -116,6 +116,16 @@ cd /usr/local/src/RHEL9-Workshop
 cp ./sample-configs/libvirt-nat/rhel9-workshop-setup.ans ./config
 ----
 
+== Install ansible or ansible-collections
+
+RHEL 9 and RHEL 8 both ship with a repackaged version of ansible called `ansible-core`.  In RHEL 9, all of the functionality needed to run these playbooks can be found in the ansible-collection rpms in the EPEL repo.  So this is the default method used for now.
+
+[{format_cmd_exec}]
+----
+cd /usr/local/src/RHEL9-Workshop
+./sample-scripts/rhel9-install-ansible-epel.sh
+----
+
 == Run the Setup (Configuration) Script
 
 Time to run the new installation helper script.
