@@ -39,19 +39,39 @@
         owner: root
 
 
-    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with except-interface"
-      lineinfile:
+    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with #interface=lo"
+      replace:
         dest: "/etc/dnsmasq.conf"
-        insertafter: "^#except-interface=.*$"
-        line: "except-interface=virbr0"
-        state: present
+        regex: "^interface=lo.*$"
+        replace: "#interface=lo"
 
     - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with bind-interfaces"
+      replace:
+        dest: "/etc/dnsmasq.conf"
+        regex: "^#bind-interfaces.*$"
+        replace: "bind-interfaces"
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with listen-address="
       lineinfile:
         dest: "/etc/dnsmasq.conf"
-        insertafter: "^#bind-interfaces.*$"
-        line: "bind-interfaces"
+        insertafter: "^#listen-address.*$"
+        line: "listen-address={{ h_pubIP }}"
         state: present
+
+
+#    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with except-interface"
+#      lineinfile:
+#        dest: "/etc/dnsmasq.conf"
+#        insertafter: "^#except-interface=.*$"
+#        line: "except-interface=virbr0"
+#        state: present
+#
+#    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with bind-interfaces"
+#      lineinfile:
+#        dest: "/etc/dnsmasq.conf"
+#        insertafter: "^#bind-interfaces.*$"
+#        line: "bind-interfaces"
+#        state: present
 
 
 
