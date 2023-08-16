@@ -39,6 +39,22 @@
         owner: root
 
 
+    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with except-interface"
+      lineinfile:
+        dest: "/etc/dnsmasq.conf"
+        insertafter: "^#except-interface=.*$"
+        line: "except-interface=virbr0"
+        state: present
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with bind-interfaces"
+      lineinfile:
+        dest: "/etc/dnsmasq.conf"
+        insertafter: "^#bind-interfaces.*$"
+        line: "bind-interfaces"
+        state: present
+
+
+
 - hosts: myBastion,myNodes
   tasks:
 
