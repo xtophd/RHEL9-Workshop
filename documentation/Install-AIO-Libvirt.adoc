@@ -113,7 +113,7 @@ git clone http://github.com/xtophd/RHEL9-Workshop -b rhel92-dev --recurse-submod
 [{format_cmd_exec}]
 ----
 cd /usr/local/src/RHEL9-Workshop
-cp ./sample-configs/libvirt-nat/rhel9-workshop-setup.ans ./configs
+cp ./sample-configs/libvirt-nat/rhel9-workshop-setup.ans ./config
 ----
 
 == Run the Setup (Configuration) Script
