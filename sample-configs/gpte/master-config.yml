@@ -91,6 +91,7 @@ myBastion:
     bastion:
   vars:
     ansible_connection: local
+    configure_dnsmasq: false
 
 
 
