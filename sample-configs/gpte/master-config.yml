@@ -42,6 +42,9 @@ all:
       admin_name:           "root"
       #admin_password:       ""
 
+      bastion:
+        configure_dnsmasq:  False
+        
       enable_unit:
         appstream:          False
         boom:               True
@@ -91,7 +94,6 @@ myBastion:
     bastion:
   vars:
     ansible_connection: local
-    configure_dnsmasq: false
 
 
 
