@@ -4,6 +4,7 @@
   tags: settings
 
 - import_playbook: bastion-dns.yml
+  when: configure_dnsmasq | default('false')
   tags: bastion
 
 - import_playbook: rhel9-prep.yml
