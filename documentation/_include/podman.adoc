@@ -147,16 +147,15 @@ podman pull ubi9/ubi
 
 [{format_cmd_output}]
 ----
-Resolved "ubi9/ubi" as an alias (/etc/containers/registries.conf.d/000-shortnames.conf)
+Resolved "ubi9/ubi" as an alias (/etc/containers/registries.conf.d/001-rhel-shortnames.conf)
 Trying to pull registry.access.redhat.com/ubi9/ubi:latest...
 Getting image source signatures
 Checking if image destination supports signatures
-Copying blob 2c9b1d3d1a0a done
-Copying blob f95ee31bf3b7 done
-Copying config 46720ac964 done
+Copying blob 3b7adf049118 done
+Copying config 9f43f297e7 done
 Writing manifest to image destination
 Storing signatures
-46720ac964ac0e5fb23c8594797c3f7bb19c5a82c4734957f8991e94c30bd9f8
+9f43f297e77bc6937de12d4e90ed5dc679bd3b9c7a481068d2a840f5244d4197
 ----
 
 Have a look at the image list now.
@@ -169,7 +168,7 @@ podman images
 [{format_cmd_output}]
 ----
 REPOSITORY                           TAG         IMAGE ID      CREATED      SIZE
-registry.access.redhat.com/ubi9/ubi  latest      46720ac964ac  5 weeks ago  229 MB
+registry.access.redhat.com/ubi9/ubi  latest      9f43f297e77b  2 weeks ago  217 MB
 ----
 
 NOTE: if you are a subscriber to Red Hat Enterprise Linux, you can pull authentic Red Hat certified images directly from Red Hat's repository.  For example: `podman pull rhel7.5 --creds 'username:password'`
@@ -189,10 +188,10 @@ podman images
 
 [{format_cmd_output}]
 ----
-REPOSITORY                                   TAG         IMAGE ID      CREATED     SIZE
-registry.access.redhat.com/ubi9/ubi-init     latest      ce6c603a0f34  7 days ago  237 MB
-registry.access.redhat.com/ubi9/ubi          latest      9877f06ecc6f  7 days ago  219 MB
-registry.access.redhat.com/ubi9/ubi-minimal  latest      3135bd90aad6  7 days ago  97.5 MB
+REPOSITORY                                   TAG         IMAGE ID      CREATED      SIZE
+registry.access.redhat.com/ubi9/ubi-init     latest      a45c5d18b941  2 weeks ago  235 MB
+registry.access.redhat.com/ubi9/ubi          latest      9f43f297e77b  2 weeks ago  217 MB
+registry.access.redhat.com/ubi9/ubi-minimal  latest      088f0967f6b5  2 weeks ago  97.4 MB
 ----
 
 
@@ -214,11 +213,11 @@ podman images
 
 [{format_cmd_output}]
 ----
-REPOSITORY                                   TAG         IMAGE ID      CREATED     SIZE
-registry.access.redhat.com/ubi9/ubi-init     latest      ce6c603a0f34  7 days ago  237 MB
-registry.access.redhat.com/ubi9/ubi          latest      9877f06ecc6f  7 days ago  219 MB
-localhost/myfavorite                         latest      9877f06ecc6f  7 days ago  219 MB
-registry.access.redhat.com/ubi9/ubi-minimal  latest      3135bd90aad6  7 days ago  97.5 MB
+REPOSITORY                                   TAG         IMAGE ID      CREATED      SIZE
+registry.access.redhat.com/ubi9/ubi-init     latest      a45c5d18b941  2 weeks ago  235 MB
+registry.access.redhat.com/ubi9/ubi          latest      9f43f297e77b  2 weeks ago  217 MB
+localhost/myfavorite                         latest      9f43f297e77b  2 weeks ago  217 MB
+registry.access.redhat.com/ubi9/ubi-minimal  latest      088f0967f6b5  2 weeks ago  97.4 MB
 ----
 
 Notice how the image-id for "ubi" and "myfavorite" are identical.
@@ -246,10 +245,10 @@ podman images
 
 [{format_cmd_output}]
 ----
-REPOSITORY                                   TAG         IMAGE ID      CREATED     SIZE
-registry.access.redhat.com/ubi9/ubi          latest      9877f06ecc6f  7 days ago  219 MB
-localhost/myfavorite                         latest      9877f06ecc6f  7 days ago  219 MB
-registry.access.redhat.com/ubi9/ubi-minimal  latest      3135bd90aad6  7 days ago  97.5 MB
+REPOSITORY                                   TAG         IMAGE ID      CREATED      SIZE
+registry.access.redhat.com/ubi9/ubi          latest      9f43f297e77b  2 weeks ago  217 MB
+localhost/myfavorite                         latest      9f43f297e77b  2 weeks ago  217 MB
+registry.access.redhat.com/ubi9/ubi-minimal  latest      088f0967f6b5  2 weeks ago  97.4 MB
 ----
 
 
@@ -596,11 +595,11 @@ podman images
 
 [{format_cmd_output}]
 ----
-REPOSITORY                               TAG         IMAGE ID      CREATED        SIZE
-localhost/custom_image                   latest      b7a25f575856  8 seconds ago  258 MB
-registry.access.redhat.com/ubi9/ubi      latest      46720ac964ac  5 weeks ago    229 MB
-localhost/myfavorite                     latest      46720ac964ac  5 weeks ago    229 MB
-registry.access.redhat.com/ubi9-minimal  latest      8b9dbc6a9765  5 weeks ago    129 MB
+REPOSITORY                                   TAG         IMAGE ID      CREATED        SIZE
+localhost/custom_image                       latest      d6271d64c93e  2 seconds ago  246 MB
+registry.access.redhat.com/ubi9/ubi          latest      9f43f297e77b  2 weeks ago    217 MB
+localhost/myfavorite                         latest      9f43f297e77b  2 weeks ago    217 MB
+registry.access.redhat.com/ubi9/ubi-minimal  latest      088f0967f6b5  2 weeks ago    97.4 MB
 ----
 
 === Deploy
@@ -783,4 +782,5 @@ endif::[]
 
 ////
 Always end files with a blank line to avoid include problems.
+Verified for RHEL 9.2
 ////
