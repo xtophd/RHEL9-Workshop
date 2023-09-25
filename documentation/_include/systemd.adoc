@@ -161,8 +161,8 @@ systemd-analyze
 
 [{format_cmd_output}]
 ----
-Startup finished in 1.806s (kernel) + 3.082s (initrd) + 8.596s (userspace) = 13.485s
-multi-user.target reached after 7.129s in userspace
+Startup finished in 2.463s (kernel) + 3.527s (initrd) + 22.967s (userspace) = 28.957s
+multi-user.target reached after 8.257s in userspace.
 ----
 
 Next let's inspect further details about all running units, ordered by the time they took to initialize.
@@ -174,21 +174,22 @@ systemd-analyze blame | head -n 15
 
 [{format_cmd_output}]
 ----
-2.407s initrd-switch-root.service
-1.657s cloud-init-local.service
-1.560s dnf-makecache.service
-1.538s kdump.service
-1.021s cloud-init.service
- 802ms cloud-config.service
- 795ms cloud-final.service
- 750ms tuned.service
- 572ms dracut-initqueue.service
- 433ms dev-hugepages.mount
- 367ms dev-mqueue.mount
- 366ms firewalld.service
- 359ms sys-kernel-debug.mount
- 353ms sys-kernel-tracing.mount
- 345ms kmod-static-nodes.service
+14.897s kdump.service
+ 5.793s sys-devices-platform-serial8250-tty-ttyS2.device
+ 5.793s dev-ttyS2.device
+ 5.792s dev-ttyS3.device
+ 5.792s sys-devices-platform-serial8250-tty-ttyS3.device
+ 5.787s dev-ttyS0.device
+ 5.787s sys-devices-pnp0-00:04-tty-ttyS0.device
+ 5.778s dev-ttyS1.device
+ 5.778s sys-devices-platform-serial8250-tty-ttyS1.device
+ 5.756s sys-module-configfs.device
+ 5.558s dev-disk-by\x2did-nvme\x2dAmazon_Elastic_Block_Store_vol0a6e8f9e6b883a484\x2dpart2.device
+ 5.558s dev-disk-by\x2dpartuuid-68b2905b\x2ddf3e\x2d4fb3\x2d80fa\x2d49d1e773aa33.device
+ 5.558s dev-disk-by\x2duuid-7B77\x2d95E7.device
+ 5.558s dev-disk-by\x2did-nvme\x2dnvme.1d0f\x2d766f6c3061366538663965366238383361343834\x2d416d617a6f6e20456c617374696320426c6f
+636b2053746f7265\x2d00000001\x2dpart2.device
+ 5.558s dev-disk-by\x2dpath-pci\x2d0000:00:04.0\x2dnvme\x2d1\x2dpart2.device
 ----
 
 This helps to learn the “cost” of some of the default services.  To speed up boot-time, unnecessary services could potentially be removed or disabled.
@@ -210,9 +211,9 @@ dnf install -y httpd mariadb-server mariadb
 [{format_cmd_output}]
 ----
 ...snip ...
-Package httpd-2.4.51-7.el9_0.x86_64 is already installed.
-Package mariadb-server-3:10.5.13-2.el9.x86_64 is already installed.
-Package mariadb-3:10.5.13-2.el9.x86_64 is already installed.
+Package httpd-2.4.53-11.el9_2.5.x86_64 is already installed.
+Package mariadb-server-3:10.5.16-2.el9_0.x86_64 is already installed.
+Package mariadb-3:10.5.16-2.el9_0.x86_64 is already installed.
 Dependencies resolved.
 Nothing to do.
 Complete!
@@ -247,17 +248,20 @@ systemctl --no-pager status httpd mariadb
 [{format_cmd_output}]
 ----
 ● httpd.service - The Apache HTTP Server
-     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
-     Active: active (running) since Tue 2022-06-07 15:47:46 EDT; 31s ago
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; preset: disabled)
+     Active: active (running) since Mon 2023-09-25 14:53:46 UTC; 11s ago
        Docs: man:httpd.service(8)
-   Main PID: 37396 (httpd)
+   Main PID: 36188 (httpd)
      Status: "Total requests: 0; Idle/Busy workers 100/0;Requests/sec: 0; Bytes served/sec:   0 B/sec"
-      Tasks: 213 (limit: 22918)
-     Memory: 23.0M
-        CPU: 65ms
+      Tasks: 213 (limit: 22480)
+     Memory: 33.3M
+        CPU: 105ms
      CGroup: /system.slice/httpd.service
-             ├─37396 /usr/sbin/httpd -DFOREGROUND
-             ├─37445 /usr/sbin/httpd -DFOREGROUND
+             ├─36188 /usr/sbin/httpd -DFOREGROUND
+             ├─36233 /usr/sbin/httpd -DFOREGROUND
+             ├─36238 /usr/sbin/httpd -DFOREGROUND
+             ├─36239 /usr/sbin/httpd -DFOREGROUND
+             └─36252 /usr/sbin/httpd -DFOREGROUND
 ...<output truncated>...
 ----
 
@@ -395,19 +399,22 @@ systemctl --no-pager status httpd
 [{format_cmd_output}]
 ----
 ● httpd.service - The Apache HTTP Server
-     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; preset: disabled)
     Drop-In: /etc/systemd/system/httpd.service.d
              └─50-httpd.conf
-     Active: active (running) since Tue 2022-06-07 15:47:46 EDT; 5min ago
+     Active: active (running) since Mon 2023-09-25 14:53:46 UTC; 5min ago
        Docs: man:httpd.service(8)
-   Main PID: 37396 (httpd)
+   Main PID: 36188 (httpd)
      Status: "Total requests: 0; Idle/Busy workers 100/0;Requests/sec: 0; Bytes served/sec:   0 B/sec"
-      Tasks: 213 (limit: 22918)
-     Memory: 23.0M
-        CPU: 181ms
+      Tasks: 213 (limit: 22480)
+     Memory: 33.3M
+        CPU: 336ms
      CGroup: /system.slice/httpd.service
-             ├─37396 /usr/sbin/httpd -DFOREGROUND
-             ├─37445 /usr/sbin/httpd -DFOREGROUND
+             ├─36188 /usr/sbin/httpd -DFOREGROUND
+             ├─36233 /usr/sbin/httpd -DFOREGROUND
+             ├─36238 /usr/sbin/httpd -DFOREGROUND
+             ├─36239 /usr/sbin/httpd -DFOREGROUND
+             └─36252 /usr/sbin/httpd -DFOREGROUND
 ----
 
 Notice that systemctl status displays that the unit has been extended with a drop-in file.
@@ -420,19 +427,19 @@ systemctl --no-pager status mariadb
 [{format_cmd_output}]
 ----
 ● mariadb.service - MariaDB 10.5 database server
-     Loaded: loaded (/usr/lib/systemd/system/mariadb.service; enabled; vendor preset: disabled)
+     Loaded: loaded (/usr/lib/systemd/system/mariadb.service; enabled; preset: disabled)
     Drop-In: /etc/systemd/system/mariadb.service.d
              └─override.conf
-     Active: active (running) since Tue 2022-06-07 15:47:48 EDT; 6min ago
+     Active: active (running) since Mon 2023-09-25 14:53:48 UTC; 6min ago
        Docs: man:mariadbd(8)
              https://mariadb.com/kb/en/library/systemd/
-   Main PID: 37717 (mariadbd)
+   Main PID: 36509 (mariadbd)
      Status: "Taking your SQL requests now..."
-      Tasks: 8 (limit: 22918)
-     Memory: 73.2M
-        CPU: 337ms
+      Tasks: 8 (limit: 22480)
+     Memory: 73.1M
+        CPU: 456ms
      CGroup: /system.slice/mariadb.service
-             └─37717 /usr/libexec/mariadbd --basedir=/usr
+             └─36509 /usr/libexec/mariadbd --basedir=/usr
 ----
 
 
