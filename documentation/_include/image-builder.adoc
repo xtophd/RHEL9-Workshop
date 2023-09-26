@@ -231,7 +231,7 @@ simple command to wait for the compose to finish.
 
 [{format_cmd_exec}]
 ----
-time until $(composer-cli compose list | head -1 | grep -qi finished); do echo -n "." ; sleep 3; done
+time until $(composer-cli compose list | tail -n +2 | grep -qi finished); do echo -n "." ; sleep 3; done
 ----
 
 WARNING:  It is critical to wait for the compose to finish before proceeding.
