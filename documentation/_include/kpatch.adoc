@@ -65,7 +65,7 @@ rpm -q kernel
 
 [{format_cmd_output}]
 ----
-kernel-5.14.0-70.13.1.el9_0.x86_64
+kernel-5.14.0-284.30.1.el9_2.x86_64
 ----
 
 [{format_cmd_exec}]
@@ -75,7 +75,7 @@ uname -r
 
 [{format_cmd_output}]
 ----
-5.14.0-70.13.1.el9_0.x86_64
+5.14.0-284.30.1.el9_2.x86_64
 ----
 
 Here we can see that we are running the 5.14.0-70.13.1 kernel. Now we install all kpatches for our kernel:
@@ -88,26 +88,25 @@ dnf install "kpatch-patch = $(uname -r)" -y
 [{format_cmd_output}]
 ----
 Updating Subscription Management repositories.
-Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)                                      7.5 kB/s | 2.4 kB     00:00
-Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)                                   7.3 kB/s | 2.4 kB     00:00
-Red Hat Enterprise Linux 9 for x86_64 - Supplementary (RPMs)                               6.2 kB/s | 2.1 kB     00:00
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)                                          134 kB/s | 4.5 kB     00:00
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)                                             111 kB/s | 4.1 kB     00:00
 Dependencies resolved.
-===========================================================================================================================
- Package                              Architecture    Version                 Repository                              Size
-===========================================================================================================================
+==================================================================================================================================
+ Package                                Architecture     Version                    Repository                               Size
+==================================================================================================================================
 Installing:
- kpatch-patch-5_14_0-70_13_1          x86_64          1-1.el9_0               rhel-9-for-x86_64-baseos-rpms           22 k
+ kpatch-patch-5_14_0-284_30_1           x86_64           0-0.el9_2                  rhel-9-for-x86_64-baseos-rpms           7.8 k
 Installing dependencies:
- kpatch                               noarch          0.9.4-2.el9             rhel-9-for-x86_64-baseos-rpms           16 k
+ kpatch                                 noarch           0.9.7-2.el9                rhel-9-for-x86_64-baseos-rpms            17 k
 Installing weak dependencies:
- kpatch-dnf                           noarch          0.4-2.el9               rhel-9-for-x86_64-baseos-rpms           18 k
+ kpatch-dnf                             noarch           0.9.7_0.4-2.el9            rhel-9-for-x86_64-baseos-rpms            18 k
 
 Transaction Summary
-===========================================================================================================================
+==================================================================================================================================
 Install  3 Packages
 
-Total download size: 55 k
-Installed size: 74 k
+Total download size: 42 k
+Installed size: 33 k
 ...<SNIP>...
 ----
 
@@ -117,23 +116,16 @@ Further, if you'd like to look at which CVEs are included by the kpatch installe
 
 [{format_cmd_exec}]
 ----
-rpm -q --changelog kpatch-patch-5_14_0-70_13_1-1-1.el9_0.x86_64
+rpm -q --changelog kpatch-patch-5_14_0-284_30_1-0-0.el9_2.x86_64
 ----
 
 [{format_cmd_output}]
 ----
-* Wed Jun 22 2022 Joe Lawrence <joe.lawrence@redhat.com> [1-1.el9_0]
-- kernel: Small table perturb size in the TCP source port generation algorithm can lead to information leak [2087132] {CVE-
-2022-1012}
-- kernel: a use-after-free write in the netfilter subsystem can lead to privilege escalation to root [2093170] {CVE-2022-19
-66}
-- kernel: buffer overflow in IPsec ESP transformation code [2087138] {CVE-2022-27666}
-
-* Mon May 02 2022 Yannick Cote <ycote@redhat.com> [0-0.el9]
-- An empty patch to subscribe to kpatch stream for kernel-5.14.0-70.13.1.el9_0 [2081116]
+* Tue Aug 29 2023 Yannick Cote <ycote@redhat.com> [0-0.el9]
+- An empty patch to subscribe to kpatch stream for kernel-5.14.0-284.30.1.el9_2 [2235709]
 ----
 
-This tells us that we are now protected against CVE-2021-3501. Let's check `kpatch list`:
+This tells us that at this time, there are no kpatches available for this version of the kernel:
 
 [{format_cmd_exec}]
 ----
@@ -143,13 +135,12 @@ kpatch list
 [{format_cmd_output}]
 ----
 Loaded patch modules:
-kpatch_5_14_0_70_13_1_1_1 [enabled]
 
 Installed patch modules:
-kpatch_5_14_0_70_13_1_1_1 (5.14.0-70.13.1.el9_0.x86_64)
+
 ----
 
-We can see that we have kpatch_5_14_0_70_13_1_1_1 now installed and loaded. We have these protections effective immediately and without having to reboot. We can now schedule a reboot for a time that is convenient for us. 
+Again, because there are no available kpatches for this version of rhel, this lists are empty.  In the past, kpatch_5_14_0_70_13_1_1_1 was available for RHEL 9.0 and if installed and loaded, the protections were effective immediately and without having to reboot. The reboot could then be scheduled for a time that is convenient. 
 
 == Taking that Scheduled Reboot 
 
@@ -187,5 +178,6 @@ endif::[]
 
 ////
 Always end files with a blank line to avoid include problems.
+Verified for RHEL92
 ////
 
