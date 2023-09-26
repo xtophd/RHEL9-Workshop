@@ -56,6 +56,11 @@ is the ssh command and password which you can use.
 
 [{format_cmd_exec2}]
 ----
+workshop-tmux.sh TERM2
+----
+
+[{format_cmd_exec2}]
+----
 [[ "$UID" == 0 ]] || sudo -i
 ----
 
@@ -461,4 +466,5 @@ endif::[]
 
 ////
 Always end files with a blank line to avoid include problems.
+Verified for RHEL92
 ////
