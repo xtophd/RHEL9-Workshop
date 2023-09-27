@@ -439,15 +439,11 @@ Once executed, you will be prompted to confirm the task.
 
 [{format_cmd_output}]
 ----
- WARNING: Converting logical volume vg_lab/lv_raid10 to VDO pool volume with formating.
+  WARNING: Converting logical volume vg_lab/lv_raid10 to VDO pool volume with formating.
   THIS WILL DESTROY CONTENT OF LOGICAL VOLUME (filesystem etc.)
-Do you really want to convert vg_lab/lv_raid10? [y/n]: y
     The VDO volume can address 6 GB in 3 data slabs, each 2 GB.
     It can grow to address at most 16 TB of physical storage in 8192 slabs.
     If a larger maximum size might be needed, use bigger slabs.
-  device-mapper: remove ioctl on  (253:8) failed: Device or resource busy
-  device-mapper: remove ioctl on  (253:8) failed: Device or resource busy
-  device-mapper: remove ioctl on  (253:8) failed: Device or resource busy
   Logical volume "lab2" created.
   Converted vg_lab/lv_raid10 to VDO pool volume and created virtual vg_lab/lab2 VDO volume.
 ----
@@ -475,7 +471,7 @@ Let us now populate the filesystem with some content.  Create a bunch of random 
 
 [{format_cmd_exec}]
 ----
-for i in {1..100} ; do mktemp -d /mnt/lab2/XXXXXX ; done
+for i in {1..10} ; do mktemp -d /mnt/lab2/XXXXXX ; done
 ----
 
 Now we will copy the same content into each of the folders as follows.
@@ -487,7 +483,7 @@ NOTE: This could take a few minutes.
 for i in /mnt/lab2/* ; do echo "${i}" ; cp -rf /usr/share/locale $i ; done
 ----
 
-The prevoius command should have copied approximately 100MB in 100 folders yielding about 10G of traditional fielsystem consumption.
+The prevoius command should have copied approximately 100MB in 10 folders yielding about 1G of traditional fielsystem consumption.
 
 === Examine Your Work
 
@@ -512,7 +508,7 @@ vdostats --human-readable
 [{format_cmd_output}]
 ----
 Device                      Size      Used Available Use% Space saving%
-vg_lab-lv_raid10-vpool      9.5G      3.7G      5.8G  39%           98%
+vg_lab-lv_raid10-vpool      9.5G      3.6G      5.9G  38%           86%
 ----
 
 
