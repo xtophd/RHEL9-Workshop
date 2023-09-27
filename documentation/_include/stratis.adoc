@@ -84,8 +84,6 @@ Next we need to enable the `stratisd` service
 systemctl enable --now stratisd
 ----
 
-TIP: The "enable --now" syntax is new in RHEL 8.  It allows for permanently enabling as well as immediately starting services in a single command.
-
 Finally check the service status.
 
 [{format_cmd_exec}]
