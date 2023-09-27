@@ -3,6 +3,10 @@
 - import_playbook: rhel9-settings.yml
   tags: settings
 
+- import_playbook: bastion-dns.yml
+  when: workshop_vars.bastion.configure_dnsmasq | default(False)
+  tags: bastion
+
 - import_playbook: rhel9-prep.yml
   tags: prep
 

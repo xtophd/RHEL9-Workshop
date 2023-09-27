@@ -46,6 +46,9 @@ all:
       admin_name:           "root"
       #admin_password:       ""
 
+      bastion:
+        configure_dnsmasq:  True
+
       enable_unit:
         appstream:          False
         boom:               True

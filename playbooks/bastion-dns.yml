@@ -1,0 +1,199 @@
+
+---
+- hosts: myBastion
+  tasks:
+
+    #
+    #    Package installation
+    #
+    
+    - name: "RHEL9-WORKSHOP : bastion-dns : package installation"
+      yum: name=dnsmasq state=installed
+
+    #
+    #    We need to disable networkmanager 
+    #    from toying with /etc/resolv.conf
+    #
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : disable network-manager /etc/resolv.conf adjustments"
+      template:
+        src:   "dns-resolv-fix.j2"
+        dest:  "/etc/NetworkManager/conf.d/90-dns-none.conf"
+        owner: root
+    
+    - name: "RHEL9-WORKSHOP : bastion-dns : restart networkmanager service"
+      service: name=NetworkManager state=reloaded enabled=yes
+
+    #
+    #    deploy a /etc/resolv.conf that 
+    #    points to our bastion dns server
+    #
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : deploy resolv.conf"
+      vars: 
+        - p_search:     "{{ workshop_vars.network_basedomain }}"
+        - p_nameserver: "127.0.0.1"
+      template:
+        src:   "dns-resolv-conf.j2"
+        dest:  "/etc/resolv.conf"
+        owner: root
+
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with #interface=lo"
+      replace:
+        dest: "/etc/dnsmasq.conf"
+        regexp: "^interface=lo.*$"
+        replace: "#interface=lo"
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with bind-interfaces"
+      replace:
+        dest: "/etc/dnsmasq.conf"
+        regexp: "^#bind-interfaces.*$"
+        replace: "bind-interfaces"
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with listen-address"
+      lineinfile:
+        dest: "/etc/dnsmasq.conf"
+        insertafter: "^#listen-address.*$"
+        line: "listen-address={{ h_pubIP }},127.0.0.1"
+        state: present
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with local domain entry"
+      lineinfile:
+        dest: "/etc/dnsmasq.conf"
+        insertafter: "^#local=/localnet/.*$"
+        line: "local=/{{ workshop_vars.network_basedomain }}/"
+        state: present
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with forwarding entry"
+      lineinfile:
+        dest:   "/etc/dnsmasq.conf"
+        line:   "server={{ workshop_vars.network_nameserver }}"
+        state:  present
+        insertafter: "EOF"
+    
+
+#    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with except-interface"
+#      lineinfile:
+#        dest: "/etc/dnsmasq.conf"
+#        insertafter: "^#except-interface=.*$"
+#        line: "except-interface=virbr0"
+#        state: present
+#
+#    - name: "RHEL9-WORKSHOP : bastion-dns : adjust /etc/dnsmasq.conf with bind-interfaces"
+#      lineinfile:
+#        dest: "/etc/dnsmasq.conf"
+#        insertafter: "^#bind-interfaces.*$"
+#        line: "bind-interfaces"
+#        state: present
+
+
+
+- hosts: myBastion,myNodes
+  tasks:
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : cleanup conflicting IP in /etc/hosts"
+      delegate_to: "{{ groups['myBastion'][0] }}" 
+      throttle: 1
+      run_once: false
+      lineinfile:
+        dest:   "/etc/hosts"
+        regexp: "{{ h_pubIP }} .*$"
+        state:  absent
+   
+    - name: "RHEL9-WORKSHOP : bastion-dns : cleanup conflicting name in /etc/hosts"
+      delegate_to: "{{ groups['myBastion'][0] }}" 
+      throttle: 1
+      run_once: false
+      lineinfile:
+        dest:   "/etc/hosts"
+        regexp: ".*{{ inventory_hostname }}.*"
+        state:  absent
+  
+    - name: "RHEL9-WORKSHOP : bastion-dns : add entry in /etc/hosts"
+      delegate_to: "{{ groups['myBastion'][0] }}" 
+      throttle: 1
+      run_once: false
+      lineinfile:
+        dest:   "/etc/hosts"
+        line:   "{{ h_pubIP }} {{ inventory_hostname }}"
+        state:  present
+        insertbefore: "^127.0.0.1.*"
+
+
+
+- hosts: myBastion
+  tasks:
+
+    #
+    #    Last couple of items:
+    #
+    #      disable nscd       dnsmasq already performs caching
+    #      systemd overrides  add restart=always to dnsmasq service
+    #      firewall rules     add 'dns' to firewalld if firewalld is enabled
+    #      service restart    
+    #
+    
+    - name: "RHEL9-WORKSHOP : bastion-dns : disable nscd services"
+      service:
+        name: "{{ item }}"
+        enabled: no
+        state: stopped
+        masked: no
+      when: 
+        - ansible_facts['services']['nscd.service']['state'] is defined
+      with_items:
+        - 'nscd.socket'
+        - 'nscd.service'
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : create systemd override directory"
+      file:
+        path: /etc/systemd/system/dnsmasq.service.d
+        mode: "0755"
+        state: directory
+    
+    - name: "RHEL9-WORKSHOP : bastion-dns : deploy systemd override config"
+      template:
+        src: "dnsmasq-systemd-overrides.j2"
+        dest: "/etc/systemd/system/dnsmasq.service.d/overrides.conf"
+        owner: root
+        group: root
+        mode: 644
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : configure firewalld"
+      shell:
+        cmd: |
+          firewall-cmd --add-service="{{ item }}"
+          firewall-cmd --add-service="{{ item }}" --permanent
+      with_items:
+        - "dns"
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : restart dnsmasq"
+      service: 
+         name: dnsmasq 
+         state: restarted 
+         enabled: yes 
+         daemon_reload: yes
+
+
+
+
+- hosts: myNodes
+  tasks:
+
+    - debug: msg="DNS IP = {{ hostvars[groups['myBastion'][0]]['h_pubIP'] }}"
+    - debug: var=bastion.dns 
+
+    - name: "RHEL9-WORKSHOP : bastion-dns : fix nodes nodes to use bastion for dns"
+      vars:
+        t_dns: "{{ hostvars[groups['myBastion'][0]]['h_pubIP'] }}"
+      shell:
+        cmd: |
+             nmcli -g name,type connection  show  --active | awk -F: '/ethernet|wireless/ { print $1 }' | while read connection
+             do
+               nmcli con mod  "$connection" ipv4.ignore-auto-dns yes
+               nmcli con mod  "$connection" ipv4.dns "{{ t_dns }}"
+               nmcli con down "$connection" && nmcli con up "$connection"
+             done
+      when: bastion.dns is defined and bastion.dns == true
+
