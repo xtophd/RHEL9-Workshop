@@ -86,7 +86,7 @@ boom profile list
 
 [{format_plane}]
 ----
-sID    Name                            OsVersion
+OsID    Name                            OsVersion
 ----
 
 For a more detailed view, you can use the `profile show` sub-command.
