@@ -1,7 +1,7 @@
 :sectnums:
 :sectnumlevels: 3
 :markup-in-source: verbatim,attributes,quotes
-:imagesdir: ./_images/cockpit-rhel90
+:imagesdir: ./_images/cockpit-rhel92
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
