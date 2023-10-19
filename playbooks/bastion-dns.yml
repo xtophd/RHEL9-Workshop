@@ -182,7 +182,7 @@
   tasks:
 
     - debug: msg="DNS IP = {{ hostvars[groups['myBastion'][0]]['h_pubIP'] }}"
-    - debug: var=bastion.dns 
+    - debug: var=workshop_vars.bastion.configure_dnsmasq
 
     - name: "RHEL9-WORKSHOP : bastion-dns : fix nodes nodes to use bastion for dns"
       vars:

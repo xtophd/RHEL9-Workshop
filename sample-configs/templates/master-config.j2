@@ -47,6 +47,9 @@ all:
       admin_name:           "root"
       #admin_password:       ""
 
+      bastion:
+        configure_dnsmasq:  True
+
       enable_unit:
         appstream:          True
         boom:               True
@@ -65,22 +68,6 @@ all:
         wayland:            True
         leapp:              True
         webconsole:         True
-
-    bastion:
-
-        firewalld:          True
-        cockpit:            False
-        dns:                True
-        dhcp:               False
-        dhcp_pxe:           False
-        dhcp_uefi_http:     False
-        nfs:                False
-        ntp:                False
-        workshop_user:      True
-        workshop_materials: True
-        desktop_gui:        False
-        desktop_chrome:     False
-        desktop_vnc:        False
 
     workshop_extras:
 
@@ -246,6 +233,23 @@ myNodes:
 {% endif %}
 {% endif %}
 
+{% if t_addr_leapp is defined and t_addr_leapp|length %}
+    {{ t_name_leapp}}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_leapp }}"
+{% if t_mac_node4|length %}
+      h_pubMAC:        "{{ t_mac_leapp }}"
+{% endif -%}
+{% if t_hw_leapp|length  %}
+      h_hwPROF:        "{{ t_hw_leapp  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "vmedia_nowait"
+{% endif %}
+
+{% if t_bmc_leapp|length %}
+      bmc_fqdn:        "{{ t_bmc_leapp }}"
+{% endif %}
+{% endif %}
 
   vars:
 {% if t_virthost_type == "libvirt" %}

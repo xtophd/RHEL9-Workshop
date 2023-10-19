@@ -36,32 +36,38 @@ export ADDR_NODE1=""
 export ADDR_NODE2=""
 export ADDR_NODE3=""
 export ADDR_NODE4=""
+export ADDR_LEAPP=""
 export BMC_BASTION=""
 export BMC_NODE1=""
 export BMC_NODE2=""
 export BMC_NODE3=""
 export BMC_NODE4=""
+export BMC_LEAPP=""
 export BMC_PW_DEFAULT=""
 export BMC_PW_BASTION=""
 export BMC_PW_NODE1=""
 export BMC_PW_NODE2=""
 export BMC_PW_NODE3=""
 export BMC_PW_NODE4=""
+export BMC_PW_LEAPP=""
 export MAC_BASTION=""
 export MAC_NODE1=""
 export MAC_NODE2=""
 export MAC_NODE3=""
 export MAC_NODE4=""
+export MAC_LEAPP=""
 export HW_BASTION=""
 export HW_NODE1=""
 export HW_NODE2=""
 export HW_NODE3=""
 export HW_NODE4=""
+export HW_LEAPP=""
 export NAME_BASTION="bastion"
 export NAME_NODE1="node1"
 export NAME_NODE2="node2"
 export NAME_NODE3="node3"
 export NAME_NODE4="node4"
+export NAME_LEAPP="leapp"
 
 
 ##
@@ -125,26 +131,31 @@ ADDR_NODE1="${ADDR_NODE1}"
 ADDR_NODE2="${ADDR_NODE2}"
 ADDR_NODE3="${ADDR_NODE3}"
 ADDR_NODE4="${ADDR_NODE4}"
+ADDR_LEAPP="${ADDR_LEAPP}"
 BMC_BASTION="${BMC_BASTION}"
 BMC_NODE1="${BMC_NODE1}"
 BMC_NODE2="${BMC_NODE2}"
 BMC_NODE3="${BMC_NODE3}"
 BMC_NODE4="${BMC_NODE4}"
+BMC_LEAPP="${BMC_LEAPP}"
 MAC_BASTION="${MAC_BASTION}"
 MAC_NODE1="${MAC_NODE1}"
 MAC_NODE2="${MAC_NODE2}"
 MAC_NODE3="${MAC_NODE3}"
 MAC_NODE4="${MAC_NODE4}"
+MAC_LEAPP="${MAC_LEAPP}"
 HW_BASTION="${HW_BASTION}"
 HW_NODE1="${HW_NODE1}"
 HW_NODE2="${HW_NODE2}"
 HW_NODE3="${HW_NODE3}"
 HW_NODE4="${HW_NODE4}"
+HW_LEAPP="${HW_LEAPP}"
 NAME_BASTION="${NAME_BASTION}"
 NAME_NODE1="${NAME_NODE1}"
 NAME_NODE2="${NAME_NODE2}"
 NAME_NODE3="${NAME_NODE3}"
 NAME_NODE4="${NAME_NODE4}"
+NAME_LEAPP="${NAME_LEAPP}"
 EO_ANSWERS
 
 }
@@ -199,6 +210,7 @@ current_settings () {
     echo "Node2  : ${ADDR_NODE2} / ${MAC_NODE2} / ${HW_NODE2} / ${BMC_NODE2} / ${NAME_NODE2}"
     echo "Node3  : ${ADDR_NODE3} / ${MAC_NODE3} / ${HW_NODE3} / ${BMC_NODE3} / ${NAME_NODE3}"
     echo "Node4  : ${ADDR_NODE4} / ${MAC_NODE4} / ${HW_NODE4} / ${BMC_NODE4} / ${NAME_NODE4}"
+    echo "Leapp  : ${ADDR_LEAPP} / ${MAC_LEAPP} / ${HW_LEAPP} / ${BMC_LEAPP} / ${NAME_LEAPP}"
     echo ""
  }
 
@@ -361,7 +373,7 @@ node_menu () {
 
     current_settings
 
-    select action in "Bastion" "Node1" "Node2" "Node3" "Node4" "Back to Main Menu"
+    select action in "Bastion" "Node1" "Node2" "Node3" "Node4" "Leapp" "Back to Main Menu"
     do
       case ${action}  in
         "Bastion")
@@ -378,6 +390,9 @@ node_menu () {
           ;;
         "Node4")
           node_submenu NODE4
+          ;;
+        "Leapp")
+          node_submenu LEAPP
           ;;
         "Back to Main Menu")
           PS3=${SAVED_PROMPT}
