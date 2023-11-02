@@ -64,7 +64,7 @@ Linux containers are technologies (plural) that allow you to package and isolate
   * improve flexibilty over virtual machines
 
 Because container images include only the content needed to run an application, a container is more efficient 
-requires less to run.  Likewise, since the container is not running the entirety of a complete operating system,
+requires less to run.  Likewise, since the container is not running complete operating system,
 it will typically run faster than an application that carries with it the overhead of a whole new virtual 
 machine.  Lastly with an application’s run time requirements included in the image itself, a container is 
 far more capable of being run in multiple environments (without modification).
@@ -428,7 +428,7 @@ UID          PID    PPID  C STIME TTY          TIME CMD
 root           1       0  0 17:23 ?        00:00:00 /bin/ps -ef
 ----
 
-Notice that all the process belonging to host itself are absent.  The programs running in the container's namespace are isolated from the rest of the host.  From the container's perspective, the process in the container is the only process running.
+Notice all the process belonging to the host itself are absent.  The programs running in the container's namespace are isolated from the rest of the host.  From the container's perspective, the process in the container is the only process running.
 
 === Network
 
@@ -574,13 +574,13 @@ ENTRYPOINT ["/usr/sbin/httpd"]
 Notice a few things about the configuration:
 
   * that our image is based on `ubi9/ubi`
-  * the build process will install an additional package `httpd` along with it's dependencies
+  * the build process will install an additional package `httpd` along with its dependencies
   * httpd is configured by default to run on port 80, so that is the port we will expose
   * the build will create a file `/var/www/html/index.html` with the contents "The Web Server is Running".
 
 === Build
 
-Now it's time to build the new container image.
+Now it is time to build the new container image.
 
 [{format_cmd_exec}]
 ----
@@ -713,7 +713,7 @@ lsns
 4026532379 cgroup      5 48787 root   /usr/sbin/httpd -D FOREGROUND
 ----
 
-We see that the httpd processes running are using the mnt uts ipc pid and net namespaces.
+We see that the running httpd processes are using the mnt uts ipc pid and net namespaces.
 
 Since we explored namespaces earlier, we may as well have a look at the control-groups aligned with our process.  
 
@@ -759,7 +759,7 @@ podman rmi --all --force
 
 This concludes the exercises related to podman.
 
-Time to finish this unit and return the shell to it's home position.
+Time to finish this unit and return the shell to its home position.
 
 [{format_cmd_exec}]
 ----
