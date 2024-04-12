@@ -16,8 +16,8 @@ endif::[]
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="copy"
 :format_cmd_output: bash,options="nowrap",subs="{markup-in-source}"
 ifeval::["%cloud_provider%" == "ec2"]
-:ssh_password: %ssh_password%
-:ssh_username: %ssh_username%
+:ssh_password: %bastion_ssh_password%
+:ssh_username: %bastion_ssh_user_name%
 :targethost_fqdn: %targethost%
 :subdomain: %subdomain_internal%
 :format_cmd_exec: source,options="nowrap",subs="{markup-in-source}",role="execute"

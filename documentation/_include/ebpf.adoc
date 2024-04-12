@@ -2,8 +2,8 @@
 :sectnumlevels: 3
 :markup-in-source: verbatim,attributes,quotes
 :ssh_command: %ssh_command%
-:ssh_password: %ssh_password%
-:ssh_username: %ssh_username%
+:ssh_password: %bastion_ssh_password%
+:ssh_username: %bastion_ssh_user_name%
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
