@@ -93,12 +93,12 @@ And the following UserID and Password:
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-%ssh_username%
+{ssh_username}
 ----
 
 [source,options="nowrap",subs="{markup-in-source}",role="copy"]
 ----
-%ssh_password%
+{ssh_password}
 ----
 
 ====
