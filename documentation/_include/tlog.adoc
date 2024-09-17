@@ -72,7 +72,7 @@ su - other-user
 ATTENTION! Your session is being recorded!
 ----
 
-You should have gotten a message when switching to `other-user` that the session is being recorded.
+You should have received a message when switching to `other-user` that the session is being recorded.
 
 Now to do a few activities worth logging.  You can check out a directory listing, look at the host's _passwd_ and _shadow_ files.  
 

@@ -55,7 +55,7 @@ You are now ready to proceed with these exercises.
 
 == Create a Container Image With Buildah
 
-In the previous lab on `podman`, we pulled down the ubi image and used an OCIFile to build a "webserver" container image. That process used `buildah` under the hood, but in this lab we are going to use `buildah` directly to create a similar image manually, step by step.
+In the previous lab on `podman`, we pulled down the ubi image and used an OCIFile to build a "webserver" container image. That process used `buildah` under the hood, but in this lab we are going to use `buildah` directly to manually create a similar image, step by step.
 
 === Start a Fresh Build
 

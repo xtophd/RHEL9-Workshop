@@ -210,7 +210,7 @@ table inet workshop {
 
   * a rule consists of zero or more *expressions* followed by one or more *statements*
   * each *expression* tests whether a packet matches a specific payload field or packet/flow metadata
-  * if a packet matches all of the expressions in the rule, then rule's *statements* are executed
+  * if a packet matches all of the expressions in the rule, then the rule's *statements* are executed
 
 Using the Table and Chain created above, let's proceed to implement and manage some basic rules.
 
