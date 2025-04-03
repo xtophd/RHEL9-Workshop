@@ -124,7 +124,7 @@ NOTE: If the presenter (or partner) has some slides to show, this is a good plac
 
 == Conclusion
 
-The set up of the RHEL 8 Workshop should now be complete.  A couple of remaining words of advice:
+The set up of the RHEL 9 Workshop should now be complete.  A couple of remaining words of advice:
 
 1.  Some exercises are dependant on the successful completion of other exercises.  Those dependencies will be noted.
 2.  Pay attention to which user-id (login) to use
